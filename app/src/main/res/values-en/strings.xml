@@ -12,7 +12,7 @@
 
     <!-- Top Header & Status -->
     <string name="header_title">Gh0stra1n</string>
-    <string name="header_desc">Rootless OverlayFS Manager · PD2339FA</string>
+    <string name="header_desc">Rootless OverlayFS Manager</string>
     <string name="status_ready">READY</string>
     <string name="status_live">LIVE</string>
     <string name="status_mounting">MOUNTING</string>
@@ -230,6 +230,7 @@
     <string name="toast_backup_success_fmt">Backup successful! File saved at:\n%s</string>
     <string name="toast_backup_failed_fmt">Backup failed: %s</string>
     <string name="toast_status_refreshed">Refreshed system &amp; partition status</string>
+    <string name="toast_device_info_copied">Device environment info copied to clipboard</string>
     <string name="toast_settings_saved">Settings saved</string>
     <string name="toast_payload_written">Test probe successfully written to /system/beef.txt</string>
     <string name="toast_payload_failed">Failed writing test probe. Check logs.</string>
@@ -403,6 +404,8 @@
     <string name="about_license_title">Open Source License</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">Changelog</string>
+    <string name="about_changelog_v112_title">v1.1.2 · Dynamic Host Device &amp; System Probing</string>
+    <string name="about_changelog_v112_desc">• Eliminated hardcoded host device strings; introduced dynamic DeviceInfoHelper\n• Auto-detects OEM marketing model names (vivo/iQOO, Xiaomi/Redmi, OPPO/OnePlus, Honor, etc.)\n• Dynamically probes Linux kernel device codenames and Android OS version at runtime\n• Interactive device info chip with click-to-copy full hardware specs &amp; CPU ABI to clipboard\n• Decoupled header subtitles and synchronized runtime host initialization logs</string>
     <string name="about_changelog_v111_title">v1.1.1 · AIDL IPC Service Integration</string>
     <string name="about_changelog_v111_desc">• Added IGh0stOverlayService AIDL inter-process communication interface\n• Exposed public Service (OVERLAY_SERVICE) for external modules/apps to interface with manager\n• Supports remote Root probing, partition status query, upperdir retrieval, mount &amp; unmount\n• Supports remote storage sync (syncStorage) and soft reboot (restartZygote)</string>
     <string name="about_changelog_v110_title">v1.1.0 · Brand-New About Page &amp; Navigation Redesign</string>

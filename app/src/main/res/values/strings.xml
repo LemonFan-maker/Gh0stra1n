@@ -12,7 +12,7 @@
 
     <!-- 顶部状态栏 -->
     <string name="header_title">Gh0stra1n</string>
-    <string name="header_desc">Rootless OverlayFS 管理器 · PD2339FA</string>
+    <string name="header_desc">Rootless OverlayFS 管理器</string>
     <string name="status_ready">环境就绪</string>
     <string name="status_live">运行中</string>
     <string name="status_mounting">装载中</string>
@@ -230,6 +230,7 @@
     <string name="toast_backup_success_fmt">备份成功！文件存放在：\n%s</string>
     <string name="toast_backup_failed_fmt">备份失败: %s</string>
     <string name="toast_status_refreshed">已刷新系统与分区状态</string>
+    <string name="toast_device_info_copied">已复制设备环境信息至剪贴板</string>
     <string name="toast_settings_saved">设置已保存</string>
     <string name="toast_payload_written">测试载荷已成功写入 /system/beef.txt</string>
     <string name="toast_payload_failed">测试载荷写入遇到问题，请查看日志</string>
@@ -403,6 +404,8 @@
     <string name="about_license_title">开源协议</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">版本更新日志</string>
+    <string name="about_changelog_v112_title">v1.1.2 · 动态识别宿主机型与系统环境</string>
+    <string name="about_changelog_v112_desc">• 移除所有写死的宿主设备信息，全新引入 DeviceInfoHelper 动态解析器\n• 自动匹配各大主流厂商商业市场机型名称 (vivo/iQOO、小米/Redmi、OPPO/一加、荣耀等)\n• 自动获取底层 Linux 官方硬件代号 (Codename) 与系统 Android 主版本\n• 顶部机型卡片增加点击反馈，支持一键将详细硬件与架构信息复制到剪贴板\n• 统一主界面顶栏副标题与底层初始化日志输出，彻底完成设备解耦</string>
     <string name="about_changelog_v111_title">v1.1.1 · 引入 AIDL 跨进程通信服务</string>
     <string name="about_changelog_v111_desc">• 新增 IGh0stOverlayService AIDL 跨进程通信接口\n• 提供公开 Service (OVERLAY_SERVICE) 供外部模块/应用与管理器交互\n• 支持远程探测 Root、查询分区状态、获取 upperdir、挂载与卸载分区\n• 支持远程调用存储落盘 (syncStorage) 与软重启 (restartZygote)</string>
     <string name="about_changelog_v110_title">v1.1.0 · 全新「关于」页面与导航架构重组</string>

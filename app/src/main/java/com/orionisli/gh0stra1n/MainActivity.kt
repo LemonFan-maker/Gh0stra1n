@@ -375,6 +375,21 @@ class MainActivity : AppCompatActivity() {
         txtDetail = findViewById(R.id.status_detail)
         txtQuickSummary = findViewById(R.id.txt_quick_summary)
 
+        // Device Info Chip (动态识别机型、代号与系统版本)
+        val txtDeviceInfo = findViewById<TextView>(R.id.txt_device_info)
+        val cardDeviceInfo = findViewById<View>(R.id.card_device_info)
+        txtDeviceInfo?.text = DeviceInfoHelper.getDeviceSummary()
+        cardDeviceInfo?.let { card ->
+            ViewAnimUtil.addPressScaleEffect(card)
+            card.setOnClickListener {
+                HapticUtil.click(it)
+                val info = DeviceInfoHelper.getDetailedInfo()
+                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                cm?.setPrimaryClip(ClipData.newPlainText("Device Info", info))
+                Toast.makeText(this, getString(R.string.toast_device_info_copied), Toast.LENGTH_SHORT).show()
+            }
+        }
+
         overviewHolders = mapOf(
             "system" to PartitionOverviewHolder(
                 findViewById(R.id.cell_overview_system),

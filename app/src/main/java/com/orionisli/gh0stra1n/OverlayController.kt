@@ -26,7 +26,7 @@ class OverlayController(
         running = true
         Thread {
             AppLogger.i("INIT", "=== Gh0stra1n 系统初始化启动 ===")
-            AppLogger.i("SYS", "宿主: ${android.os.Build.BRAND} ${android.os.Build.MODEL} (Android ${android.os.Build.VERSION.RELEASE})")
+            AppLogger.i("SYS", "宿主: ${DeviceInfoHelper.getDeviceSummary()}")
             if (!SuChannel.probeRoot()) {
                 AppLogger.e("INIT", "Root 特权通道不可用，请确认 su 授权")
                 setState(State.NO_ROOT, "")

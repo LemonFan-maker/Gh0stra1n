@@ -24,8 +24,8 @@ android {
         applicationId = "com.orionisli.gh0stra1n"
         minSdk = 28
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.1.1"
+        versionCode = 7
+        versionName = "1.1.2"
         buildConfigField("String", "GIT_COMMIT_HASH", "\"$gitCommitHash\"")
     }
 
