@@ -17,14 +17,15 @@ android {
 
     buildFeatures {
         buildConfig = true
+        aidl = true
     }
 
     defaultConfig {
         applicationId = "com.orionisli.gh0stra1n"
         minSdk = 28
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.1.0"
+        versionCode = 6
+        versionName = "1.1.1"
         buildConfigField("String", "GIT_COMMIT_HASH", "\"$gitCommitHash\"")
     }
 

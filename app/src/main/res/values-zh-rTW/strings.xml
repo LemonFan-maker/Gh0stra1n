@@ -403,6 +403,8 @@
     <string name="about_license_title">開源協議</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">版本更新日誌</string>
+    <string name="about_changelog_v111_title">v1.1.1 · 引入 AIDL 跨進程通訊服務</string>
+    <string name="about_changelog_v111_desc">• 新增 IGh0stOverlayService AIDL 跨進程通訊介面\n• 提供公開 Service (OVERLAY_SERVICE) 供外部模組/應用與管理器互動\n• 支援遠端探測 Root、查詢分區狀態、取得 upperdir、掛載與卸載分區\n• 支援遠端呼叫儲存落盤 (syncStorage) 與軟重啟 (restartZygote)</string>
     <string name="about_changelog_v110_title">v1.1.0 · 全新「關於」頁面與導航架構重組</string>
     <string name="about_changelog_v110_desc">• 移除測試載荷頁面，全新引入規範化「關於」頁面與開源資訊\n• 調整底欄導航架構：控制、分區、日誌、設定、關於\n• 頁面頂部展示向量 Logo 與編譯期 Git 短提交雜湊膠囊\n• 增加永久開源與免費防倒賣聲明，支援一鍵直達 GitHub 開源倉庫\n• 增加版本更新歷史日誌時間線與多語言同步</string>
     <string name="about_changelog_v103_title">v1.0.3 · 全面適配多方案與舊內核</string>

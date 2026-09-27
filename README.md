@@ -43,6 +43,50 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 4. 可通过内置文件浏览器向upperdir添加或替换文件。
 5. 在“设置”页面可进行一键备份或从归档防篡改恢复。
 
+## AIDL 跨进程通信 (IPC)
+
+Gh0stra1n 提供了标准 AIDL 服务，供第三方应用、自动化脚本或系统模块调用管理器能力：
+
+- **Action**: `com.orionisli.gh0stra1n.OVERLAY_SERVICE`
+- **Package**: `com.orionisli.gh0stra1n`
+- **Interface**: `com.orionisli.gh0stra1n.ipc.IGh0stOverlayService`
+
+### 接口方法说明
+
+| 方法名 | 返回值 | 说明 |
+| :--- | :--- | :--- |
+| `isRootAlive()` | `boolean` | 探测 Root 环境与 SuChannel 是否可用 |
+| `getPartitionStatus(String partitionName)` | `int` | 查询分区挂载状态（`1`: 已挂载 LIVE, `0`: 离线 OFFLINE, `-1`: 未知分区） |
+| `getUpperDir(String partitionName)` | `String` | 获取指定分区的可写修改层（upperdir）物理路径 |
+| `getPartitionFreeSpace(String partitionName)` | `long` | 获取指定分区修改层剩余可用空间（字节） |
+| `mountPartition(String partitionName)` | `boolean` | 挂载指定分区的 OverlayFS 修改层 |
+| `unmountPartition(String partitionName)` | `boolean` | 安全卸载指定分区的 OverlayFS 修改层 |
+| `syncStorage()` | `void` | 强制将缓存数据落盘同步（`sync`） |
+| `restartZygote()` | `boolean` | 软重启系统（重启 Zygote 进程）使修改快速生效 |
+| `executeRootCommand(String command)` | `boolean` | 执行指定的特权 Root Shell 指令 |
+
+### 客户端绑定示例 (Kotlin)
+
+```kotlin
+val intent = Intent("com.orionisli.gh0stra1n.OVERLAY_SERVICE").apply {
+    setPackage("com.orionisli.gh0stra1n")
+}
+
+val connection = object : ServiceConnection {
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        val overlayService = IGh0stOverlayService.Stub.asInterface(service)
+        val isRoot = overlayService.isRootAlive
+        val isSystemMounted = overlayService.getPartitionStatus("system") == 1
+        val upperDir = overlayService.getUpperDir("system")
+        // ...
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {}
+}
+
+context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+```
+
 ## 许可证
 
 [Apache-2.0 License](LICENSE)

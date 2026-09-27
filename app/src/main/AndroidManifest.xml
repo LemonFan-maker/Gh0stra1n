@@ -35,5 +35,13 @@
             android:name=".PartitionExplorerActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <service
+            android:name=".Gh0stOverlayService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.orionisli.gh0stra1n.OVERLAY_SERVICE" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

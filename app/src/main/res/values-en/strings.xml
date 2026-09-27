@@ -403,6 +403,8 @@
     <string name="about_license_title">Open Source License</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">Changelog</string>
+    <string name="about_changelog_v111_title">v1.1.1 · AIDL IPC Service Integration</string>
+    <string name="about_changelog_v111_desc">• Added IGh0stOverlayService AIDL inter-process communication interface\n• Exposed public Service (OVERLAY_SERVICE) for external modules/apps to interface with manager\n• Supports remote Root probing, partition status query, upperdir retrieval, mount &amp; unmount\n• Supports remote storage sync (syncStorage) and soft reboot (restartZygote)</string>
     <string name="about_changelog_v110_title">v1.1.0 · Brand-New About Page &amp; Navigation Redesign</string>
     <string name="about_changelog_v110_desc">• Replaced test payloads tab with a comprehensive, modern About page\n• Reordered bottom navigation: Control, Partitions, Logs, Settings, About\n• Prominently display vector app logo with build-time Git commit hash pill\n• Added anti-fraud / permanently free notice and one-click GitHub repo link\n• Added complete version changelog timeline with full localization</string>
     <string name="about_changelog_v103_title">v1.0.3 · Multi-SU Support &amp; Legacy Kernel Adaptation</string>
