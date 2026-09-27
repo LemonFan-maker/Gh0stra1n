@@ -215,6 +215,10 @@
     <string name="dialog_shrink_title">確認收縮映像體積</string>
     <string name="dialog_shrink_msg_fmt">確定要將分區 [%1$s] 映像收縮至 %2$d MiB 嗎？\n\n• 若處於掛載中，將自動先安全卸載後收縮並重新裝載\n• 將使用 resize2fs 對 ext4 檔案系統與映像執行截斷收縮\n\n確定執行嗎？</string>
     <string name="dialog_shrink_btn">立即收縮</string>
+    <string name="dialog_no_image_title">未檢測到分區鏡像</string>
+    <string name="dialog_no_image_msg">目前系統尚未初始化任何分區鏡像。\n\nOverlayFS 需要基於 ext4 鏡像構建可寫層。請先創建至少一個分區鏡像後再執行掛載。</string>
+    <string name="dialog_no_image_btn_create">前往創建鏡像</string>
+    <string name="toast_select_partition_to_create">請點擊需要配置的分區以創建鏡像</string>
 
     <string name="toast_no_image">該分區暫無映像，請先創建或掛載</string>
     <string name="toast_theme_changing">主題切換中...</string>

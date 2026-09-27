@@ -2070,6 +2070,26 @@ class MainActivity : AppCompatActivity() {
     fun onMountClick(v: View) {
         HapticUtil.click(v)
         AppLogger.i("UI", ">>> 用户触发: 挂载 OverlayFS")
+
+        val hasAny = PartitionTable.ALL.any { (latestPartStats[it.id]?.imageCount ?: 0) > 0 }
+            || ImageManager.hasAnyImage()
+        if (!hasAny) {
+            HapticUtil.warning()
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.dialog_no_image_title)
+                .setMessage(R.string.dialog_no_image_msg)
+                .setPositiveButton(R.string.dialog_no_image_btn_create) { _, _ ->
+                    HapticUtil.click()
+                    liquidBottomBar.selectTab(Tab.PARTITIONS.ordinal, notify = true, animate = true)
+                    Toast.makeText(this, R.string.toast_select_partition_to_create, Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton(R.string.btn_cancel) { _, _ ->
+                    HapticUtil.click()
+                }
+                .show()
+            return
+        }
+
         controller.mountAll()
     }
 
@@ -2116,6 +2136,9 @@ class MainActivity : AppCompatActivity() {
     fun onRefreshClick(v: View) {
         HapticUtil.click(v)
         AppLogger.i("UI", ">>> 用户触发: 刷新状态")
+        if (controller.state == State.NO_ROOT) {
+            controller.boot()
+        }
         refreshRows()
         Toast.makeText(this, getString(R.string.toast_status_refreshed), Toast.LENGTH_SHORT).show()
     }

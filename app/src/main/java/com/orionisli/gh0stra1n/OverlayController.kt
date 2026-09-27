@@ -33,6 +33,7 @@ class OverlayController(
                 running = false
                 return@Thread
             }
+            AppLogger.i("SYS", "Root 授权方案: ${SuChannel.rootProvider}")
             val live = ImageManager.livePartitions()
             if (live.isNotEmpty()) {
                 AppLogger.i("INIT", "检测到已有活跃 OverlayFS 挂载: ${live.joinToString()}")
@@ -45,9 +46,17 @@ class OverlayController(
                     AppLogger.w("CONFIG", "开机自动恢复挂载未启用，系统当前处于冷备离线状态")
                 }
                 if (auto && lastState == "LIVE" && lastIds.isNotEmpty()) {
-                    AppLogger.i("INIT", "根据策略恢复上次挂载: ${lastIds.joinToString()}")
-                    setState(State.MOUNTING, "")
-                    doMount(lastIds)
+                    val validLastIds = lastIds.filter { id ->
+                        PartitionTable.byId[id]?.let { ImageManager.hasImage(it) } == true
+                    }
+                    if (validLastIds.isNotEmpty()) {
+                        AppLogger.i("INIT", "根据策略恢复上次挂载: ${validLastIds.joinToString()}")
+                        setState(State.MOUNTING, "")
+                        doMount(validLastIds)
+                    } else {
+                        AppLogger.w("INIT", "上次挂载记录中的分区镜像已不存在，跳过自动恢复挂载")
+                        setState(State.READY, "")
+                    }
                 } else {
                     setState(State.READY, "")
                 }
@@ -60,9 +69,26 @@ class OverlayController(
         if (running) return
         running = true
         Thread {
-            AppLogger.i("ACTION", ">>> 用户触发: 挂载全部分区 (${PartitionTable.ALL.size} 个)")
+            AppLogger.i("ACTION", ">>> 用户触发: 挂载分区 OverlayFS")
+            if (state == State.NO_ROOT) {
+                AppLogger.i("MOUNT", "重新检测 Root 特权通道...")
+                if (!SuChannel.probeRoot()) {
+                    AppLogger.e("MOUNT", "Root 特权通道仍不可用，请在授权管理器中授权")
+                    setState(State.NO_ROOT, "")
+                    running = false
+                    return@Thread
+                }
+            }
+            val targetParts = PartitionTable.ALL.filter { ImageManager.hasImage(it) }
+            if (targetParts.isEmpty()) {
+                AppLogger.w("MOUNT", "未检测到任何已创建的分区镜像，终止挂载，请先创建镜像")
+                setState(State.READY, "未检测到镜像")
+                running = false
+                return@Thread
+            }
+            AppLogger.i("MOUNT", "准备挂载已创建镜像的分区 (${targetParts.size} 个): ${targetParts.map { it.id }.joinToString()}")
             setState(State.MOUNTING, "")
-            doMount(PartitionTable.ALL.map { it.id })
+            doMount(targetParts.map { it.id })
             running = false
         }.start()
     }
@@ -230,6 +256,21 @@ class OverlayController(
         running = true
         Thread {
             AppLogger.i("ACTION", ">>> 用户触发: 挂载单个分区 [${part.id}]")
+            if (state == State.NO_ROOT) {
+                AppLogger.i("MOUNT", "重新检测 Root 特权通道...")
+                if (!SuChannel.probeRoot()) {
+                    AppLogger.e("MOUNT", "Root 特权通道仍不可用，请在授权管理器中授权")
+                    setState(State.NO_ROOT, "")
+                    running = false
+                    return@Thread
+                }
+            }
+            if (!ImageManager.hasImage(part)) {
+                AppLogger.w("MOUNT", "分区 [${part.id}] 镜像未初始化，跳过挂载，请先创建镜像")
+                setState(State.READY, "分区 [${part.id}] 镜像未创建")
+                running = false
+                return@Thread
+            }
             setState(State.MOUNTING, "")
             val noatime = settings?.noatimeMount ?: true
             val autoFsck = settings?.autoFsck ?: true

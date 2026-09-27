@@ -42,15 +42,17 @@ object ImageAnalyzer {
                 /system/bin/toybox find $mntDir -printf "%s\t%M\t%u\t%g\t%P\n"
             """.trimIndent()
         } else {
+            val loopRes = ImageManager.attachLoop(targetImage)
+            if (loopRes.isFailure) {
+                return Result.failure(loopRes.exceptionOrNull()!!)
+            }
+            val dev = loopRes.getOrThrow()
             """
                 mkdir -p $inspectDir
-                DEV=$(losetup -f --show $targetImage)
-                if [ -n "${'$'}DEV" ]; then
-                    mount -t ext4 -o ro ${'$'}DEV $inspectDir
-                    /system/bin/toybox find $inspectDir -printf "%s\t%M\t%u\t%g\t%P\n"
-                    umount $inspectDir 2>/dev/null
-                    losetup -d ${'$'}DEV 2>/dev/null
-                fi
+                mount -t ext4 -o ro $dev $inspectDir
+                /system/bin/toybox find $inspectDir -printf "%s\t%M\t%u\t%g\t%P\n"
+                umount $inspectDir 2>/dev/null
+                losetup -d $dev 2>/dev/null
                 rmdir $inspectDir 2>/dev/null
             """.trimIndent()
         }
@@ -163,15 +165,15 @@ object ImageAnalyzer {
             if (imgs.isEmpty()) return Pair(false, "Error: Image file not found for this partition")
             val targetImage = imgs.first()
             val inspectDir = "${PartitionTable.BASE_DIR}/inspect_${part.id}"
+            val loopRes = ImageManager.attachLoop(targetImage)
+            if (loopRes.isFailure) return Pair(false, "Error: ${loopRes.exceptionOrNull()?.message}")
+            val dev = loopRes.getOrThrow()
             val cmd = """
                 mkdir -p $inspectDir
-                DEV=$(losetup -f --show $targetImage)
-                if [ -n "${'$'}DEV" ]; then
-                    mount -t ext4 -o ro ${'$'}DEV $inspectDir
-                    head -c $maxBytes "$inspectDir/$cleanPath"
-                    umount $inspectDir 2>/dev/null
-                    losetup -d ${'$'}DEV 2>/dev/null
-                fi
+                mount -t ext4 -o ro $dev $inspectDir
+                head -c $maxBytes "$inspectDir/$cleanPath"
+                umount $inspectDir 2>/dev/null
+                losetup -d $dev 2>/dev/null
                 rmdir $inspectDir 2>/dev/null
             """.trimIndent()
             SuChannel.run(cmd, 15, logCmd = false).out

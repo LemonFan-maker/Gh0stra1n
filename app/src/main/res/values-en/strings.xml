@@ -215,6 +215,10 @@
     <string name="dialog_shrink_title">Confirm Size Shrink</string>
     <string name="dialog_shrink_msg_fmt">Are you sure you want to shrink [%1$s] image to %2$d MiB?\n\n• If mounted, it will safely unmount, shrink, and remount\n• resize2fs will truncate the filesystem\n\nProceed?</string>
     <string name="dialog_shrink_btn">Shrink Now</string>
+    <string name="dialog_no_image_title">No Partition Images Found</string>
+    <string name="dialog_no_image_msg">No partition images have been initialized yet.\n\nOverlayFS requires ext4 image files to construct writable layers. Please create at least one partition image before mounting.</string>
+    <string name="dialog_no_image_btn_create">Create Image</string>
+    <string name="toast_select_partition_to_create">Please tap a partition to create its image</string>
 
     <string name="toast_no_image">Partition has no image. Create or mount first.</string>
     <string name="toast_theme_changing">Changing theme...</string>

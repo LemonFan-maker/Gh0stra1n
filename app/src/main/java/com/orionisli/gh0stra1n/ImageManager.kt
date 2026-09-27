@@ -8,6 +8,16 @@ object ImageManager {
         return r.out.trim().lines().filter { it.isNotBlank() && it.endsWith(".img") } to r.out
     }
 
+    fun hasImage(part: PartitionDef): Boolean {
+        val (imgs, _) = listImages(part)
+        return imgs.isNotEmpty()
+    }
+
+    fun hasAnyImage(): Boolean {
+        val r = SuChannel.run("ls ${PartitionTable.BASE_DIR}/*.img 2>/dev/null", 5, logCmd = false)
+        return r.ok && r.out.lines().any { it.trim().endsWith(".img") }
+    }
+
     fun createImage(part: PartitionDef, sizeMiB: Long): Result<String> {
         return createImageWithPreset(part.id, sizeMiB, ManifestStore.loadPreset())
     }
@@ -63,22 +73,41 @@ object ImageManager {
         return Triple(bc * bs, fb * bs, disk)
     }
 
+    @Synchronized
     fun attachLoop(image: String): Result<String> {
         val cmd = buildString {
-            append("LOOP=\$(losetup -j $image 2>/dev/null | head -1 | cut -d: -f1); ")
-            append("if [ -n \"\$LOOP\" ] && [ ! -b \"\$LOOP\" ]; then losetup -d \"\$LOOP\" 2>/dev/null; LOOP=\"\"; fi; ")
-            append("if [ -z \"\$LOOP\" ]; then LOOP=\$(losetup -f --show $image 2>/dev/null); fi; ")
-            append("if [ -z \"\$LOOP\" ]; then ")
-            append("for n in \$(seq 30 99); do ")
+            append("LOOP=\$(losetup -a 2>/dev/null | grep '$image' | head -1 | cut -d: -f1); ")
+            append("if [ -n \"\$LOOP\" ] && [ -b \"\$LOOP\" ]; then echo \"\$LOOP\"; exit 0; fi; ")
+
+            append("PARTS=\$(cat /sys/module/loop/parameters/max_part 2>/dev/null || echo 0); ")
+            append("[ -z \"\$PARTS\" ] && PARTS=0; ")
+            append("STEP=\$((PARTS + 1)); ")
+
+            append("for n in \$(seq 30 64); do ")
             append("DEV=/dev/block/loop\$n; ")
-            append("[ -b \"\$DEV\" ] || DEV=/dev/loop\$n; ")
-            append("if [ ! -b \"\$DEV\" ]; then mknod /dev/block/loop\$n b 7 \$n 2>/dev/null && DEV=/dev/block/loop\$n; fi; ")
+            append("EXP=\$((n * STEP)); ")
+            append("if [ -e \"\$DEV\" ]; then ")
+            append("CUR=\$(printf '%d\\n' 0x\$(stat -c '%T' \"\$DEV\" 2>/dev/null) 2>/dev/null); ")
+            append("if [ \"\$CUR\" != \"\$EXP\" ]; then rm -f \"\$DEV\" 2>/dev/null; mknod \"\$DEV\" b 7 \$EXP 2>/dev/null; fi; ")
+            append("else ")
+            append("mknod \"\$DEV\" b 7 \$EXP 2>/dev/null; ")
+            append("fi; ")
+            append("done; ")
+
+            append("FREE=\$(losetup -f 2>/dev/null); ")
+            append("if [ -n \"\$FREE\" ] && [ -b \"\$FREE\" ]; then ")
+            append("if losetup \"\$FREE\" $image 2>/dev/null; then echo \"\$FREE\"; exit 0; fi; ")
+            append("fi; ")
+
+            append("for n in \$(seq 30 64); do ")
+            append("DEV=/dev/block/loop\$n; ")
             append("[ -b \"\$DEV\" ] || continue; ")
             append("if losetup \"\$DEV\" 2>/dev/null >/dev/null; then continue; fi; ")
             append("if grep -q \"\$DEV\" /proc/mounts 2>/dev/null; then continue; fi; ")
-            append("if losetup \"\$DEV\" $image 2>/dev/null; then LOOP=\"\$DEV\"; break; fi; ")
-            append("done; fi; ")
-            append("echo \"\$LOOP\"")
+            append("if losetup \"\$DEV\" $image 2>/dev/null; then echo \"\$DEV\"; exit 0; fi; ")
+            append("done; ")
+
+            append("echo 'NO_FREE_LOOP'")
         }
         val r = SuChannel.run(cmd, 15, logCmd = true)
         val dev = r.out.trim().lines().lastOrNull { it.startsWith("/dev/block/loop") || it.startsWith("/dev/loop") }
@@ -463,14 +492,11 @@ object ImageManager {
     )
 
     fun preflight(part: PartitionDef, neededBytes: Long = 0L, log: (String) -> Unit): Result<PreflightResult> {
-        var (imgs, _) = listImages(part)
+        val (imgs, _) = listImages(part)
         if (imgs.isEmpty()) {
-            val entry = ManifestStore.reconcile(part)
-            val size = entry.defaultSizeMiB.coerceIn(ManifestStore.MIN_SIZE_MIB, ManifestStore.MAX_SIZE_MIB)
-            val created = createImage(part, size)
-            if (created.isFailure) return Result.failure(created.exceptionOrNull()!!)
-            log("created ${created.getOrThrow().substringAfterLast('/')} (${size}MiB, manifest)")
-            imgs = listImages(part).first
+            val errMsg = "分区 [${part.id}] 镜像未初始化，请先创建镜像"
+            log(errMsg)
+            return Result.failure(IllegalStateException(errMsg))
         }
         val upper = imgs.first()
         return Result.success(PreflightResult(upper, imgs))
@@ -623,10 +649,14 @@ object ImageManager {
             append("mount -t ext4 $ext4UpperOpts $upperLoop $mnt; ")
             append("fi && ")
             append("mkdir -p $mnt/u $mnt/w && ")
+            append("TARGET_CTX=\$(ls -dZ ${part.mountPoint} 2>/dev/null | awk '{for(i=1;i<=NF;i++) if(\$i ~ /^u:object_r:/) print \$i}'); ")
+            append("[ -z \"\$TARGET_CTX\" ] && TARGET_CTX='u:object_r:system_file:s0'; ")
+            append("chcon -R \"\$TARGET_CTX\" $mnt 2>/dev/null; ")
             append(lowerSetupCmds.toString())
             append("if grep ' ${part.mountPoint} ' /proc/mounts | grep -q 'ovl_gh0stra1n_${part.id}'; then ")
             append("umount -l ${part.mountPoint} 2>/dev/null; fi; ")
             append("mount -t overlay ovl_gh0stra1n_${part.id} -o lowerdir=$lowerdir,upperdir=$mnt/u,workdir=$mnt/w ${part.mountPoint} && ")
+            append("chcon \"\$TARGET_CTX\" ${part.mountPoint} 2>/dev/null; ")
             append(remountNoatime)
             append("grep ' ${part.mountPoint} ' /proc/mounts | grep -m1 ovl_gh0stra1n")
         }
