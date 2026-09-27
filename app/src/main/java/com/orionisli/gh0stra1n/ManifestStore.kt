@@ -6,7 +6,7 @@ import org.json.JSONObject
 object ManifestStore {
 
     const val MANIFEST_PATH = "${PartitionTable.BASE_DIR}/manifest.json"
-    const val MIN_SIZE_MIB = 128L
+    const val MIN_SIZE_MIB = 16L
     const val MAX_SIZE_MIB = 8192L
 
     data class ImageEntry(

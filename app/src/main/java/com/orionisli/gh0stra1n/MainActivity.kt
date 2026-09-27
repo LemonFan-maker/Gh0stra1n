@@ -1048,7 +1048,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val (total, free, _) = ImageManager.imageStats(upper)
-        val currentMiB = (total / (1024 * 1024)).coerceAtLeast(128L)
+        val currentMiB = (total / (1024 * 1024)).coerceAtLeast(ManifestStore.MIN_SIZE_MIB)
         val usedMiB = ((total - free) / (1024 * 1024)).coerceAtLeast(0L)
 
         txtCurrent.text = getString(R.string.dialog_resize_cur_cap_fmt, currentMiB, usedMiB)
@@ -1164,7 +1164,7 @@ class MainActivity : AppCompatActivity() {
         // 异步查询最小极限
         Thread {
             val minBytes = ImageManager.getMinimumFsSize(upper)
-            val minMiB = if (minBytes != null) (minBytes / (1024 * 1024)) + 16L else 64L
+            val minMiB = if (minBytes != null) (minBytes / (1024 * 1024)) + 16L else ManifestStore.MIN_SIZE_MIB
             runOnUiThread {
                 txtMinLimit.text = getString(R.string.dialog_compact_shrink_limit_fmt, minMiB)
                 editShrink.hint = ">= $minMiB MiB"

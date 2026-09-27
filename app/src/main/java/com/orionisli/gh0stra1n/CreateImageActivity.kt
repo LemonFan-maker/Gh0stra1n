@@ -334,7 +334,7 @@ class CreateImageActivity : AppCompatActivity() {
     private fun onConfirmCreate() {
         val (sizeMiB, preset) = getCurrentConfig()
 
-        if (sizeMiB < 64) {
+        if (sizeMiB < 16) {
             Toast.makeText(this, getString(R.string.toast_create_err_min), Toast.LENGTH_SHORT).show()
             return
         }

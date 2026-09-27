@@ -285,7 +285,7 @@
     <string name="create_image_confirm_msg_fmt">About to initialize new image container for [%1$s]:\n\n• Quota Size: %2$d MiB (%3$s)\n• Format: EXT4 (Block: %4$dB)\n• Inode Density: %5$d bytes/inode\n• Reserved: %6$d%%\n\nFormat and register into image stack?</string>
     <string name="create_image_btn_confirm">Create Now</string>
     <string name="create_image_in_progress">Initializing ext4 image...</string>
-    <string name="toast_create_err_min">Image capacity cannot be less than 64 MiB</string>
+    <string name="toast_create_err_min">Image capacity cannot be less than 16 MiB</string>
     <string name="toast_create_err_max">Image capacity cannot exceed 16384 MiB (16 GiB)</string>
     <string name="toast_create_success_fmt">Image created: %s</string>
     <string name="toast_create_failed_fmt">Creation failed: %s</string>

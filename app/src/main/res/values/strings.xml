@@ -285,7 +285,7 @@
     <string name="create_image_confirm_msg_fmt">即将为 [%1$s] 分区初始化新镜像容器：\n\n• 配额大小: %2$d MiB (%3$s)\n• 存储格式: EXT4 (块大小: %4$dB)\n• Inode 密度: %5$d bytes/inode\n• 保留块: %6$d%%\n\n确认开始格式化并注册到镜像栈吗？</string>
     <string name="create_image_btn_confirm">立即创建</string>
     <string name="create_image_in_progress">正在初始化 ext4 镜像...</string>
-    <string name="toast_create_err_min">镜像容量最小不能低于 64 MiB</string>
+    <string name="toast_create_err_min">镜像容量最小不能低于 16 MiB</string>
     <string name="toast_create_err_max">镜像容量不能超过 16384 MiB (16 GiB)</string>
     <string name="toast_create_success_fmt">镜像创建成功: %s</string>
     <string name="toast_create_failed_fmt">创建失败: %s</string>

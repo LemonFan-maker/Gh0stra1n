@@ -285,7 +285,7 @@
     <string name="create_image_confirm_msg_fmt">即將為 [%1$s] 分區初始化新映像容器：\n\n• 配額大小: %2$d MiB (%3$s)\n• 儲存格式: EXT4 (塊大小: %4$dB)\n• Inode 密度: %5$d bytes/inode\n• 保留塊: %6$d%%\n\n確認開始格式化並註冊到映像棧嗎？</string>
     <string name="create_image_btn_confirm">立即創建</string>
     <string name="create_image_in_progress">正在初始化 ext4 映像...</string>
-    <string name="toast_create_err_min">映像容量最小不能低於 64 MiB</string>
+    <string name="toast_create_err_min">映像容量最小不能低於 16 MiB</string>
     <string name="toast_create_err_max">映像容量不能超過 16384 MiB (16 GiB)</string>
     <string name="toast_create_success_fmt">映像創建成功: %s</string>
     <string name="toast_create_failed_fmt">創建失敗: %s</string>
