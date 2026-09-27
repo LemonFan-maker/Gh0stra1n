@@ -41,4 +41,4 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ## 许可证
 
-MIT License
+[Apache-2.0 License](LICENSE)
