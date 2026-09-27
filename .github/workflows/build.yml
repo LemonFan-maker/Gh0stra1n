@@ -40,10 +40,12 @@ jobs:
       - name: Prepare Artifacts & Checksums
         run: |
           mkdir -p dist
-          # Extract version from tag or fallback to 1.0.0
-          VERSION="${GITHUB_REF_NAME:-v1.0.0}"
-          if [[ "$VERSION" != v* ]]; then
-            VERSION="v1.0.0"
+          # Extract version from tag or fallback to gradle versionName
+          if [[ "$GITHUB_REF_NAME" == v* ]]; then
+            VERSION="$GITHUB_REF_NAME"
+          else
+            GRADLE_VER=$(grep 'versionName =' app/build.gradle.kts | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+            VERSION="v${GRADLE_VER:-1.0.1}"
           fi
           
           cp app/build/outputs/apk/release/app-release.apk "dist/Gh0stra1n-${VERSION}-release.apk"

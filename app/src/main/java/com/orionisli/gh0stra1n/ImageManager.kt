@@ -64,15 +64,16 @@ object ImageManager {
     }
 
     fun attachLoop(image: String): Result<String> {
-        val r = SuChannel.run("losetup -f --show $image", 10)
-        val dev = r.out.trim().lines().lastOrNull { it.startsWith("/dev/block/loop") }
+        val cmd = "LOOP=\$(losetup -j $image 2>/dev/null | head -1 | cut -d: -f1); " +
+                "if [ -z \"\$LOOP\" ]; then LOOP=\$(losetup -f --show $image 2>/dev/null); fi; " +
+                "if [ -z \"\$LOOP\" ]; then " +
+                "for n in \$(seq 30 2 50); do losetup /dev/block/loop\$n $image 2>/dev/null && LOOP=/dev/block/loop\$n && break; done; " +
+                "fi; " +
+                "echo \"\$LOOP\""
+        val r = SuChannel.run(cmd, 15, logCmd = true)
+        val dev = r.out.trim().lines().lastOrNull { it.startsWith("/dev/block/loop") || it.startsWith("/dev/loop") }
         if (r.ok && !dev.isNullOrBlank()) {
             return Result.success(dev)
-        }
-        for (n in (30..50).step(2).reversed()) {
-            val loop = "/dev/block/loop$n"
-            val r2 = SuChannel.run("losetup $loop $image && echo $loop", 10)
-            if (r2.ok && r2.out.contains(loop)) return Result.success(loop)
         }
         return Result.failure(RuntimeException("loop attach 失败: ${r.out}"))
     }
@@ -446,10 +447,15 @@ object ImageManager {
         }
     }
 
-    fun preflight(part: PartitionDef, neededBytes: Long, log: (String) -> Unit): Result<String> {
-        val entry = ManifestStore.reconcile(part)
+    data class PreflightResult(
+        val upper: String,
+        val images: List<String>
+    )
+
+    fun preflight(part: PartitionDef, neededBytes: Long = 0L, log: (String) -> Unit): Result<PreflightResult> {
         var (imgs, _) = listImages(part)
         if (imgs.isEmpty()) {
+            val entry = ManifestStore.reconcile(part)
             val size = entry.defaultSizeMiB.coerceIn(ManifestStore.MIN_SIZE_MIB, ManifestStore.MAX_SIZE_MIB)
             val created = createImage(part, size)
             if (created.isFailure) return Result.failure(created.exceptionOrNull()!!)
@@ -457,13 +463,18 @@ object ImageManager {
             imgs = listImages(part).first
         }
         val upper = imgs.first()
+        if (neededBytes <= 0L) {
+            return Result.success(PreflightResult(upper, imgs))
+        }
+
+        val entry = ManifestStore.getPart(part.id, part.defaultSizeMiB)
         val (total, free, _) = imageStats(upper)
         val limitBytes = if (entry.locked)
             entry.defaultSizeMiB.coerceIn(ManifestStore.MIN_SIZE_MIB, ManifestStore.MAX_SIZE_MIB) * 1024 * 1024
         else ManifestStore.MAX_SIZE_MIB * 1024 * 1024L
 
         log("${upper.substringAfterLast('/')}: free=${fmt(free)} need=${fmt(neededBytes)} total=${fmt(total)}")
-        if (free >= neededBytes) return Result.success(upper)
+        if (free >= neededBytes) return Result.success(PreflightResult(upper, imgs))
 
         val upperSize = SuChannel.run("stat -c %s $upper", 10).out.trim().toLongOrNull() ?: upper.sizeOf(entry)
         val growTo = ((upperSize + neededBytes - free + 16 * 1024 * 1024 - 1) /
@@ -478,7 +489,7 @@ object ImageManager {
                 entry.images[idx] = entry.images[idx].copy(size = growTo)
                 ManifestStore.putPart(part.id, entry)
             }
-            return Result.success(upper)
+            return Result.success(PreflightResult(upper, imgs))
         }
         val newSize = (entry.defaultSizeMiB * 1024 * 1024)
             .coerceAtLeast(growTo.coerceAtMost(limitBytes))
@@ -487,7 +498,7 @@ object ImageManager {
         val created = createImage(part, newSize / (1024 * 1024))
         if (created.isFailure) return Result.failure(created.exceptionOrNull()!!)
         log("stack-bump: ${created.getOrThrow().substringAfterLast('/')} ($newSize) 成为 upper")
-        return Result.success(created.getOrThrow())
+        return Result.success(PreflightResult(created.getOrThrow(), listImages(part).first))
     }
 
     private fun String.sizeOf(entry: ManifestStore.PartEntry): Long {
@@ -585,14 +596,13 @@ object ImageManager {
     ): Result<Unit> {
         val strategyDesc = if (noatime) "noatime" else "relatime"
         AppLogger.i("MOUNT", "=== 开始挂载分区 [${part.id}] (${part.mountPoint}) [策略: $strategyDesc, autoFsck=$autoFsck] ===")
-        val upperRes = preflight(part, neededBytes, log)
-        if (upperRes.isFailure) {
-            AppLogger.e("MOUNT", "[${part.id}] 预检失败: ${upperRes.exceptionOrNull()?.message}")
-            return Result.failure(upperRes.exceptionOrNull()!!)
+        val preRes = preflight(part, neededBytes, log)
+        if (preRes.isFailure) {
+            AppLogger.e("MOUNT", "[${part.id}] 预检失败: ${preRes.exceptionOrNull()?.message}")
+            return Result.failure(preRes.exceptionOrNull()!!)
         }
-        val upper = upperRes.getOrThrow()
+        val (upper, imgs) = preRes.getOrThrow()
         AppLogger.i("MOUNT", "[${part.id}] 选定 Upper 镜像: ${upper.substringAfterLast('/')}")
-        val (imgs, _) = listImages(part)
 
         fsck(part, upper, enabled = autoFsck, log = log)?.let {
             AppLogger.e("MOUNT", "[${part.id}] 自检失败，终止挂载: $it")
@@ -601,7 +611,6 @@ object ImageManager {
 
         val b = PartitionTable.BASE_DIR
         val mnt = "$b/mnt_${part.id}"
-        var r: SuResult
 
         val upperLoopRes = attachLoop(upper)
         if (upperLoopRes.isFailure) {
@@ -611,17 +620,10 @@ object ImageManager {
         val upperLoop = upperLoopRes.getOrThrow()
         AppLogger.i("MOUNT", "[${part.id}] 环回设备绑定: $upperLoop <- ${upper.substringAfterLast('/')}")
         log("upper $upperLoop <- ${upper.substringAfterLast('/')}")
-        val ext4UpperOpts = if (noatime) "-o noatime" else ""
-        r = SuChannel.run("mkdir -p $mnt && mount -t ext4 $ext4UpperOpts $upperLoop $mnt && echo OK", 30)
-        if (!r.ok) {
-            AppLogger.e("MOUNT", "[${part.id}] ext4 upper mount 失败: $r")
-            return Result.failure(RuntimeException("ext4 upper mount: $r"))
-        }
-        r = SuChannel.run("mkdir -p $mnt/u $mnt/w && echo OK", 30)
-        if (!r.ok) return Result.failure(RuntimeException("mkdir u/w: $r"))
 
         val lowers = imgs.drop(1)
         val lowerDirs = mutableListOf<String>()
+        val lowerSetupCmds = StringBuilder()
         var n = 0
         for (img in lowers) {
             val loopRes = attachLoop(img)
@@ -629,8 +631,7 @@ object ImageManager {
             val loop = loopRes.getOrThrow()
             val d = "$b/low${n}_${part.id}"
             val ext4LowerOpts = if (noatime) "-o ro,noatime" else "-o ro"
-            r = SuChannel.run("mkdir -p $d && mount -t ext4 $ext4LowerOpts $loop $d && echo OK", 30)
-            if (!r.ok) return Result.failure(RuntimeException("ext4 ro lower $img: $r"))
+            lowerSetupCmds.append("mkdir -p $d && mount -t ext4 $ext4LowerOpts $loop $d && ")
             lowerDirs.add(d)
             AppLogger.i("MOUNT", "[${part.id}] 挂载 lower 镜像: $loop <- ${img.substringAfterLast('/')}")
             log("lower $loop <- ${img.substringAfterLast('/')} (ro)")
@@ -639,58 +640,39 @@ object ImageManager {
 
         val lowerdir = (lowerDirs + part.mountPoint).joinToString(":")
         AppLogger.i("MOUNT", "[${part.id}] 执行 OverlayFS 挂载至 ${part.mountPoint}")
-        r = SuChannel.run(
-            "mount -t overlay ovl_gh0stra1n_${part.id} " +
-            "-o lowerdir=$lowerdir,upperdir=$mnt/u,workdir=$mnt/w ${part.mountPoint} && echo MOUNT-OK", 30)
-        if (!r.ok) {
+
+        val ext4UpperOpts = if (noatime) "-o noatime" else ""
+        val remountNoatime = if (noatime) "mount -o remount,noatime ${part.mountPoint} 2>/dev/null; " else ""
+
+        val pipelineCmd = "mkdir -p $mnt/u $mnt/w && " +
+            lowerSetupCmds.toString() +
+            "mount -t ext4 $ext4UpperOpts $upperLoop $mnt && " +
+            "mount -t overlay ovl_gh0stra1n_${part.id} -o lowerdir=$lowerdir,upperdir=$mnt/u,workdir=$mnt/w ${part.mountPoint} && " +
+            remountNoatime +
+            "grep ' ${part.mountPoint} ' /proc/mounts | grep -m1 ovl_gh0stra1n"
+
+        val r = SuChannel.run(pipelineCmd, 30, logCmd = true)
+        if (!r.ok || !r.out.contains("lowerdir=") || !r.out.contains("upperdir=")) {
             AppLogger.e("MOUNT", "[${part.id}] overlay mount 失败: $r")
             return Result.failure(RuntimeException("overlay mount: $r"))
         }
 
-        if (noatime) {
-            SuChannel.run("mount -o remount,noatime ${part.mountPoint} 2>/dev/null", 10)
-        }
-
-        val mi = SuChannel.run("grep ' ${part.mountPoint} ' /proc/mounts | grep -m1 ovl_gh0stra1n")
-        if (!mi.ok || !mi.out.contains("lowerdir=") || !mi.out.contains("upperdir=")) {
-            AppLogger.e("MOUNT", "[${part.id}] mountinfo 断言失败: $mi")
-            return Result.failure(RuntimeException("mountinfo 断言失败: $mi"))
-        }
         val finalStrategy = if (noatime) "noatime (闪存保护)" else "relatime"
         AppLogger.i("MOUNT", "[${part.id}] 挂载验证成功 (LIVE, $finalStrategy)")
-        log("overlay LIVE: ${mi.out.trim().split(" ").take(3).joinToString(" ")}")
+        log("overlay LIVE: ${r.out.trim().split(" ").take(3).joinToString(" ")}")
         return Result.success(Unit)
     }
 
     fun unmountStack(part: PartitionDef, log: (String) -> Unit): Result<Unit> {
         AppLogger.i("UMOUNT", "=== 开始卸载分区 [${part.id}] (${part.mountPoint}) ===")
         val b = PartitionTable.BASE_DIR
-        val mi = SuChannel.run("grep ' ${part.mountPoint} ' /proc/mounts | grep -m1 ovl_gh0stra1n")
-        if (!mi.out.contains("ovl_gh0stra1n")) {
-            AppLogger.i("UMOUNT", "[${part.id}] 分区当前未处于挂载状态")
-            log("already detached")
-            return Result.success(Unit)
-        }
-        var r = SuChannel.run("umount ${part.mountPoint} 2>&1; echo RC=\$?", 30)
-        if (r.out.contains("RC=0")) {
-            AppLogger.i("UMOUNT", "[${part.id}] overlay umount 成功")
-            log("overlay umount OK")
-        } else {
-            val holders = if (r.out.contains("busy")) {
-                SuChannel.run("ls -l /proc/*/cwd 2>/dev/null | grep '${part.mountPoint}' | head -5", 15).out.trim()
-            } else ""
-            AppLogger.w("UMOUNT", "[${part.id}] 检测到 EBUSY，转用 lazy umount -l")
-            log("umount EBUSY → 占用进程: {" + holders.ifBlank { "未识别(可能为打开文件描述)" } + "}, lazy 兜底")
-            r = SuChannel.run("umount -l ${part.mountPoint} && echo OK", 30)
-            if (!r.ok) {
-                AppLogger.e("UMOUNT", "[${part.id}] lazy umount 失败: $r")
-                return Result.failure(RuntimeException("lazy umount: $r"))
-            }
-        }
-        r = SuChannel.run(
+        val cmd = "if grep ' ${part.mountPoint} ' /proc/mounts | grep -q ovl_gh0stra1n; then " +
+            "umount ${part.mountPoint} 2>/dev/null || umount -l ${part.mountPoint} 2>/dev/null; " +
+            "fi; " +
             "for d in $b/mnt_${part.id} $b/low*_${part.id}; do umount \$d 2>/dev/null; done; " +
-            "sync; grep -c '${part.id}' /proc/mounts", 30)
-        AppLogger.i("UMOUNT", "[${part.id}] 底层 ext4 与 loop 清理完成")
+            "sync; grep -c '${part.id}' /proc/mounts"
+        val r = SuChannel.run(cmd, 25, logCmd = true)
+        AppLogger.i("UMOUNT", "[${part.id}] 底层 ext4 与 overlay 清理完成 (剩余挂载: ${r.out.trim()})")
         log("residue mounts: ${r.out.trim()}")
         return Result.success(Unit)
     }

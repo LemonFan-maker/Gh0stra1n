@@ -1,5 +1,9 @@
 package com.orionisli.gh0stra1n
 
+import java.util.Collections
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+
 enum class State { BOOT, NO_ROOT, READY, MOUNTING, LIVE, FAILED, TEARDOWN, DETACH }
 
 class OverlayController(
@@ -65,41 +69,70 @@ class OverlayController(
 
     private fun doMount(ids: List<String>) {
         val live = ImageManager.livePartitions().toSet()
-        val succeeded = mutableListOf<String>()
+        val succeeded = Collections.synchronizedList(mutableListOf<String>())
         val noatime = settings?.noatimeMount ?: true
         val autoFsck = settings?.autoFsck ?: true
-        for (id in ids) {
-            val p = PartitionTable.byId[id] ?: continue
-            if (p.id in live) {
-                AppLogger.i("MOUNT", "[${p.id}] 已处于挂载状态，同步挂载策略 (noatime=$noatime)")
-                val b = PartitionTable.BASE_DIR
-                val mnt = "$b/mnt_${p.id}"
-                val ext4Opt = if (noatime) "remount,noatime" else "remount,atime,relatime"
-                val ovlOpt = if (noatime) "remount,noatime" else "remount,atime,relatime"
-                SuChannel.run("mount -o $ext4Opt $mnt 2>/dev/null", 10)
-                SuChannel.run("mount -o $ovlOpt ${p.mountPoint} 2>/dev/null", 10)
-                setState(State.MOUNTING, "")
-                succeeded.add(p.id)
-                continue
-            }
-            val mntOk: Result<Unit> = ImageManager.mountStack(
-                p,
-                log = { msg -> setState(State.MOUNTING, "") },
-                neededBytes = PayloadManifest.estimatedBytes(64),
-                noatime = noatime,
-                autoFsck = autoFsck
-            )
-            if (mntOk.isFailure) {
-                val errMsg = mntOk.exceptionOrNull()?.message ?: "error"
-                AppLogger.e("MOUNT", "分区 [${p.id}] 挂载失败: $errMsg")
-                setState(State.FAILED, "${p.id}: $errMsg")
-                return
-            }
-            succeeded.add(p.id)
+        val validPartitions = ids.mapNotNull { PartitionTable.byId[it] }
+
+        if (validPartitions.isEmpty()) {
+            setState(State.READY, "")
+            return
         }
+
+        var firstError: String? = null
+        val poolSize = minOf(validPartitions.size, 5)
+        val executor = Executors.newFixedThreadPool(poolSize)
+        val latch = CountDownLatch(validPartitions.size)
+
+        for (p in validPartitions) {
+            executor.execute {
+                try {
+                    if (p.id in live) {
+                        AppLogger.i("MOUNT", "[${p.id}] 已处于挂载状态，同步挂载策略 (noatime=$noatime)")
+                        val b = PartitionTable.BASE_DIR
+                        val mnt = "$b/mnt_${p.id}"
+                        val ext4Opt = if (noatime) "remount,noatime" else "remount,atime,relatime"
+                        val ovlOpt = if (noatime) "remount,noatime" else "remount,atime,relatime"
+                        SuChannel.run("mount -o $ext4Opt $mnt 2>/dev/null", 10)
+                        SuChannel.run("mount -o $ovlOpt ${p.mountPoint} 2>/dev/null", 10)
+                        succeeded.add(p.id)
+                        return@execute
+                    }
+                    val mntOk = ImageManager.mountStack(
+                        p,
+                        log = { _ -> },
+                        neededBytes = 0L,
+                        noatime = noatime,
+                        autoFsck = autoFsck
+                    )
+                    if (mntOk.isFailure) {
+                        val errMsg = mntOk.exceptionOrNull()?.message ?: "error"
+                        AppLogger.e("MOUNT", "分区 [${p.id}] 挂载失败: $errMsg")
+                        synchronized(succeeded) {
+                            if (firstError == null) firstError = "${p.id}: $errMsg"
+                        }
+                    } else {
+                        succeeded.add(p.id)
+                    }
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+
+        try {
+            latch.await()
+        } catch (_: InterruptedException) {}
+        executor.shutdown()
+
+        if (firstError != null) {
+            setState(State.FAILED, firstError!!)
+            return
+        }
+
         AppLogger.i("MOUNT", ">>> 全部请求分区挂载完成: ${succeeded.joinToString()}")
         setState(State.LIVE, "")
-        ManifestStore.recordLastMount(succeeded, "LIVE")
+        ManifestStore.recordLastMount(succeeded.toList(), "LIVE")
     }
 
     fun unmountAll() {
@@ -121,16 +154,40 @@ class OverlayController(
             ManifestStore.recordLastMount(emptyList(), "DETACH")
             return true
         }
-        for (id in live) {
-            val p = PartitionTable.byId[id] ?: continue
-            val r = ImageManager.unmountStack(p) { _ -> setState(State.TEARDOWN, "") }
-            if (r.isFailure) {
-                val errMsg = r.exceptionOrNull()?.message ?: "error"
-                AppLogger.e("UMOUNT", "分区 [${p.id}] 卸载失败: $errMsg")
-                setState(State.FAILED, "${p.id}: $errMsg")
-                return false
+
+        val validParts = live.mapNotNull { PartitionTable.byId[it] }
+        var firstError: String? = null
+        val poolSize = minOf(validParts.size, 5)
+        val executor = Executors.newFixedThreadPool(poolSize)
+        val latch = CountDownLatch(validParts.size)
+
+        for (p in validParts) {
+            executor.execute {
+                try {
+                    val r = ImageManager.unmountStack(p) { _ -> }
+                    if (r.isFailure) {
+                        val errMsg = r.exceptionOrNull()?.message ?: "error"
+                        AppLogger.e("UMOUNT", "分区 [${p.id}] 卸载失败: $errMsg")
+                        synchronized(validParts) {
+                            if (firstError == null) firstError = "${p.id}: $errMsg"
+                        }
+                    }
+                } finally {
+                    latch.countDown()
+                }
             }
         }
+
+        try {
+            latch.await()
+        } catch (_: InterruptedException) {}
+        executor.shutdown()
+
+        if (firstError != null) {
+            setState(State.FAILED, firstError!!)
+            return false
+        }
+
         AppLogger.i("UMOUNT", ">>> 全部 OverlayFS 分区卸载完成")
         setState(State.DETACH, "")
         ManifestStore.recordLastMount(emptyList(), "DETACH")
@@ -178,8 +235,8 @@ class OverlayController(
             val autoFsck = settings?.autoFsck ?: true
             val mntOk = ImageManager.mountStack(
                 part,
-                log = { _ -> setState(State.MOUNTING, "") },
-                neededBytes = PayloadManifest.estimatedBytes(64),
+                log = { _ -> },
+                neededBytes = 0L,
                 noatime = noatime,
                 autoFsck = autoFsck
             )
@@ -203,7 +260,7 @@ class OverlayController(
         Thread {
             AppLogger.i("ACTION", ">>> 用户触发: 卸载单个分区 [${part.id}]")
             setState(State.TEARDOWN, "")
-            val r = ImageManager.unmountStack(part) { _ -> setState(State.TEARDOWN, "") }
+            val r = ImageManager.unmountStack(part) { _ -> }
             if (r.isFailure) {
                 val errMsg = r.exceptionOrNull()?.message ?: "error"
                 AppLogger.e("UMOUNT", "分区 [${part.id}] 卸载失败: $errMsg")
@@ -229,7 +286,7 @@ class OverlayController(
         Thread {
             AppLogger.i("ACTION", ">>> 用户触发: 删除分区镜像 [${part.id}]")
             setState(State.TEARDOWN, "")
-            val r = ImageManager.deletePartitionData(part) { _ -> setState(State.TEARDOWN, "") }
+            val r = ImageManager.deletePartitionData(part) { _ -> }
             if (r.isFailure) {
                 val errMsg = r.exceptionOrNull()?.message ?: "error"
                 AppLogger.e("DELETE", "分区 [${part.id}] 删除失败: $errMsg")
@@ -255,7 +312,7 @@ class OverlayController(
         Thread {
             AppLogger.i("ACTION", ">>> 用户触发: 删除所有分区镜像")
             setState(State.TEARDOWN, "")
-            val r = ImageManager.deleteAllPartitionData { _ -> setState(State.TEARDOWN, "") }
+            val r = ImageManager.deleteAllPartitionData { _ -> }
             if (r.isFailure) {
                 val errMsg = r.exceptionOrNull()?.message ?: "error"
                 AppLogger.e("DELETE", "全部分区删除失败: $errMsg")
@@ -275,7 +332,7 @@ class OverlayController(
         Thread {
             AppLogger.i("ACTION", ">>> 用户触发: 格式化分区镜像 [${part.id}]")
             setState(State.TEARDOWN, "")
-            val r = ImageManager.formatPartitionData(part) { _ -> setState(State.TEARDOWN, "") }
+            val r = ImageManager.formatPartitionData(part) { _ -> }
             if (r.isFailure) {
                 val errMsg = r.exceptionOrNull()?.message ?: "error"
                 AppLogger.e("FORMAT", "分区 [${part.id}] 格式化失败: $errMsg")

@@ -32,11 +32,13 @@ object AppLogger {
     private val mainHandler = Handler(Looper.getMainLooper())
 
     fun log(level: LogLevel, tag: String, msg: String) {
-        val time = timeFormat.format(Date())
+        val time = synchronized(timeFormat) { timeFormat.format(Date()) }
         val entry = LogEntry(time, level, tag, msg)
-        logHistory.add(entry)
-        if (logHistory.size > 800) {
-            logHistory.removeAt(0)
+        synchronized(logHistory) {
+            logHistory.add(entry)
+            if (logHistory.size > 800) {
+                logHistory.removeAt(0)
+            }
         }
         mainHandler.post {
             for (listener in listeners) {

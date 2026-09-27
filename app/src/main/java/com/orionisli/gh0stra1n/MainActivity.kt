@@ -100,6 +100,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var partitionAdapter: PartitionAdapter
     private val payloadAdapter = PayloadAdapter()
     private val latestPartStats = java.util.concurrent.ConcurrentHashMap<String, PartitionImageStat>()
+    private val isRefreshingRows = java.util.concurrent.atomic.AtomicBoolean(false)
+    private val pendingRefreshRows = java.util.concurrent.atomic.AtomicBoolean(false)
 
     // Logs
     private lateinit var txtLog: TextView
@@ -1761,7 +1763,9 @@ class MainActivity : AppCompatActivity() {
         btnInstall.setTextColor(installTextColor)
         btnInstall.iconTint = ColorStateList.valueOf(installTextColor)
 
-        refreshRows()
+        if (!busy) {
+            refreshRows()
+        }
     }
 
     data class PartitionImageStat(
@@ -1773,169 +1777,177 @@ class MainActivity : AppCompatActivity() {
     )
 
     private fun refreshRows() {
+        if (isRefreshingRows.get()) {
+            pendingRefreshRows.set(true)
+            return
+        }
+        isRefreshingRows.set(true)
         Thread {
-            val live = ImageManager.livePartitions().toSet()
-            val stats = mutableMapOf<String, String>()
-            val partStats = mutableMapOf<String, PartitionImageStat>()
+            try {
+                do {
+                    pendingRefreshRows.set(false)
+                    val live = ImageManager.livePartitions().toSet()
+                    val stats = mutableMapOf<String, String>()
+                    val partStats = mutableMapOf<String, PartitionImageStat>()
 
-            val batchCmd = buildString {
-                append("for p in system vendor product system_ext odm; do ")
-                append("n=\$(ls /data/local/gh0stra1n-overlayfs/\${p}-*.img 2>/dev/null | wc -l); ")
-                append("img=\$(ls -t /data/local/gh0stra1n-overlayfs/\${p}-*.img 2>/dev/null | head -1); ")
-                append("if [ -n \"\$img\" ]; then ")
-                append("/system/bin/tune2fs -l \"\$img\" 2>/dev/null | awk -v p=\"\$p\" -v n=\"\$n\" '")
-                append("/Block size:/ {bs=\$3} /Block count:/ {bc=\$3} /Free blocks:/ {fb=\$3} ")
-                append("END {printf \"%s:%s:%s:%s:%s\\n\", p, n, bs, bc, fb}'; ")
-                append("else echo \"\$p:0:0:0:0\"; fi; done")
-            }
+                    val batchCmd = buildString {
+                        append("for p in system vendor product system_ext odm; do ")
+                        append("n=\$(ls /data/local/gh0stra1n-overlayfs/\${p}-*.img 2>/dev/null | wc -l); ")
+                        append("img=\$(ls -t /data/local/gh0stra1n-overlayfs/\${p}-*.img 2>/dev/null | head -1); ")
+                        append("if [ -n \"\$img\" ]; then ")
+                        append("/system/bin/tune2fs -l \"\$img\" 2>/dev/null | awk -v p=\"\$p\" -v n=\"\$n\" '")
+                        append("/Block size:/ {bs=\$3} /Block count:/ {bc=\$3} /Free blocks:/ {fb=\$3} ")
+                        append("END {printf \"%s:%s:%s:%s:%s\\n\", p, n, bs, bc, fb}'; ")
+                        append("else echo \"\$p:0:0:0:0\"; fi; done")
+                    }
 
-            val r = SuChannel.run(batchCmd, 15, logCmd = false)
-            for (line in r.out.lines()) {
-                val parts = line.trim().split(":")
-                if (parts.size >= 5) {
-                    val p = parts[0]
-                    val n = parts[1].toIntOrNull() ?: 0
-                    val bs = parts[2].toLongOrNull() ?: 0L
-                    val bc = parts[3].toLongOrNull() ?: 0L
-                    val fb = parts[4].toLongOrNull() ?: 0L
-                    val total = bc * bs
-                    val free = fb * bs
-                    val used = (total - free).coerceAtLeast(0L)
-                    val pct = if (total > 0L) (used.toDouble() / total * 100.0) else 0.0
+                    val r = SuChannel.run(batchCmd, 15, logCmd = false)
+                    for (line in r.out.lines()) {
+                        val parts = line.trim().split(":")
+                        if (parts.size >= 5) {
+                            val p = parts[0]
+                            val n = parts[1].toIntOrNull() ?: 0
+                            val bs = parts[2].toLongOrNull() ?: 0L
+                            val bc = parts[3].toLongOrNull() ?: 0L
+                            val fb = parts[4].toLongOrNull() ?: 0L
+                            val total = bc * bs
+                            val free = fb * bs
+                            val used = (total - free).coerceAtLeast(0L)
+                            val pct = if (total > 0L) (used.toDouble() / total * 100.0) else 0.0
 
-                    partStats[p] = PartitionImageStat(p, n, used, total, pct)
-                    stats[p] = if (n > 0) fmtMiB(total) else getString(R.string.part_no_image)
-                }
-            }
+                            partStats[p] = PartitionImageStat(p, n, used, total, pct)
+                            stats[p] = if (n > 0) fmtMiB(total) else getString(R.string.part_no_image)
+                        }
+                    }
 
-            val partitionItems = PartitionTable.ALL.map { p ->
-                val stat = partStats[p.id]
-                val hasImg = (stat?.imageCount ?: 0) > 0
-                val totalBytes = stat?.totalBytes ?: 0L
-                val usedBytes = stat?.usedBytes ?: 0L
-                PartitionItem(
-                    def = p,
-                    isLive = p.id in live,
-                    stats = stats[p.id] ?: getString(R.string.part_no_image),
-                    hasImage = hasImg,
-                    totalBytes = totalBytes,
-                    usedBytes = usedBytes
-                )
-            }
+                    val partitionItems = PartitionTable.ALL.map { p ->
+                        val stat = partStats[p.id]
+                        val hasImg = (stat?.imageCount ?: 0) > 0
+                        val totalBytes = stat?.totalBytes ?: 0L
+                        val usedBytes = stat?.usedBytes ?: 0L
+                        PartitionItem(
+                            def = p,
+                            isLive = p.id in live,
+                            stats = stats[p.id] ?: getString(R.string.part_no_image),
+                            hasImage = hasImg,
+                            totalBytes = totalBytes,
+                            usedBytes = usedBytes
+                        )
+                    }
 
-            runOnUiThread {
-                partitionAdapter.submitList(partitionItems)
-                val liveCount = PartitionTable.ALL.count { it.id in live }
-                txtQuickSummary.text = if (liveCount > 0) getString(R.string.overview_mount_count_fmt, liveCount) else getString(R.string.overview_mount_count_none)
+                    val (isInstalled, out) = PayloadManifest.probeStatus("/system/beef.txt")
+                    val statusText = if (isInstalled) out else getString(R.string.payload_status_uninstalled)
+                    val payloadItems = listOf(
+                        PayloadItem("/system/beef.txt", statusText, isInstalled)
+                    )
 
-                latestPartStats.clear()
-                latestPartStats.putAll(partStats)
+                    runOnUiThread {
+                        partitionAdapter.submitList(partitionItems)
+                        payloadAdapter.submitList(payloadItems)
+                        val liveCount = PartitionTable.ALL.count { it.id in live }
+                        txtQuickSummary.text = if (liveCount > 0) getString(R.string.overview_mount_count_fmt, liveCount) else getString(R.string.overview_mount_count_none)
 
-                for ((partId, holder) in overviewHolders) {
-                    val stat = partStats[partId]
-                    val isLive = partId in live
-                    if (isLive) {
-                        holder.cell.tag = "live_cell"
-                        if (currentPalette.isDark) {
-                            val liveBg = GradientDrawable().apply {
-                                cornerRadius = dp(12).toFloat()
-                                setColor(Color.parseColor("#143823"))
-                                setStroke(dp(1), Color.parseColor("#2EA043"))
+                        latestPartStats.clear()
+                        latestPartStats.putAll(partStats)
+
+                        for ((partId, holder) in overviewHolders) {
+                            val stat = partStats[partId]
+                            val isLive = partId in live
+                            if (isLive) {
+                                holder.cell.tag = "live_cell"
+                                if (currentPalette.isDark) {
+                                    val liveBg = GradientDrawable().apply {
+                                        cornerRadius = dp(12).toFloat()
+                                        setColor(Color.parseColor("#143823"))
+                                        setStroke(dp(1), Color.parseColor("#2EA043"))
+                                    }
+                                    holder.cell.background = liveBg
+                                    updateCellTextColors(holder.cell, Color.parseColor("#7EE787"), Color.parseColor("#A3E635"))
+                                } else {
+                                    holder.cell.setBackgroundResource(R.drawable.bg_overview_cell_live)
+                                    updateCellTextColors(holder.cell, Color.parseColor("#14532D"), Color.parseColor("#166534"))
+                                }
+                            } else {
+                                holder.cell.tag = null
+                                val normalBg = GradientDrawable().apply {
+                                    cornerRadius = dp(12).toFloat()
+                                    setColor(currentPalette.cardInner)
+                                    setStroke(dp(1), currentPalette.cardBorder)
+                                }
+                                holder.cell.background = normalBg
+                                updateCellTextColors(holder.cell, currentPalette.textPrimary, currentPalette.textSecondary)
                             }
-                            holder.cell.background = liveBg
-                            updateCellTextColors(holder.cell, Color.parseColor("#7EE787"), Color.parseColor("#A3E635"))
+
+                            if (stat != null && stat.totalBytes > 0L) {
+                                holder.txtSize.text = "<${fmtCompact(stat.usedBytes)}/${fmtCompact(stat.totalBytes)}>"
+                                val progressVal = (stat.pct * 10).toInt().coerceIn(0, 1000)
+                                holder.progress.setProgressCompat(progressVal, true)
+                                holder.txtPct.text = "%.1f%%".format(stat.pct)
+                                if (isLive) {
+                                    holder.dot.setColorFilter(colorGreenText)
+                                    holder.progress.setIndicatorColor(colorGreenText)
+                                } else {
+                                    holder.dot.setColorFilter(colorGrayText)
+                                    holder.progress.setIndicatorColor(colorAccent)
+                                }
+                            } else {
+                                holder.txtSize.text = getString(R.string.part_no_image)
+                                holder.progress.setProgressCompat(0, false)
+                                holder.txtPct.text = "--"
+                                holder.dot.setColorFilter(colorGrayText)
+                                holder.progress.setIndicatorColor(colorGrayText)
+                            }
+                        }
+
+                        val sumUsed = partStats.values.sumOf { it.usedBytes }
+                        val sumTotal = partStats.values.sumOf { it.totalBytes }
+                        val totalPct = if (sumTotal > 0L) (sumUsed.toDouble() / sumTotal * 100.0) else 0.0
+                        if (sumTotal > 0L) {
+                            totalOverviewHolder.txtSize.text = "<${fmtCompact(sumUsed)}/${fmtCompact(sumTotal)}>"
+                            totalOverviewHolder.progress.setProgressCompat((totalPct * 10).toInt().coerceIn(0, 1000), true)
+                            totalOverviewHolder.txtPct.text = "%.1f%%".format(totalPct)
                         } else {
-                            holder.cell.setBackgroundResource(R.drawable.bg_overview_cell_live)
-                            updateCellTextColors(holder.cell, Color.parseColor("#14532D"), Color.parseColor("#166534"))
+                            totalOverviewHolder.txtSize.text = getString(R.string.part_no_image)
+                            totalOverviewHolder.progress.setProgressCompat(0, false)
+                            totalOverviewHolder.txtPct.text = "--"
                         }
-                    } else {
-                        holder.cell.tag = null
-                        val normalBg = GradientDrawable().apply {
-                            cornerRadius = dp(12).toFloat()
-                            setColor(currentPalette.cardInner)
-                            setStroke(dp(1), currentPalette.cardBorder)
-                        }
-                        holder.cell.background = normalBg
-                        updateCellTextColors(holder.cell, currentPalette.textPrimary, currentPalette.textSecondary)
-                    }
-
-                    if (stat != null && stat.totalBytes > 0L) {
-                        holder.txtSize.text = "<${fmtCompact(stat.usedBytes)}/${fmtCompact(stat.totalBytes)}>"
-                        val progressVal = (stat.pct * 10).toInt().coerceIn(0, 1000)
-                        holder.progress.setProgressCompat(progressVal, true)
-                        holder.txtPct.text = "%.1f%%".format(stat.pct)
-                        if (isLive) {
-                            holder.dot.setColorFilter(colorGreenText)
-                            holder.progress.setIndicatorColor(colorGreenText)
+                        if (liveCount == 5) {
+                            totalOverviewHolder.cell.tag = "live_cell"
+                            if (currentPalette.isDark) {
+                                val liveBg = GradientDrawable().apply {
+                                    cornerRadius = dp(12).toFloat()
+                                    setColor(Color.parseColor("#143823"))
+                                    setStroke(dp(1), Color.parseColor("#2EA043"))
+                                }
+                                totalOverviewHolder.cell.background = liveBg
+                                updateCellTextColors(totalOverviewHolder.cell, Color.parseColor("#7EE787"), Color.parseColor("#A3E635"))
+                            } else {
+                                totalOverviewHolder.cell.setBackgroundResource(R.drawable.bg_overview_cell_live)
+                                updateCellTextColors(totalOverviewHolder.cell, Color.parseColor("#14532D"), Color.parseColor("#166534"))
+                            }
+                            totalOverviewHolder.dot.setColorFilter(colorGreenText)
+                            totalOverviewHolder.progress.setIndicatorColor(colorGreenText)
                         } else {
-                            holder.dot.setColorFilter(colorGrayText)
-                            holder.progress.setIndicatorColor(colorAccent)
+                            totalOverviewHolder.cell.tag = null
+                            val normalBg = GradientDrawable().apply {
+                                cornerRadius = dp(12).toFloat()
+                                setColor(currentPalette.cardInner)
+                                setStroke(dp(1), currentPalette.cardBorder)
+                            }
+                            totalOverviewHolder.cell.background = normalBg
+                            updateCellTextColors(totalOverviewHolder.cell, currentPalette.textPrimary, currentPalette.textSecondary)
+                            if (liveCount > 0) {
+                                totalOverviewHolder.dot.setColorFilter(colorYellowText)
+                                totalOverviewHolder.progress.setIndicatorColor(colorAccent)
+                            } else {
+                                totalOverviewHolder.dot.setColorFilter(colorAccent)
+                                totalOverviewHolder.progress.setIndicatorColor(colorAccent)
+                            }
                         }
-                    } else {
-                        holder.txtSize.text = getString(R.string.part_no_image)
-                        holder.progress.setProgressCompat(0, false)
-                        holder.txtPct.text = "--"
-                        holder.dot.setColorFilter(colorGrayText)
-                        holder.progress.setIndicatorColor(colorGrayText)
                     }
-                }
-
-                val sumUsed = partStats.values.sumOf { it.usedBytes }
-                val sumTotal = partStats.values.sumOf { it.totalBytes }
-                val totalPct = if (sumTotal > 0L) (sumUsed.toDouble() / sumTotal * 100.0) else 0.0
-                if (sumTotal > 0L) {
-                    totalOverviewHolder.txtSize.text = "<${fmtCompact(sumUsed)}/${fmtCompact(sumTotal)}>"
-                    totalOverviewHolder.progress.setProgressCompat((totalPct * 10).toInt().coerceIn(0, 1000), true)
-                    totalOverviewHolder.txtPct.text = "%.1f%%".format(totalPct)
-                } else {
-                    totalOverviewHolder.txtSize.text = getString(R.string.part_no_image)
-                    totalOverviewHolder.progress.setProgressCompat(0, false)
-                    totalOverviewHolder.txtPct.text = "--"
-                }
-                if (liveCount == 5) {
-                    totalOverviewHolder.cell.tag = "live_cell"
-                    if (currentPalette.isDark) {
-                        val liveBg = GradientDrawable().apply {
-                            cornerRadius = dp(12).toFloat()
-                            setColor(Color.parseColor("#143823"))
-                            setStroke(dp(1), Color.parseColor("#2EA043"))
-                        }
-                        totalOverviewHolder.cell.background = liveBg
-                        updateCellTextColors(totalOverviewHolder.cell, Color.parseColor("#7EE787"), Color.parseColor("#A3E635"))
-                    } else {
-                        totalOverviewHolder.cell.setBackgroundResource(R.drawable.bg_overview_cell_live)
-                        updateCellTextColors(totalOverviewHolder.cell, Color.parseColor("#14532D"), Color.parseColor("#166534"))
-                    }
-                    totalOverviewHolder.dot.setColorFilter(colorGreenText)
-                    totalOverviewHolder.progress.setIndicatorColor(colorGreenText)
-                } else {
-                    totalOverviewHolder.cell.tag = null
-                    val normalBg = GradientDrawable().apply {
-                        cornerRadius = dp(12).toFloat()
-                        setColor(currentPalette.cardInner)
-                        setStroke(dp(1), currentPalette.cardBorder)
-                    }
-                    totalOverviewHolder.cell.background = normalBg
-                    updateCellTextColors(totalOverviewHolder.cell, currentPalette.textPrimary, currentPalette.textSecondary)
-                    if (liveCount > 0) {
-                        totalOverviewHolder.dot.setColorFilter(colorYellowText)
-                        totalOverviewHolder.progress.setIndicatorColor(colorAccent)
-                    } else {
-                        totalOverviewHolder.dot.setColorFilter(colorAccent)
-                        totalOverviewHolder.progress.setIndicatorColor(colorAccent)
-                    }
-                }
-            }
-        }.start()
-
-        Thread {
-            val (isInstalled, out) = PayloadManifest.probeStatus("/system/beef.txt")
-            val statusText = if (isInstalled) out else getString(R.string.payload_status_uninstalled)
-            val payloadItems = listOf(
-                PayloadItem("/system/beef.txt", statusText, isInstalled)
-            )
-            runOnUiThread {
-                payloadAdapter.submitList(payloadItems)
+                } while (pendingRefreshRows.get())
+            } finally {
+                isRefreshingRows.set(false)
             }
         }.start()
     }
