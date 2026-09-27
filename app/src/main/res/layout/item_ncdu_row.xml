@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_ncdu_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    app:cardBackgroundColor="?attr/colorSurfaceVariant"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="0dp"
+    app:strokeColor="?attr/colorOutline"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- 图标 -->
+            <ImageView
+                android:id="@+id/img_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_folder"
+                app:tint="#D97706" />
+
+            <!-- 名称 -->
+            <TextView
+                android:id="@+id/txt_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="middle"
+                android:fontFamily="@font/maple_mono_regular"
+                android:singleLine="true"
+                android:text="app/"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <!-- 隐藏标记徽章 -->
+            <TextView
+                android:id="@+id/badge_hidden"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_pill_gray"
+                android:fontFamily="@font/maple_mono_regular"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="1dp"
+                android:text="@string/preview_type_hidden"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="9sp"
+                android:visibility="gone" />
+
+            <!-- 大小与条目统计 -->
+            <TextView
+                android:id="@+id/txt_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/maple_mono_regular"
+                android:text="28.0 MiB"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 权限与所有者信息 (Linux 文件管理器特色) -->
+        <TextView
+            android:id="@+id/txt_meta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/maple_mono_regular"
+            android:text="-rw-rw-rw- · root:root"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="10sp" />
+
+        <!-- ncdu 占用比例条与百分比 -->
+        <LinearLayout
+            android:id="@+id/layout_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progress_ratio"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:progress="68"
+                app:indicatorColor="?attr/colorPrimary"
+                app:trackColor="?attr/colorOutlineVariant"
+                app:trackCornerRadius="2dp"
+                app:trackThickness="4dp" />
+
+            <TextView
+                android:id="@+id/txt_ratio_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/maple_mono_regular"
+                android:text="0.0%"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

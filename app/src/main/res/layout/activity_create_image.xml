@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_create_image"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
+
+    <!-- 顶部固定栏 -->
+    <LinearLayout
+        android:id="@+id/header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="14dp"
+        android:background="?android:attr/colorBackground">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="?attr/colorOnSurface"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/back" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_title"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_subtitle"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12sp"
+                android:fontFamily="@font/maple_mono"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btn_reset_preset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_reset"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/maple_mono"
+            android:padding="8dp"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- 可滚动内容区 -->
+    <ScrollView
+        android:id="@+id/scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/header_bar"
+        android:layout_above="@+id/bottom_action_card"
+        android:paddingHorizontal="20dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- 1. 目标挂载分区 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_target_part"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chip_group_partition"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_system"
+                                style="@style/Gh0stra1n.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="system"
+                                android:checked="true"
+                                android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
+                                android:fontFamily="@font/maple_mono_regular" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_vendor"
+                                style="@style/Gh0stra1n.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="vendor"
+                                android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
+                                android:fontFamily="@font/maple_mono_regular" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_product"
+                                style="@style/Gh0stra1n.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="product"
+                                android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
+                                android:fontFamily="@font/maple_mono_regular" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_system_ext"
+                                style="@style/Gh0stra1n.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="system_ext"
+                                android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
+                                android:fontFamily="@font/maple_mono_regular" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_odm"
+                                style="@style/Gh0stra1n.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="odm"
+                                android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
+                                android:fontFamily="@font/maple_mono_regular" />
+                        </com.google.android.material.chip.ChipGroup>
+                    </HorizontalScrollView>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_image_target_part_desc"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/maple_mono"
+                        android:lineSpacingExtra="3dp"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 2. 磁盘镜像容量 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_quota"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <EditText
+                            android:id="@+id/edit_size_mib"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_input"
+                            android:inputType="number"
+                            android:text="1024"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/maple_mono"
+                            android:paddingHorizontal="14dp" />
+
+                        <TextView
+                            android:id="@+id/txt_size_readable"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="≈ 1.0 GiB"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/maple_mono"
+                            android:layout_marginStart="14dp" />
+                    </LinearLayout>
+
+                    <!-- 快捷胶囊加减 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_size_256"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="256M"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="11sp"
+                            android:fontFamily="@font/maple_mono"
+                            android:padding="0dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:layout_marginEnd="6dp"
+                            app:cornerRadius="19dp"
+                            app:strokeColor="?attr/colorOutline" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_size_512"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="512M"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="11sp"
+                            android:fontFamily="@font/maple_mono"
+                            android:padding="0dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:layout_marginEnd="6dp"
+                            app:cornerRadius="19dp"
+                            app:strokeColor="?attr/colorOutline" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_size_1024"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="1024M"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="11sp"
+                            android:fontFamily="@font/maple_mono"
+                            android:padding="0dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:layout_marginEnd="6dp"
+                            app:cornerRadius="19dp"
+                            app:strokeColor="?attr/colorOutline" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_size_2048"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="2048M"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="11sp"
+                            android:fontFamily="@font/maple_mono"
+                            android:padding="0dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            app:cornerRadius="19dp"
+                            app:strokeColor="?attr/colorOutline" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_image_quota_desc"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/maple_mono"
+                        android:lineSpacingExtra="3dp"
+                        android:layout_marginTop="10dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 3. 文件系统与块大小 (Block Size) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_block_size"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <RadioGroup
+                        android:id="@+id/rg_block_size"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_bs_1024"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="1024 (1KB)"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <RadioButton
+                            android:id="@+id/rb_bs_2048"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="2048 (2KB)"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <RadioButton
+                            android:id="@+id/rb_bs_4096"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.2"
+                            android:text="@string/create_image_bs_4096"
+                            android:checked="true"
+                            android:textColor="?attr/colorPrimary"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+                    </RadioGroup>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_image_block_size_desc"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/maple_mono"
+                        android:lineSpacingExtra="3dp"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 4. Inode 节点密度 (Bytes per Inode) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_inode_density"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <RadioGroup
+                        android:id="@+id/rg_inode_ratio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_inode_4096"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/create_image_inode_4096"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <RadioButton
+                            android:id="@+id/rb_inode_8192"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.2"
+                            android:text="@string/create_image_inode_8192"
+                            android:checked="true"
+                            android:textColor="?attr/colorPrimary"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <RadioButton
+                            android:id="@+id/rb_inode_16384"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/create_image_inode_16384"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+                    </RadioGroup>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_image_inode_density_desc"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/maple_mono"
+                        android:lineSpacingExtra="3dp"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 5. Superblock 保留块比例 (Reserved Ratio) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_res_ratio"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <RadioGroup
+                        android:id="@+id/rg_reserved_ratio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_res_0"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/create_image_res_0"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <RadioButton
+                            android:id="@+id/rb_res_1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.2"
+                            android:text="@string/create_image_res_1"
+                            android:checked="true"
+                            android:textColor="?attr/colorPrimary"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <RadioButton
+                            android:id="@+id/rb_res_5"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/create_image_res_5"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/maple_mono" />
+                    </RadioGroup>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_image_res_ratio_desc"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/maple_mono"
+                        android:lineSpacingExtra="3dp"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 6. 高级特性扩展 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_image_features"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/create_image_feat_dir_index"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/sw_dir_index"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/create_image_feat_filetype"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/sw_filetype"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/create_image_feat_sparse_super"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/sw_sparse_super"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_image_features_desc"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/maple_mono"
+                        android:lineSpacingExtra="3dp"
+                        android:layout_marginTop="10dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 7. 设为默认规则持久化 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/create_image_save_template"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/maple_mono" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/create_image_save_template_desc"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="11.5sp"
+                            android:fontFamily="@font/maple_mono"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/sw_save_preset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 底部悬浮操作按钮 -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottom_action_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="26dp"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:strokeColor="@android:color/transparent"
+        app:cardElevation="0dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_create_image"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="@string/create_image_btn_submit"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/maple_mono"
+            app:cornerRadius="26dp"
+            app:backgroundTint="?attr/colorPrimary"
+            app:icon="@drawable/ic_add"
+            app:iconTint="?attr/colorOnPrimary"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+    </com.google.android.material.card.MaterialCardView>
+
+</RelativeLayout>

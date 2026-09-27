@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 默认多巴胺浅米主题 (Beige) -->
+    <style name="Theme.Gh0stra1n" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@color/ghost_black</item>
+        <item name="android:statusBarColor">@color/ghost_black</item>
+        <item name="android:navigationBarColor">@color/ghost_black</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">@color/accent_light</item>
+        <item name="colorSecondaryContainer">@color/tab_item_selected_bg</item>
+        <item name="colorOnSecondaryContainer">@color/accent</item>
+
+        <item name="colorSurface">@color/card_dark</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorSurfaceVariant">@color/card_dark_inner</item>
+        <item name="colorSurfaceContainer">@color/card_dark</item>
+        <item name="colorSurfaceContainerLow">@color/card_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/card_dark</item>
+        <item name="colorOutline">@color/card_border</item>
+        <item name="colorOutlineVariant">@color/card_border_subtle</item>
+        <item name="colorControlHighlight">@color/accent_bg</item>
+
+        <item name="bottomSheetDialogTheme">@style/Gh0stra1n.BottomSheetDialog</item>
+        <item name="chipStyle">@style/Gh0stra1n.Chip.Filter</item>
+
+        <item name="fontFamily">@font/maple_mono</item>
+        <item name="android:fontFamily">@font/maple_mono</item>
+    </style>
+
+    <style name="Theme.Gh0stra1n.Beige" parent="Theme.Gh0stra1n" />
+
+    <!-- 极简灰韵主题 (Slate) -->
+    <style name="Theme.Gh0stra1n.Slate" parent="Theme.Gh0stra1n">
+        <item name="android:windowBackground">@color/slate_bg</item>
+        <item name="android:statusBarColor">@color/slate_bg</item>
+        <item name="android:navigationBarColor">@color/slate_bg</item>
+        <item name="colorPrimary">@color/slate_accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">@color/slate_accent</item>
+        <item name="colorSecondaryContainer">#E8F1FC</item>
+        <item name="colorOnSecondaryContainer">@color/slate_accent</item>
+        <item name="colorSurface">@color/slate_card</item>
+        <item name="colorSurfaceVariant">@color/slate_card_inner</item>
+        <item name="colorSurfaceContainer">@color/slate_card</item>
+        <item name="colorSurfaceContainerLow">@color/slate_card</item>
+        <item name="colorSurfaceContainerHigh">@color/slate_card</item>
+        <item name="colorOutline">@color/slate_border</item>
+        <item name="colorOutlineVariant">#DCE3EA</item>
+        <item name="colorOnSurface">@color/slate_text</item>
+        <item name="colorOnSurfaceVariant">#374151</item>
+        <item name="colorControlHighlight">#E8F1FC</item>
+    </style>
+
+    <!-- 纯黑极客主题 (Cyber Dark) -->
+    <style name="Theme.Gh0stra1n.CyberDark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/cyber_bg</item>
+        <item name="android:statusBarColor">@color/cyber_bg</item>
+        <item name="android:navigationBarColor">@color/cyber_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <item name="colorPrimary">@color/cyber_accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">@color/cyber_accent</item>
+        <item name="colorSecondaryContainer">#2C204E</item>
+        <item name="colorOnSecondaryContainer">#A78BFA</item>
+        <item name="colorSurface">@color/cyber_card</item>
+        <item name="colorSurfaceVariant">@color/cyber_card_inner</item>
+        <item name="colorSurfaceContainer">@color/cyber_card</item>
+        <item name="colorSurfaceContainerLow">@color/cyber_card</item>
+        <item name="colorSurfaceContainerHigh">@color/cyber_card</item>
+        <item name="colorOutline">@color/cyber_border</item>
+        <item name="colorOutlineVariant">#1D273B</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorOnSurfaceVariant">#CBD5E1</item>
+        <item name="colorControlHighlight">#2C204E</item>
+
+        <item name="bottomSheetDialogTheme">@style/Gh0stra1n.BottomSheetDialog</item>
+        <item name="chipStyle">@style/Gh0stra1n.Chip.Filter</item>
+        <item name="fontFamily">@font/maple_mono</item>
+        <item name="android:fontFamily">@font/maple_mono</item>
+    </style>
+
+    <!-- 抹茶雅绿主题 (Matcha) -->
+    <style name="Theme.Gh0stra1n.Matcha" parent="Theme.Gh0stra1n">
+        <item name="android:windowBackground">@color/matcha_bg</item>
+        <item name="android:statusBarColor">@color/matcha_bg</item>
+        <item name="android:navigationBarColor">@color/matcha_bg</item>
+        <item name="colorPrimary">@color/matcha_accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">@color/matcha_accent</item>
+        <item name="colorSecondaryContainer">#E6F4EA</item>
+        <item name="colorOnSecondaryContainer">@color/matcha_accent</item>
+        <item name="colorSurface">@color/matcha_card</item>
+        <item name="colorSurfaceVariant">@color/matcha_card_inner</item>
+        <item name="colorSurfaceContainer">@color/matcha_card</item>
+        <item name="colorSurfaceContainerLow">@color/matcha_card</item>
+        <item name="colorSurfaceContainerHigh">@color/matcha_card</item>
+        <item name="colorOutline">@color/matcha_border</item>
+        <item name="colorOutlineVariant">#DFEAD4</item>
+        <item name="colorOnSurface">@color/matcha_text</item>
+        <item name="colorOnSurfaceVariant">#3F4E38</item>
+        <item name="colorControlHighlight">#E6F4EA</item>
+    </style>
+
+    <!-- 极光冷夜主题 (Dark Aurora / Nord) -->
+    <style name="Theme.Gh0stra1n.Nord" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">#0A0F1D</item>
+        <item name="android:statusBarColor">#0A0F1D</item>
+        <item name="android:navigationBarColor">#0A0F1D</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="colorPrimary">#00E5BC</item>
+        <item name="colorOnPrimary">#0A0F1D</item>
+        <item name="colorSecondary">#00E5BC</item>
+        <item name="colorSecondaryContainer">#143538</item>
+        <item name="colorOnSecondaryContainer">#4EECD2</item>
+        <item name="colorSurface">#131B2E</item>
+        <item name="colorSurfaceVariant">#1B253D</item>
+        <item name="colorSurfaceContainer">#131B2E</item>
+        <item name="colorSurfaceContainerLow">#131B2E</item>
+        <item name="colorSurfaceContainerHigh">#131B2E</item>
+        <item name="colorOutline">#2C3A5A</item>
+        <item name="colorOutlineVariant">#1E283F</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorOnSurfaceVariant">#CBD5E1</item>
+        <item name="colorControlHighlight">#143538</item>
+        <item name="bottomSheetDialogTheme">@style/Gh0stra1n.BottomSheetDialog</item>
+        <item name="chipStyle">@style/Gh0stra1n.Chip.Filter</item>
+        <item name="fontFamily">@font/maple_mono</item>
+        <item name="android:fontFamily">@font/maple_mono</item>
+    </style>
+
+    <!-- 樱花粉黛主题 (Sakura) -->
+    <style name="Theme.Gh0stra1n.Sakura" parent="Theme.Gh0stra1n">
+        <item name="android:windowBackground">@color/sakura_bg</item>
+        <item name="android:statusBarColor">@color/sakura_bg</item>
+        <item name="android:navigationBarColor">@color/sakura_bg</item>
+        <item name="colorPrimary">@color/sakura_accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">@color/sakura_accent</item>
+        <item name="colorSecondaryContainer">#FCE4EC</item>
+        <item name="colorOnSecondaryContainer">@color/sakura_accent</item>
+        <item name="colorSurface">@color/sakura_card</item>
+        <item name="colorSurfaceVariant">@color/sakura_card_inner</item>
+        <item name="colorSurfaceContainer">@color/sakura_card</item>
+        <item name="colorSurfaceContainerLow">@color/sakura_card</item>
+        <item name="colorSurfaceContainerHigh">@color/sakura_card</item>
+        <item name="colorOutline">@color/sakura_border</item>
+        <item name="colorOutlineVariant">#FFE4EB</item>
+        <item name="colorOnSurface">@color/sakura_text</item>
+        <item name="colorOnSurfaceVariant">#6A4A57</item>
+        <item name="colorControlHighlight">#FCE4EC</item>
+    </style>
+
+    <style name="Gh0stra1n.BottomNav.Text" parent="">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Gh0stra1n.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Gh0stra1n.BottomSheet</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="Gh0stra1n.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="shapeAppearance">@style/Gh0stra1n.ShapeAppearance.BottomSheet</item>
+    </style>
+
+    <style name="Gh0stra1n.ShapeAppearance.BottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- Maple Mono 专用 Chip 样式 -->
+    <style name="Gh0stra1n.TextAppearance.Chip" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/maple_mono_regular</item>
+        <item name="android:fontFamily">@font/maple_mono_regular</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="Gh0stra1n.Chip.Filter" parent="Widget.Material3.Chip.Filter">
+        <item name="android:textAppearance">@style/Gh0stra1n.TextAppearance.Chip</item>
+        <item name="fontFamily">@font/maple_mono_regular</item>
+        <item name="android:fontFamily">@font/maple_mono_regular</item>
+    </style>
+</resources>

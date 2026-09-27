@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeColor="?attr/colorOutline"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- 标题栏与挂载状态 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_dialog_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/maple_mono_regular"
+                android:text="Details"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txt_dialog_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_green"
+                android:fontFamily="@font/maple_mono_regular"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="LIVE"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="12dp"
+            android:background="?attr/colorOutline" />
+
+        <!-- 详细信息卡片区 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="?attr/colorSurfaceVariant"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/colorOutline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <!-- 挂载目标 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="86dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="@string/detail_mount_target"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_mount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="/system"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 容量配额 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="86dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="@string/detail_quota"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_quota"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="512 MiB"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- 空间占用 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="86dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="@string/detail_disk_usage"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_space"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="64.1 MiB / 512 MiB (12.5%)"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 镜像文件 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="86dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="@string/detail_img_file"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_image"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="middle"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:singleLine="true"
+                        android:text="system.img"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- EXT4 属性 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="86dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="@string/detail_fs"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_fs"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="EXT4"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- OverlayFS 三层架构说明 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:text="@string/detail_overlay_paths"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_upper"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ellipsize="middle"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:singleLine="true"
+                        android:text="• Upper: -"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_work"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:ellipsize="middle"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:singleLine="true"
+                        android:text="• Work: -"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/txt_dialog_lower"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:ellipsize="middle"
+                        android:fontFamily="@font/maple_mono_regular"
+                        android:singleLine="true"
+                        android:text="• Lower: -"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 操作按钮组 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_detail_browse"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="?attr/colorPrimary"
+                android:elevation="0dp"
+                android:fontFamily="@font/maple_mono_regular"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="4dp"
+                android:stateListAnimator="@null"
+                android:text="@string/detail_btn_browse"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="11sp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/btn_detail_analysis"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="?attr/colorSurfaceVariant"
+                android:elevation="0dp"
+                android:fontFamily="@font/maple_mono_regular"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="4dp"
+                android:stateListAnimator="@null"
+                android:text="@string/detail_btn_analysis"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="11sp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/btn_detail_close"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:backgroundTint="?attr/colorSurfaceVariant"
+                android:elevation="0dp"
+                android:fontFamily="@font/maple_mono_regular"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="60dp"
+                android:paddingHorizontal="10dp"
+                android:stateListAnimator="@null"
+                android:text="@string/btn_close"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="11sp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_scroll_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    android:background="?attr/colorSurface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="24dp">
+
+        <!-- 顶部拖动手柄 -->
+        <View
+            android:id="@+id/dialog_drag_handle"
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bg_capsule_disabled"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 分区信息卡头 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+
+            <ImageView
+                android:id="@+id/menu_part_dot"
+                android:layout_width="9dp"
+                android:layout_height="9dp"
+                android:src="@drawable/bg_status_dot"
+                android:visibility="gone"
+                android:contentDescription="Status" />
+
+            <TextView
+                android:id="@+id/menu_part_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="system"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/menu_part_mount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="/system"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12.5sp"
+                android:fontFamily="@font/maple_mono"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/menu_part_pill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_green"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="LIVE"
+                android:textColor="@color/status_green"
+                android:textSize="10.5sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/maple_mono" />
+        </LinearLayout>
+
+        <!-- 镜像容量与状态摘要 -->
+        <TextView
+            android:id="@+id/menu_part_stats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.2 GiB"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="11.5sp"
+            android:fontFamily="@font/maple_mono"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <View
+            android:id="@+id/dialog_divider_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorOutlineVariant"
+            android:layout_marginBottom="4dp" />
+
+        <!-- 菜单选项 1: 格式化此镜像 (二次确认) -->
+        <LinearLayout
+            android:id="@+id/menu_item_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp">
+
+            <ImageView
+                android:id="@+id/menu_icon_format"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_format"
+                app:tint="?attr/colorOnSurface" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_format"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_format_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/menu_pill_format"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_purple"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/tag_confirm"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 菜单选项 2: 卸载此镜像 / 挂载此镜像 -->
+        <LinearLayout
+            android:id="@+id/menu_item_mount_unmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="1dp">
+
+            <ImageView
+                android:id="@+id/menu_mount_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_unmount"
+                app:tint="?attr/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/menu_mount_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_unmount"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/menu_mount_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_unmount_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 菜单选项 3: 扩展镜像容量 (在线/离线扩容) -->
+        <LinearLayout
+            android:id="@+id/menu_item_resize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="1dp">
+
+            <ImageView
+                android:id="@+id/menu_icon_resize"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_expand"
+                app:tint="?attr/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_resize"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_resize_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/menu_pill_resize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_purple"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/tag_resize"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 菜单选项 4: 镜像压缩与整理 (tune2fs / shrink / punch-hole) -->
+        <LinearLayout
+            android:id="@+id/menu_item_compact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="1dp">
+
+            <ImageView
+                android:id="@+id/menu_icon_compact"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_compress"
+                app:tint="?attr/colorOnSurface" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_compact"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_compact_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/menu_pill_compact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_purple"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/tag_compact"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 菜单选项 5: 文件系统自检与修复 (e2fsck) -->
+        <LinearLayout
+            android:id="@+id/menu_item_fsck"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="1dp">
+
+            <ImageView
+                android:id="@+id/menu_icon_fsck"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_check"
+                app:tint="?attr/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_fsck"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_fsck_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/menu_pill_fsck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_purple"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/tag_fsck"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 菜单选项 6: 镜像占用分析 (WizTree + ncdu) -->
+        <LinearLayout
+            android:id="@+id/menu_item_analysis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="1dp">
+
+            <ImageView
+                android:id="@+id/menu_icon_analysis"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_analytics"
+                app:tint="?attr/colorOnSurface" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_analysis"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_analysis_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/menu_pill_analysis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_purple"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/tag_analysis"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 菜单选项 7: 彻底删除此镜像 (二次确认) -->
+        <LinearLayout
+            android:id="@+id/menu_item_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="1dp">
+
+            <ImageView
+                android:id="@+id/menu_icon_delete"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_trash"
+                app:tint="@color/status_red" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/menu_delete_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_delete"
+                    android:textColor="@color/status_red"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/menu_delete_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_delete_desc"
+                    android:textColor="@color/status_red"
+                    android:textSize="11sp"
+                    android:alpha="0.8"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/menu_pill_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_red"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/tag_confirm"
+                android:textColor="@color/status_red"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 菜单选项 8: 创建镜像 (占位预留) -->
+        <LinearLayout
+            android:id="@+id/menu_item_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_menu_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="6.5dp"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="1dp">
+
+            <ImageView
+                android:id="@+id/menu_icon_create"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_add"
+                app:tint="?attr/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/menu_create_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_create"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="14.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/menu_create_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_create_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/menu_pill_create"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_purple"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/tag_template"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/dialog_divider_2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorOutlineVariant"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 取消按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_menu_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:text="@string/btn_close"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="13.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="21dp"
+            app:backgroundTint="?attr/colorSurfaceVariant"
+            app:strokeColor="?attr/colorOutline"
+            app:strokeWidth="1dp" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

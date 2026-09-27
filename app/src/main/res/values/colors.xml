@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light Beige / Cream Palette 浅色米色高级极简配色 -->
+    <color name="ghost_black">#F6F4EE</color> <!-- 柔和米白画布底色 -->
+    <color name="card_dark">#FFFFFF</color> <!-- 纯白高雅卡片底色 -->
+    <color name="card_dark_inner">#FAF8F5</color> <!-- 浅象牙内嵌卡片底色 -->
+    <color name="card_border">#E7E2D7</color> <!-- 温暖亚麻细边框 -->
+    <color name="card_border_subtle">#EFEBE4</color> <!-- 极浅分割线 -->
+
+    <!-- 文字色彩系统 -->
+    <color name="text_primary">#1C1A17</color> <!-- 浓郁暖黑高对比主文字 -->
+    <color name="text_secondary">#6E6961</color> <!-- 优雅暖灰次级文字 -->
+    <color name="text_muted">#9C968B</color> <!-- 浅亚麻灰注脚文字 -->
+
+    <!-- Dopamine 标志性紫 (浅色米底优化) -->
+    <color name="accent">#693FB4</color>
+    <color name="accent_pressed">#542E96</color>
+    <color name="accent_light">#8257D6</color>
+    <color name="accent_bg">#F1EDFA</color>
+
+    <!-- 状态指示色彩 (浅底高对比度) -->
+    <!-- 活跃 (LIVE / Success) -->
+    <color name="status_green">#1A7F37</color>
+    <color name="status_green_bg">#EAF5EC</color>
+    <color name="status_green_border">#BEE3C8</color>
+
+    <!-- 危险/警示 (DANGER / Offline / Delete) -->
+    <color name="status_red">#CF222E</color>
+    <color name="status_red_bg">#FFEBE9</color>
+    <color name="status_red_border">#FFC1BA</color>
+
+    <!-- 进行中/挂载 (MOUNTING / Busy) -->
+    <color name="status_yellow">#9A6700</color>
+    <color name="status_yellow_bg">#FFF8C5</color>
+    <color name="status_yellow_border">#F5E08A</color>
+
+    <!-- 待命/就绪 (IDLE / Detach) -->
+    <color name="status_gray">#57606A</color>
+    <color name="status_gray_bg">#F0EDE6</color>
+    <color name="status_gray_border">#DED8CD</color>
+
+    <!-- 悬浮底栏 -->
+    <color name="tab_bar_bg">#FFFFFF</color>
+    <color name="tab_bar_border">#E3DDD2</color>
+    <color name="tab_item_selected_bg">#F0EBFA</color>
+
+    <!-- 终端控制台 (浅色米白羊皮纸质感终端 - PaperColor / Latte 配色体系) -->
+    <color name="terminal_bg">#F4F0E8</color>
+    <color name="terminal_border">#DFD9CC</color>
+    <color name="term_text_default">#2D2924</color>
+    <color name="term_text_timestamp">#8C867B</color>
+    <color name="term_text_info_tag">#1D4ED8</color>
+    <color name="term_text_info">#1E293B</color>
+    <color name="term_text_warn_tag">#D97706</color>
+    <color name="term_text_warn">#B45309</color>
+    <color name="term_text_error_tag">#DC2626</color>
+    <color name="term_text_error">#B91C1C</color>
+    <color name="term_text_su_tag">#7C3AED</color>
+    <color name="term_text_su_cmd">#334155</color>
+    <color name="term_text_su_ok">#15803D</color>
+    <color name="term_text_debug">#64748B</color>
+
+    <!-- 通用米色主题定义 -->
+    <color name="bg_main">#FAF7F2</color>
+    <color name="card_bg">#F5EFE6</color>
+    <color name="btn_primary_text">#FFFFFF</color>
+
+    <!-- 主题 2: Minimal Slate (极简灰韵) -->
+    <color name="slate_bg">#F1F3F5</color>
+    <color name="slate_card">#FFFFFF</color>
+    <color name="slate_card_inner">#E9ECEF</color>
+    <color name="slate_border">#CED4DA</color>
+    <color name="slate_accent">#2B6CB0</color>
+    <color name="slate_text">#212529</color>
+
+    <!-- 主题 3: Cyber Dark (暗黑极客) -->
+    <color name="cyber_bg">#0A0D14</color>
+    <color name="cyber_card">#131826</color>
+    <color name="cyber_card_inner">#1A2133</color>
+    <color name="cyber_border">#242E46</color>
+    <color name="cyber_accent">#8B5CF6</color>
+    <color name="cyber_text">#F3F4F6</color>
+
+    <!-- 主题 4: Matcha Mist (抹茶雅绿) -->
+    <color name="matcha_bg">#F3F5EE</color>
+    <color name="matcha_card">#FFFFFF</color>
+    <color name="matcha_card_inner">#EAF0E2</color>
+    <color name="matcha_border">#D2DEC5</color>
+    <color name="matcha_accent">#2E7D32</color>
+    <color name="matcha_text">#1D261A</color>
+
+    <!-- 主题 5: Dark Aurora (极光魅夜) -->
+    <color name="nord_bg">#061524</color>
+    <color name="nord_card">#0B2236</color>
+    <color name="nord_card_inner">#102E46</color>
+    <color name="nord_border">#1E4968</color>
+    <color name="nord_accent">#18D6C8</color>
+    <color name="nord_text">#F0FDFA</color>
+
+    <!-- 主题 6: Sakura (樱花粉黛) -->
+    <color name="sakura_bg">#FFF8F9</color>
+    <color name="sakura_card">#FFFFFF</color>
+    <color name="sakura_card_inner">#FFF0F3</color>
+    <color name="sakura_border">#FCD5DF</color>
+    <color name="sakura_accent">#E14979</color>
+    <color name="sakura_text">#341B26</color>
+
+    <!-- 终端主题变体 -->
+    <color name="term_matrix_bg">#0D1117</color>
+    <color name="term_matrix_border">#30363D</color>
+    <color name="term_matrix_text">#38BDF8</color>
+
+    <color name="term_solarized_bg">#FDF6E3</color>
+    <color name="term_solarized_border">#EEE8D5</color>
+    <color name="term_solarized_text">#586E75</color>
+
+    <color name="term_monokai_bg">#272822</color>
+    <color name="term_monokai_border">#49483E</color>
+    <color name="term_monokai_text">#F8F8F2</color>
+</resources>
