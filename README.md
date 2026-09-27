@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="Gh0stra1n Banner" width="100%" />
+</p>
+
 # Gh0stra1n
 
 针对现代Android系统的免刷入OverlayFS分区挂载与修改工具。通过Linux内核原生OverlayFS技术，在不修改底层物理只读分区的情况下实现对system、vendor、product等系统分区的无损读写修改。

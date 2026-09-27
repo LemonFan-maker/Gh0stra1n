@@ -5,8 +5,9 @@
 
     <application
         android:label="Gh0stra1n"
-        android:icon="@drawable/ic_launcher"
-        android:theme="@style/Theme.Gh0stra1n"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:theme="@style/Theme.Gh0stra1n.Sakura"
         android:allowBackup="false"
         android:supportsRtl="false">
 

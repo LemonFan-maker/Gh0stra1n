@@ -64,7 +64,7 @@ class LiquidGlassBottomBar @JvmOverloads constructor(
     private var dragStartTouchX = 0f
     private var initialIndicatorTranslationX = 0f
 
-    private var palette: ThemePalette = ThemeManager.PALETTE_BEIGE
+    private var palette: ThemePalette = ThemeManager.PALETTE_SAKURA
 
     var onTabSelectedListener: ((Int) -> Unit)? = null
     var onTabDragListener: ((currentPos: Float) -> Unit)? = null

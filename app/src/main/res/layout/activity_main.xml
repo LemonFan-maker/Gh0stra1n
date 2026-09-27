@@ -1374,6 +1374,23 @@
                             android:layout_marginTop="8dp">
 
                             <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_theme_sakura"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="36dp"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="6dp"
+                                android:text="@string/theme_sakura"
+                                android:textSize="11sp"
+                                android:textColor="?attr/colorOnSurface"
+                                app:strokeColor="?attr/colorPrimary"
+                                app:strokeWidth="2dp"
+                                app:cornerRadius="8dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:padding="0dp" />
+
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_theme_beige"
                                 style="@style/Widget.Material3.Button.OutlinedButton"
                                 android:layout_width="0dp"
@@ -1382,9 +1399,8 @@
                                 android:layout_marginEnd="6dp"
                                 android:text="@string/theme_beige"
                                 android:textSize="11sp"
-                                android:textColor="?attr/colorOnSurface"
-                                app:strokeColor="?attr/colorPrimary"
-                                app:strokeWidth="2dp"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                app:strokeColor="?attr/colorOutline"
                                 app:cornerRadius="8dp"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
@@ -1396,23 +1412,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="36dp"
                                 android:layout_weight="1"
-                                android:layout_marginEnd="6dp"
                                 android:text="@string/theme_slate"
-                                android:textSize="11sp"
-                                android:textColor="?attr/colorOnSurfaceVariant"
-                                app:strokeColor="?attr/colorOutline"
-                                app:cornerRadius="8dp"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:padding="0dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_theme_cyber"
-                                style="@style/Widget.Material3.Button.OutlinedButton"
-                                android:layout_width="0dp"
-                                android:layout_height="36dp"
-                                android:layout_weight="1"
-                                android:text="@string/theme_cyber"
                                 android:textSize="11sp"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 app:strokeColor="?attr/colorOutline"
@@ -1427,6 +1427,22 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:layout_marginTop="6dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_theme_cyber"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="36dp"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="6dp"
+                                android:text="@string/theme_cyber"
+                                android:textSize="11sp"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                app:strokeColor="?attr/colorOutline"
+                                app:cornerRadius="8dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:padding="0dp" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_theme_matcha"
@@ -1450,23 +1466,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="36dp"
                                 android:layout_weight="1"
-                                android:layout_marginEnd="6dp"
                                 android:text="@string/theme_nord"
-                                android:textSize="11sp"
-                                android:textColor="?attr/colorOnSurfaceVariant"
-                                app:strokeColor="?attr/colorOutline"
-                                app:cornerRadius="8dp"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:padding="0dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_theme_sakura"
-                                style="@style/Widget.Material3.Button.OutlinedButton"
-                                android:layout_width="0dp"
-                                android:layout_height="36dp"
-                                android:layout_weight="1"
-                                android:text="@string/theme_sakura"
                                 android:textSize="11sp"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 app:strokeColor="?attr/colorOutline"

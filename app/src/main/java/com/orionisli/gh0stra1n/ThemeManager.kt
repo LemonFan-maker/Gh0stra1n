@@ -230,18 +230,19 @@ object ThemeManager {
 
     fun getPalette(name: String): ThemePalette {
         return when (name.lowercase()) {
+            "beige" -> PALETTE_BEIGE
             "slate" -> PALETTE_SLATE
             "cyber" -> PALETTE_CYBER
             "matcha" -> PALETTE_MATCHA
             "nord", "aurora" -> PALETTE_NORD
             "sakura" -> PALETTE_SAKURA
-            else -> PALETTE_BEIGE
+            else -> PALETTE_SAKURA
         }
     }
 
     fun getCurrentPalette(context: Context): ThemePalette {
         val sp = context.getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        val name = sp.getString("ui_theme", "beige") ?: "beige"
+        val name = sp.getString("ui_theme", "sakura") ?: "sakura"
         return getPalette(name)
     }
 

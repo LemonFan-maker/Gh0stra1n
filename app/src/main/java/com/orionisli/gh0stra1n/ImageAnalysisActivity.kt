@@ -56,13 +56,14 @@ class ImageAnalysisActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        when (sp.getString("ui_theme", "beige")) {
+        when (sp.getString("ui_theme", "sakura")) {
+            "beige" -> setTheme(R.style.Theme_Gh0stra1n_Beige)
             "slate" -> setTheme(R.style.Theme_Gh0stra1n_Slate)
             "cyber" -> setTheme(R.style.Theme_Gh0stra1n_CyberDark)
             "matcha" -> setTheme(R.style.Theme_Gh0stra1n_Matcha)
             "nord", "aurora" -> setTheme(R.style.Theme_Gh0stra1n_Nord)
             "sakura" -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
-            else -> setTheme(R.style.Theme_Gh0stra1n_Beige)
+            else -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
         }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_analysis)

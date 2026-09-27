@@ -40,7 +40,7 @@ class SettingsStore(context: Context) {
         set(v) = sp.edit().putBoolean(KEY_SHOW_HIDDEN, v).apply()
 
     var uiTheme: String
-        get() = sp.getString(KEY_UI_THEME, "beige") ?: "beige"
+        get() = sp.getString(KEY_UI_THEME, "sakura") ?: "sakura"
         set(v) = sp.edit().putString(KEY_UI_THEME, v).apply()
 
     var terminalTheme: String
