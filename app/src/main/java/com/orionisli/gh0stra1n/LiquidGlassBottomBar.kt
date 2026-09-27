@@ -37,9 +37,9 @@ class LiquidGlassBottomBar @JvmOverloads constructor(
     private val tabs = listOf(
         TabInfo(R.drawable.ic_tab_control, R.string.tab_control),
         TabInfo(R.drawable.ic_tab_partitions, R.string.tab_partitions),
-        TabInfo(R.drawable.ic_tab_payloads, R.string.tab_payloads),
+        TabInfo(R.drawable.ic_tab_logs, R.string.tab_logs),
         TabInfo(R.drawable.ic_tab_settings, R.string.tab_settings),
-        TabInfo(R.drawable.ic_tab_logs, R.string.tab_logs)
+        TabInfo(R.drawable.ic_tab_about, R.string.tab_about)
     )
 
     private val cardView: MaterialCardView

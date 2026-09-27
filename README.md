@@ -37,7 +37,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ## 使用说明
 
-1. 确保设备已获取Root权限（目前仅支持[ghostlock-PD2339FA-Neo9SPro-Root](https://github.com/LemonFan-maker/ghostlock-PD2339FA-Neo9SPro-Root)，后续会添加主流提权工具支持）。
+1. 确保设备已获取Root权限（目前支持[ghostlock-PD2339FA-Neo9SPro-Root](https://github.com/LemonFan-maker/ghostlock-PD2339FA-Neo9SPro-Root)，Magisk方案，APatch，KernelSU等方案属于实验性，若出现问题，欢迎提交日志反馈）。
 2. 在“分区”页面为目标分区创建ext4镜像。
 3. 在“控制”页面点击“挂载OverlayFS”接管对应分区。
 4. 可通过内置文件浏览器向upperdir添加或替换文件。

@@ -9,15 +9,15 @@
         android:icon="@drawable/ic_tab_partitions"
         android:title="@string/tab_partitions" />
     <item
-        android:id="@+id/nav_payloads"
-        android:icon="@drawable/ic_tab_payloads"
-        android:title="@string/tab_payloads" />
+        android:id="@+id/nav_logs"
+        android:icon="@drawable/ic_tab_logs"
+        android:title="@string/tab_logs" />
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_tab_settings"
         android:title="@string/tab_settings" />
     <item
-        android:id="@+id/nav_logs"
-        android:icon="@drawable/ic_tab_logs"
-        android:title="@string/tab_logs" />
+        android:id="@+id/nav_about"
+        android:icon="@drawable/ic_tab_about"
+        android:title="@string/tab_about" />
 </menu>

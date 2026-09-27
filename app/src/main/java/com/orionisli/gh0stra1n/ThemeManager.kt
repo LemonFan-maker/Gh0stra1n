@@ -460,7 +460,6 @@ object ThemeManager {
                 }
                 is MaterialButton -> {
                     if (childId == R.id.btn_mount ||
-                        childId == R.id.btn_install ||
                         childId == R.id.btn_settings_save ||
                         childId == R.id.btn_settings_backup ||
                         childId == R.id.btn_settings_restore ||

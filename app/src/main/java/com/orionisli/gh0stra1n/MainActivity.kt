@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -82,7 +83,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnRefreshPartitions: MaterialButton
     private lateinit var btnUnmountAllPart: MaterialButton
     private lateinit var btnDeleteAllPart: MaterialButton
-    private lateinit var btnInstall: MaterialButton
 
     // Settings
     private lateinit var setWarn: EditText
@@ -96,9 +96,7 @@ class MainActivity : AppCompatActivity() {
 
     // Lists
     private lateinit var partitionRecyclerView: RecyclerView
-    private lateinit var payloadRecyclerView: RecyclerView
     private lateinit var partitionAdapter: PartitionAdapter
-    private val payloadAdapter = PayloadAdapter()
     private val latestPartStats = java.util.concurrent.ConcurrentHashMap<String, PartitionImageStat>()
     private val isRefreshingRows = java.util.concurrent.atomic.AtomicBoolean(false)
     private val pendingRefreshRows = java.util.concurrent.atomic.AtomicBoolean(false)
@@ -113,11 +111,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var liquidBottomBar: LiquidGlassBottomBar
     private lateinit var tabControlView: View
     private lateinit var tabPartitionsView: View
-    private lateinit var tabPayloadsView: View
-    private lateinit var tabSettingsView: View
     private lateinit var tabLogsView: View
+    private lateinit var tabSettingsView: View
+    private lateinit var tabAboutView: View
 
-    private enum class Tab { CONTROL, PARTITIONS, PAYLOADS, SETTINGS, LOGS }
+    private enum class Tab { CONTROL, PARTITIONS, LOGS, SETTINGS, ABOUT }
     private var currentTab = Tab.CONTROL
 
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
@@ -443,7 +441,6 @@ class MainActivity : AppCompatActivity() {
         btnRefreshPartitions = findViewById(R.id.btn_refresh_partitions)
         btnUnmountAllPart = findViewById(R.id.btn_unmount_all_part)
         btnDeleteAllPart = findViewById(R.id.btn_delete_all_part)
-        btnInstall = findViewById(R.id.btn_install)
 
         btnMount.setOnClickListener { onMountClick(it) }
         btnUnmount.setOnClickListener { onUnmountClick(it) }
@@ -452,7 +449,6 @@ class MainActivity : AppCompatActivity() {
         btnRefreshPartitions.setOnClickListener { onRefreshClick(it) }
         btnUnmountAllPart.setOnClickListener { onUnmountClick(it) }
         btnDeleteAllPart.setOnClickListener { onDeleteAllPartitionsClick(it) }
-        btnInstall.setOnClickListener { onInstallClick(it) }
 
         // Settings
         setWarn = findViewById(R.id.set_warn)
@@ -493,7 +489,7 @@ class MainActivity : AppCompatActivity() {
         listOf(
             btnMount, btnUnmount, btnReboot, btnRefreshStatus,
             btnRefreshPartitions, btnUnmountAllPart, btnDeleteAllPart,
-            btnInstall, btnSettingsSave
+            btnSettingsSave
         ).forEach { ViewAnimUtil.addPressScaleEffect(it) }
 
         partitionAdapter = PartitionAdapter(
@@ -513,10 +509,6 @@ class MainActivity : AppCompatActivity() {
         partitionRecyclerView = findViewById(R.id.partition_recycler_view)
         partitionRecyclerView.layoutManager = LinearLayoutManager(this)
         partitionRecyclerView.adapter = partitionAdapter
-
-        payloadRecyclerView = findViewById(R.id.payload_recycler_view)
-        payloadRecyclerView.layoutManager = LinearLayoutManager(this)
-        payloadRecyclerView.adapter = payloadAdapter
 
         // Logs
         txtLog = findViewById(R.id.txt_log)
@@ -539,10 +531,12 @@ class MainActivity : AppCompatActivity() {
         // Tab Views
         tabControlView = findViewById(R.id.tab_control)
         tabPartitionsView = findViewById(R.id.tab_partitions)
-        tabPayloadsView = findViewById(R.id.tab_payloads)
-        tabSettingsView = findViewById(R.id.tab_settings)
         tabLogsView = findViewById(R.id.tab_logs)
+        tabSettingsView = findViewById(R.id.tab_settings)
+        tabAboutView = findViewById(R.id.tab_about)
         liquidBottomBar = findViewById(R.id.liquid_bottom_bar)
+
+        initAboutView()
 
         val rootLayout = findViewById<View>(R.id.root_layout)
         val headerContainer = findViewById<LinearLayout>(R.id.header_container)
@@ -591,6 +585,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initAboutView() {
+        val txtAboutVersion = findViewById<TextView>(R.id.txt_about_version)
+        val versionName = BuildConfig.VERSION_NAME
+        val gitHash = BuildConfig.GIT_COMMIT_HASH
+        txtAboutVersion?.text = "v$versionName · $gitHash"
+
+        val btnRepo = findViewById<View>(R.id.btn_about_repo)
+        if (btnRepo != null) {
+            ViewAnimUtil.addPressScaleEffect(btnRepo)
+            btnRepo.setOnClickListener {
+                HapticUtil.click(it)
+                val repoUrl = getString(R.string.about_repo_url)
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(repoUrl))
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    AppLogger.e("UI", "打开开源链接失败: ${e.message}")
+                }
+            }
+        }
+    }
+
     private fun initNavigation(savedInstanceState: Bundle? = null) {
         val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
         val defaultIndex = sp.getInt("last_active_tab", Tab.CONTROL.ordinal)
@@ -619,7 +635,7 @@ class MainActivity : AppCompatActivity() {
     private fun applyTabDrag(currentPos: Float) {
         val tabContainer = findViewById<View>(R.id.tab_container)
         val width = (if (tabContainer != null && tabContainer.width > 0) tabContainer.width else resources.displayMetrics.widthPixels).toFloat()
-        val views = listOf(tabControlView, tabPartitionsView, tabPayloadsView, tabSettingsView, tabLogsView)
+        val views = listOf(tabControlView, tabPartitionsView, tabLogsView, tabSettingsView, tabAboutView)
 
         val clampedPos = when {
             currentPos < 0f -> currentPos * 0.35f
@@ -672,13 +688,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun switchTab(tab: Tab, animate: Boolean = true) {
         pageDragAnimator?.cancel()
-        val views = listOf(tabControlView, tabPartitionsView, tabPayloadsView, tabSettingsView, tabLogsView)
+        val views = listOf(tabControlView, tabPartitionsView, tabLogsView, tabSettingsView, tabAboutView)
         val targetView = when (tab) {
             Tab.CONTROL -> tabControlView
             Tab.PARTITIONS -> tabPartitionsView
-            Tab.PAYLOADS -> tabPayloadsView
-            Tab.SETTINGS -> tabSettingsView
             Tab.LOGS -> tabLogsView
+            Tab.SETTINGS -> tabSettingsView
+            Tab.ABOUT -> tabAboutView
         }
 
         currentTab = tab
@@ -708,10 +724,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (tab == Tab.PARTITIONS || tab == Tab.PAYLOADS) {
+        if (tab == Tab.PARTITIONS) {
             refreshRows()
         } else if (tab == Tab.LOGS) {
             scrollLog.post { scrollLog.fullScroll(View.FOCUS_DOWN) }
+        } else if (tab == Tab.ABOUT) {
+            (tabAboutView as? ScrollView)?.post { (tabAboutView as? ScrollView)?.scrollTo(0, 0) }
         }
     }
 
@@ -726,7 +744,6 @@ class MainActivity : AppCompatActivity() {
         btnSettingsSave.backgroundTintList = ColorStateList.valueOf(p.accent)
         btnSettingsBackup.backgroundTintList = ColorStateList.valueOf(p.accent)
         btnSettingsRestore.backgroundTintList = ColorStateList.valueOf(p.accent)
-        btnInstall.backgroundTintList = ColorStateList.valueOf(p.accent)
 
         // 次级操作按钮与图标色彩同步
         listOf(btnReboot, btnRefreshStatus, btnRefreshPartitions).forEach { btn ->
@@ -770,7 +787,8 @@ class MainActivity : AppCompatActivity() {
         updateLanguageButtonsUi()
 
         if (::partitionAdapter.isInitialized) partitionAdapter.notifyDataSetChanged()
-        payloadAdapter.notifyDataSetChanged()
+        findViewById<ImageView>(R.id.icon_about_github)?.imageTintList = ColorStateList.valueOf(p.textPrimary)
+        findViewById<ImageView>(R.id.icon_about_history)?.imageTintList = ColorStateList.valueOf(p.textSecondary)
     }
 
     private fun showPartitionMenu(item: PartitionItem) {
@@ -1757,11 +1775,6 @@ class MainActivity : AppCompatActivity() {
             btnMount.setTextColor(if (btnMount.isEnabled) Color.WHITE else colorGrayText)
         }
         btnReboot.isEnabled = !busy
-        btnInstall.isEnabled = !busy && state == State.LIVE
-        btnInstall.backgroundTintList = ColorStateList.valueOf(if (btnInstall.isEnabled) currentPalette.accent else colorDark)
-        val installTextColor = if (btnInstall.isEnabled) Color.WHITE else colorGrayText
-        btnInstall.setTextColor(installTextColor)
-        btnInstall.iconTint = ColorStateList.valueOf(installTextColor)
 
         if (!busy) {
             refreshRows()
@@ -1835,15 +1848,8 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
 
-                    val (isInstalled, out) = PayloadManifest.probeStatus("/system/beef.txt")
-                    val statusText = if (isInstalled) out else getString(R.string.payload_status_uninstalled)
-                    val payloadItems = listOf(
-                        PayloadItem("/system/beef.txt", statusText, isInstalled)
-                    )
-
                     runOnUiThread {
                         partitionAdapter.submitList(partitionItems)
-                        payloadAdapter.submitList(payloadItems)
                         val liveCount = PartitionTable.ALL.count { it.id in live }
                         txtQuickSummary.text = if (liveCount > 0) getString(R.string.overview_mount_count_fmt, liveCount) else getString(R.string.overview_mount_count_none)
 
@@ -2169,32 +2175,6 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    fun onInstallClick(v: View) {
-        HapticUtil.click(v)
-        AppLogger.i("UI", ">>> 用户触发: 写入测试载荷 (/system/beef.txt)")
-        btnInstall.isEnabled = false
-        btnInstall.backgroundTintList = ColorStateList.valueOf(colorDark)
-        btnInstall.setTextColor(colorGrayText)
-        btnInstall.iconTint = ColorStateList.valueOf(colorGrayText)
-        Thread {
-            val ok = PayloadManifest.installAll { msg -> AppLogger.d("PAYLOAD", msg) }
-            runOnUiThread {
-                btnInstall.isEnabled = true
-                btnInstall.backgroundTintList = ColorStateList.valueOf(colorAccent)
-                btnInstall.setTextColor(Color.WHITE)
-                btnInstall.iconTint = ColorStateList.valueOf(Color.WHITE)
-                if (ok) {
-                    HapticUtil.success()
-                    Toast.makeText(this, getString(R.string.toast_payload_written), Toast.LENGTH_SHORT).show()
-                } else {
-                    HapticUtil.error()
-                    Toast.makeText(this, getString(R.string.toast_payload_failed), Toast.LENGTH_LONG).show()
-                }
-                refreshRows()
-            }
-        }.start()
-    }
-
     private fun copyLogToClipboard() {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("Gh0stra1n Logs", txtLog.text.toString())
@@ -2305,55 +2285,6 @@ class MainActivity : AppCompatActivity() {
             }
             holder.btnMore.setOnClickListener {
                 onMenuClick(item)
-            }
-        }
-    }
-
-    data class PayloadItem(
-        val path: String,
-        val statusText: String,
-        val isInstalled: Boolean,
-    )
-
-    class PayloadAdapter : RecyclerView.Adapter<PayloadAdapter.ViewHolder>() {
-        private var items: List<PayloadItem> = emptyList()
-
-        fun submitList(newItems: List<PayloadItem>) {
-            items = newItems
-            notifyDataSetChanged()
-        }
-
-        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val title: TextView = view.findViewById(R.id.payload_title)
-            val statusPill: TextView = view.findViewById(R.id.payload_status_pill)
-            val detail: TextView = view.findViewById(R.id.payload_detail)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val v = LayoutInflater.from(parent.context).inflate(R.layout.item_payload, parent, false)
-            return ViewHolder(v)
-        }
-
-        override fun getItemCount(): Int = items.size
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = items[position]
-            val p = ThemeManager.getCurrentPalette(holder.itemView.context)
-            (holder.itemView as? MaterialCardView)?.let { card ->
-                card.setCardBackgroundColor(p.cardBg)
-                card.strokeColor = p.cardBorder
-            }
-            holder.title.setTextColor(p.textPrimary)
-            holder.detail.setTextColor(p.textSecondary)
-
-            holder.title.text = item.path
-            holder.detail.text = holder.itemView.context.getString(R.string.payload_probe_desc_fmt, item.statusText)
-            if (item.isInstalled) {
-                holder.statusPill.text = holder.itemView.context.getString(R.string.payload_status_installed)
-                ThemeManager.stylePill(holder.statusPill, PillType.GREEN, p)
-            } else {
-                holder.statusPill.text = holder.itemView.context.getString(R.string.payload_status_uninstalled)
-                ThemeManager.stylePill(holder.statusPill, PillType.RED, p)
             }
         }
     }

@@ -8,6 +8,7 @@
     <string name="tab_payloads">Payloads</string>
     <string name="tab_settings">Settings</string>
     <string name="tab_logs">Logs</string>
+    <string name="tab_about">About</string>
 
     <!-- Top Header & Status -->
     <string name="header_title">Gh0stra1n</string>
@@ -387,4 +388,29 @@
     <string name="file_type_database">Database</string>
     <string name="file_type_directory">Directory</string>
     <string name="file_type_other">Other File</string>
+
+    <!-- About Page -->
+    <string name="about_app_subtitle">Android Modular OverlayFS Stack Manager &amp; System Partition Engine</string>
+    <string name="about_version_label">Version Info</string>
+    <string name="about_antifraud_title">Permanently Open Source &amp; Free</string>
+    <string name="about_antifraud_content">This software is 100% open source and completely free of charge!\nIf you purchased this software from any third-party store, reseller, or individual, you have been scammed! Please request a refund immediately and report it to our GitHub repository!</string>
+    <string name="about_antifraud_tag">Anti-Fraud · Resale Prohibited</string>
+    <string name="about_developer_title">Core Developer</string>
+    <string name="about_developer_name">OrionisLi (LemonFan-maker)</string>
+    <string name="about_repo_title">Open Source Repository</string>
+    <string name="about_repo_url">https://github.com/LemonFan-maker/gh0stra1n</string>
+    <string name="about_repo_desc">Visit GitHub to view source code, report issues, or star the project</string>
+    <string name="about_license_title">Open Source License</string>
+    <string name="about_license_name">Apache License 2.0</string>
+    <string name="about_changelog_title">Changelog</string>
+    <string name="about_changelog_v110_title">v1.1.0 · Brand-New About Page &amp; Navigation Redesign</string>
+    <string name="about_changelog_v110_desc">• Replaced test payloads tab with a comprehensive, modern About page\n• Reordered bottom navigation: Control, Partitions, Logs, Settings, About\n• Prominently display vector app logo with build-time Git commit hash pill\n• Added anti-fraud / permanently free notice and one-click GitHub repo link\n• Added complete version changelog timeline with full localization</string>
+    <string name="about_changelog_v103_title">v1.0.3 · Multi-SU Support &amp; Legacy Kernel Adaptation</string>
+    <string name="about_changelog_v103_desc">• Added auto-detection for KernelSU, Magisk, APatch, and absolute su paths\n• Adapted step-based loop allocation for legacy kernels (Linux 4.14+), fixing loop attach conflicts\n• Auto-sync SELinux contexts on OverlayFS mount, resolving permission denied (error=13)\n• Guided image creation prompts before mounting, preventing implicit disk formatting</string>
+    <string name="about_changelog_v102_title">v1.0.2 · Loop Teardown &amp; Idempotent Recovery</string>
+    <string name="about_changelog_v102_desc">• Explicitly release associated loop devices upon unmount\n• Collision-free loop device scanning (30..99) preventing EBUSY\n• Removed aggressive auto-resize; lowered minimum image size to 16 MiB</string>
+    <string name="about_changelog_v101_title">v1.0.1 · Pipelined Execution &amp; Debounce Protection</string>
+    <string name="about_changelog_v101_desc">• Concurrent multi-partition pipelined mounting for significantly faster startup\n• Added UI debounce and thread-level state refresh guard\n• Integrated GitHub Actions CI/CD automated build pipelines</string>
+    <string name="about_changelog_v100_title">v1.0.0 · Initial Open Source Release</string>
+    <string name="about_changelog_v100_desc">• First official open-source release\n• Flash-free system partition takeover via OverlayFS\n• Skeuomorphic liquid glass navigation bar &amp; Material You theming</string>
 </resources>

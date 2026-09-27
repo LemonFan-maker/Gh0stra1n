@@ -8,6 +8,7 @@
     <string name="tab_payloads">載荷</string>
     <string name="tab_settings">設定</string>
     <string name="tab_logs">日誌</string>
+    <string name="tab_about">關於</string>
 
     <!-- 頂部狀態列 -->
     <string name="header_title">Gh0stra1n</string>
@@ -387,4 +388,29 @@
     <string name="file_type_database">資料庫</string>
     <string name="file_type_directory">目錄</string>
     <string name="file_type_other">其他檔案</string>
+
+    <!-- 關於頁面 -->
+    <string name="about_app_subtitle">Android 模組化 OverlayFS 棧式管理與系統分區接管引擎</string>
+    <string name="about_version_label">版本資訊</string>
+    <string name="about_antifraud_title">永久開源與免費聲明</string>
+    <string name="about_antifraud_content">本程式永久開源且完全免費！\n如果您是在任何第三方平台、網店或個人處付費購買的，說明您已被騙！請立即向平台申請退款，並歡迎前往 GitHub 開源倉庫進行反饋和舉報！</string>
+    <string name="about_antifraud_tag">謹防詐騙 · 拒絕倒賣</string>
+    <string name="about_developer_title">核心開發者</string>
+    <string name="about_developer_name">OrionisLi (LemonFan-maker)</string>
+    <string name="about_repo_title">開源倉庫</string>
+    <string name="about_repo_url">https://github.com/LemonFan-maker/gh0stra1n</string>
+    <string name="about_repo_desc">前往 GitHub 查看源碼、提交 Issue 或 Star 支持</string>
+    <string name="about_license_title">開源協議</string>
+    <string name="about_license_name">Apache License 2.0</string>
+    <string name="about_changelog_title">版本更新日誌</string>
+    <string name="about_changelog_v110_title">v1.1.0 · 全新「關於」頁面與導航架構重組</string>
+    <string name="about_changelog_v110_desc">• 移除測試載荷頁面，全新引入規範化「關於」頁面與開源資訊\n• 調整底欄導航架構：控制、分區、日誌、設定、關於\n• 頁面頂部展示向量 Logo 與編譯期 Git 短提交雜湊膠囊\n• 增加永久開源與免費防倒賣聲明，支援一鍵直達 GitHub 開源倉庫\n• 增加版本更新歷史日誌時間線與多語言同步</string>
+    <string name="about_changelog_v103_title">v1.0.3 · 全面適配多方案與舊內核</string>
+    <string name="about_changelog_v103_desc">• 新增 KernelSU、Magisk、APatch 及絕對路徑 su 自動探測支援\n• 適配舊內核 (Linux 4.14 等) loop 步長演算法，解決 loop attach 裝置衝突\n• 掛載 OverlayFS 時自動同步分區 SELinux 上下文，根除權限被拒 (error=13)\n• 掛載無映像攔截與引導建立，移除隱式自動建圖</string>
+    <string name="about_changelog_v102_title">v1.0.2 · 迴環釋放與掛載冪等自癒</string>
+    <string name="about_changelog_v102_desc">• 卸載時主動回收關聯的 loop 迴環裝置節點\n• 順延無衝突掃描 (30..99) 避免 EBUSY\n• 移除自動擴容邏輯，最低映像門檻降至 16 MiB</string>
+    <string name="about_changelog_v101_title">v1.0.1 · 管道化加速與防抖保護</string>
+    <string name="about_changelog_v101_desc">• 多分區並發多執行緒管道化裝載，速度顯著提升\n• 介面增加防抖與執行緒級重新整理保護機制\n• 接入 GitHub Actions 自動化 CI/CD 流水線</string>
+    <string name="about_changelog_v100_title">v1.0.0 · 首發開源版本</string>
+    <string name="about_changelog_v100_desc">• 首個正式開源版本發布\n• 實現基於 OverlayFS 的免重刷系統分區接管\n• 擬物液態玻璃底部導航與 Material You 主題系統</string>
 </resources>

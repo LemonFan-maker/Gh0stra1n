@@ -8,6 +8,7 @@
     <string name="tab_payloads">载荷</string>
     <string name="tab_settings">设置</string>
     <string name="tab_logs">日志</string>
+    <string name="tab_about">关于</string>
 
     <!-- 顶部状态栏 -->
     <string name="header_title">Gh0stra1n</string>
@@ -387,4 +388,29 @@
     <string name="file_type_database">数据库</string>
     <string name="file_type_directory">目录</string>
     <string name="file_type_other">其他文件</string>
+
+    <!-- 关于页面 -->
+    <string name="about_app_subtitle">Android 模块化 OverlayFS 栈式管理与系统分区接管引擎</string>
+    <string name="about_version_label">版本信息</string>
+    <string name="about_antifraud_title">永久开源与免费声明</string>
+    <string name="about_antifraud_content">本程序永久开源且完全免费！\n如果您是在任何第三方平台、网店或个人处付费购买的，说明您已被骗！请立即向平台申请退款，并欢迎前往 GitHub 开源仓库进行反馈和举报！</string>
+    <string name="about_antifraud_tag">谨防诈骗 · 拒绝倒卖</string>
+    <string name="about_developer_title">核心开发者</string>
+    <string name="about_developer_name">OrionisLi (LemonFan-maker)</string>
+    <string name="about_repo_title">开源仓库</string>
+    <string name="about_repo_url">https://github.com/LemonFan-maker/gh0stra1n</string>
+    <string name="about_repo_desc">前往 GitHub 查看源码、提交 Issue 或 Star 支持</string>
+    <string name="about_license_title">开源协议</string>
+    <string name="about_license_name">Apache License 2.0</string>
+    <string name="about_changelog_title">版本更新日志</string>
+    <string name="about_changelog_v110_title">v1.1.0 · 全新「关于」页面与导航架构重组</string>
+    <string name="about_changelog_v110_desc">• 移除测试载荷页面，全新引入规范化「关于」页面与开源信息\n• 调整底栏导航架构：控制、分区、日志、设置、关于\n• 页面顶部展示矢量 Logo 与编译期 Git 短提交哈希胶囊\n• 增加永久开源与免费防倒卖声明，支持一键直达 GitHub 开源仓库\n• 增加版本更新历史日志时间线与多语言同步</string>
+    <string name="about_changelog_v103_title">v1.0.3 · 全面适配多方案与旧内核</string>
+    <string name="about_changelog_v103_desc">• 新增 KernelSU、Magisk、APatch 及绝对路径 su 自动探测支持\n• 适配旧内核 (Linux 4.14 等) loop 步长算法，解决 loop attach 设备冲突\n• 挂载 OverlayFS 时自动同步分区 SELinux 上下文，根除权限被拒 (error=13)\n• 挂载无镜像拦截与引导创建，移除隐式自动建图</string>
+    <string name="about_changelog_v102_title">v1.0.2 · 回环释放与挂载幂等自愈</string>
+    <string name="about_changelog_v102_desc">• 卸载时主动回收关联的 loop 回环设备节点\n• 顺延无冲突扫描 (30..99) 避免 EBUSY\n• 移除自动扩容逻辑，最低镜像门槛降至 16 MiB</string>
+    <string name="about_changelog_v101_title">v1.0.1 · 管道化加速与防抖保护</string>
+    <string name="about_changelog_v101_desc">• 多分区并发多线程管道化装载，速度显著提升\n• 界面增加防抖与线程级刷新保护机制\n• 接入 GitHub Actions 自动化 CI/CD 流水线</string>
+    <string name="about_changelog_v100_title">v1.0.0 · 首发开源版本</string>
+    <string name="about_changelog_v100_desc">• 首个正式开源版本发布\n• 实现基于 OverlayFS 的免重刷系统分区接管\n• 拟物液态玻璃底部导航与 Material You 主题系统</string>
 </resources>
