@@ -1,0 +1,72 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ master, main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Package APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Debug & Release APKs
+        run: ./gradlew assembleDebug assembleRelease --stacktrace
+
+      - name: Prepare Artifacts & Checksums
+        run: |
+          mkdir -p dist
+          # Extract version from tag or fallback to 1.0.0
+          VERSION="${GITHUB_REF_NAME:-v1.0.0}"
+          if [[ "$VERSION" != v* ]]; then
+            VERSION="v1.0.0"
+          fi
+          
+          cp app/build/outputs/apk/release/app-release.apk "dist/Gh0stra1n-${VERSION}-release.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "dist/Gh0stra1n-${VERSION}-debug.apk"
+          
+          cd dist
+          sha256sum "Gh0stra1n-${VERSION}-release.apk" "Gh0stra1n-${VERSION}-debug.apk" > sha256sums.txt
+          cd ..
+
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gh0stra1n-APKs
+          path: dist/*
+          retention-days: 14
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
