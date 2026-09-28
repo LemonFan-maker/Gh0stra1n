@@ -36,13 +36,21 @@ android {
             val keystoreFile = storeFilePath?.let { file(it) }
 
             if (keystoreFile != null && keystoreFile.exists()) {
+                fun secret(name: String): String =
+                    (project.findProperty(name) as? String)?.takeIf { it.isNotBlank() }
+                        ?: System.getenv(name)?.takeIf { it.isNotBlank() }
+                        ?: throw GradleException(
+                            "Release keystore $keystoreFile exists but $name is unset or blank. " +
+                                "Provide it as a Gradle property (-P$name=...), an environment " +
+                                "variable, or a repository secret. Refusing to sign with an " +
+                                "empty password, which fails as 'Given final block not " +
+                                "properly padded' deep in the Android Gradle Plugin."
+                        )
+
                 storeFile = keystoreFile
-                storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as? String
-                    ?: System.getenv("RELEASE_STORE_PASSWORD")
-                keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as? String
-                    ?: System.getenv("RELEASE_KEY_ALIAS")
-                keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as? String
-                    ?: System.getenv("RELEASE_KEY_PASSWORD")
+                storePassword = secret("RELEASE_STORE_PASSWORD")
+                keyAlias = secret("RELEASE_KEY_ALIAS")
+                keyPassword = secret("RELEASE_KEY_PASSWORD")
             } else {
                 initWith(getByName("debug"))
             }

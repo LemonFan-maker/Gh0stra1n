@@ -7,3 +7,5 @@ local.properties
 .kotlin
 .vscode
 dist/
+*.jks
+*.keystore

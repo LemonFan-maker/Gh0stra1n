@@ -34,16 +34,27 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Decode Release Keystore
+      - name: Verify Release Signing Secrets
         env:
           KEYSTORE_B64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          if [ -n "$KEYSTORE_B64" ]; then
-            echo "$KEYSTORE_B64" | base64 -d > app/release.jks
-            echo "Release keystore decoded successfully."
-          else
-            echo "RELEASE_KEYSTORE_BASE64 not configured, will fallback to debug signing."
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::notice::RELEASE_KEYSTORE_BASE64 not configured; building with debug signing."
+            exit 0
           fi
+          missing=""
+          [ -n "$STORE_PASSWORD" ] || missing="$missing RELEASE_STORE_PASSWORD"
+          [ -n "$KEY_ALIAS" ]      || missing="$missing RELEASE_KEY_ALIAS"
+          [ -n "$KEY_PASSWORD" ]   || missing="$missing RELEASE_KEY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Keystore is configured but these secrets are unset or empty:$missing"
+            echo "::error::An empty RELEASE_KEY_PASSWORD surfaces as 'Given final block not properly padded'."
+            exit 1
+          fi
+          echo "All four release signing secrets are present."
 
       - name: Build Debug & Release APKs
         env:
