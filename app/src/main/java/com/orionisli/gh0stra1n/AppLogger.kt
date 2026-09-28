@@ -22,7 +22,7 @@ data class LogEntry(
     val tag: String,
     val msg: String,
 ) {
-    val formatted: String get() = "[$time] [$tag] $msg"
+    val formatted: String get() = "[$time][$tag]$msg"
 }
 
 object AppLogger {
@@ -87,6 +87,6 @@ object AppLogger {
         synchronized(logHistory) {
             logHistory.clear()
         }
-        log(LogLevel.INFO, "INFO", "终端日志已清空")
+        log(LogLevel.INFO, "INFO", "日志已清空")
     }
 }

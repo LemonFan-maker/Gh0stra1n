@@ -1,5 +1,6 @@
 package com.orionisli.gh0stra1n
 
+import java.util.concurrent.atomic.AtomicLong
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -25,17 +26,44 @@ object ManifestStore {
 
     val lockedLimitTop: Long get() = MAX_SIZE_MIB * 1024 * 1024
 
+    @Volatile
+    private var cached: JSONObject? = null
+
+    @Volatile
+    private var cacheLoaded = false
+
+    private val saveSeq = AtomicLong(0)
+
     fun load(): JSONObject? {
+        if (cacheLoaded) return cached
         val r = SuChannel.run("cat $MANIFEST_PATH 2>/dev/null", 10)
-        if (!r.ok || r.out.isBlank()) return null
-        return try { JSONObject(r.out) } catch (e: Exception) { null }
+        val parsed = if (!r.ok || r.out.isBlank()) {
+            null
+        } else {
+            try {
+                JSONObject(r.out)
+            } catch (e: Exception) {
+                AppLogger.e("MANIFEST", "清单解析失败：$MANIFEST_PATH ${e.message}")
+                null
+            }
+        }
+        cached = parsed
+        cacheLoaded = true
+        return parsed
     }
 
     fun save(root: JSONObject): Boolean {
-        val tmp = "$MANIFEST_PATH.tmp"
+        val tmp = "$MANIFEST_PATH.tmp.${Thread.currentThread().id}.${saveSeq.incrementAndGet()}"
         val r = SuChannel.run(
             "mkdir -p ${PartitionTable.BASE_DIR} && " +
             "printf '%s' '${root.toString().replace("'", "'\\''")}' > $tmp && mv $tmp $MANIFEST_PATH && sync", 15)
+        if (r.ok) {
+            cached = root
+            cacheLoaded = true
+        } else {
+            cached = null
+            cacheLoaded = false
+        }
         return r.ok
     }
 

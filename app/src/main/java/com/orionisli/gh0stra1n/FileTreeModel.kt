@@ -4,14 +4,14 @@ import android.graphics.Color
 import android.graphics.RectF
 
 enum class FileType(val color: Int) {
-    APK(Color.rgb(37, 99, 235)),       // #2563EB
-    SO(Color.rgb(124, 58, 237)),       // #7C3AED
-    DEX(Color.rgb(5, 150, 105)),      // #059669
-    MEDIA(Color.rgb(217, 119, 6)),     // #D97706
-    CONFIG(Color.rgb(8, 145, 178)),    // #0891B2
-    DATABASE(Color.rgb(219, 39, 119)),   // #DB2777
-    DIRECTORY(Color.rgb(71, 85, 105)),     // #475569
-    OTHER(Color.rgb(100, 116, 139));   // #64748B
+    APK(Color.rgb(37, 99, 235)), // #2563EB
+    SO(Color.rgb(124, 58, 237)), // #7C3AED
+    DEX(Color.rgb(5, 150, 105)), // #059669
+    MEDIA(Color.rgb(217, 119, 6)), // #D97706
+    CONFIG(Color.rgb(8, 145, 178)), // #0891B2
+    DATABASE(Color.rgb(219, 39, 119)), // #DB2777
+    DIRECTORY(Color.rgb(71, 85, 105)), // #475569
+    OTHER(Color.rgb(100, 116, 139)); // #64748B
 
     fun getDisplayName(context: android.content.Context): String = when (this) {
         APK -> context.getString(R.string.file_type_apk)
@@ -86,7 +86,6 @@ class FileNode(
 
     fun findDeepest(x: Float, y: Float): FileNode? {
         if (!rect.contains(x, y)) return null
-        // 优先检查子节点
         for (c in children) {
             if (c.rect.contains(x, y)) {
                 val deeper = c.findDeepest(x, y)

@@ -181,7 +181,6 @@ object ThemeManager {
         isDark = false
     )
 
-    // 各主题主/次/注脚文字色集合
     private val allPrimaryTextColors = setOf(
         Color.parseColor("#1C1A17"),
         Color.parseColor("#212529"),
@@ -286,7 +285,6 @@ object ThemeManager {
         val p = getCurrentPalette(activity)
         val window = activity.window
 
-        // 设置系统栏透明度与亮暗图标模式
         val wic = WindowCompat.getInsetsController(window, window.decorView)
         wic.isAppearanceLightStatusBars = !p.isDark
         wic.isAppearanceLightNavigationBars = !p.isDark
@@ -304,7 +302,6 @@ object ThemeManager {
             }
         }
 
-        // 遍历更新界面全量视图色彩
         val root = activity.findViewById<View>(android.R.id.content)
         if (root is ViewGroup) {
             applyThemeRecursively(root, p)
@@ -364,7 +361,6 @@ object ThemeManager {
         contentView.background = contentBg
         contentView.clipToOutline = true
 
-        // 递归遍历子视图着色
         if (contentView is ViewGroup) {
             applyThemeRecursively(contentView, p)
         }
@@ -406,6 +402,16 @@ object ThemeManager {
         }
     }
 
+    private fun isNestedInCard(view: View, root: View): Boolean {
+        var ancestor = view.parent as? View
+        while (ancestor != null) {
+            if (ancestor is MaterialCardView) return true
+            if (ancestor === root) return false
+            ancestor = ancestor.parent as? View
+        }
+        return false
+    }
+
     private fun applyThemeRecursively(viewGroup: ViewGroup, p: ThemePalette) {
         if (viewGroup is LiquidGlassBottomBar) return
         if (viewGroup.id == R.id.card_terminal_log || viewGroup.id == R.id.scroll_log) return
@@ -431,9 +437,7 @@ object ThemeManager {
 
             when (child) {
                 is MaterialCardView -> {
-                    if (childId == R.id.card_device_info ||
-                        (child.parent is ViewGroup && (child.parent as ViewGroup) != viewGroup)
-                    ) {
+                    if (childId == R.id.card_device_info || isNestedInCard(child, viewGroup)) {
                         child.setCardBackgroundColor(p.cardInner)
                         child.strokeColor = p.cardBorderSubtle
                     } else {
@@ -520,7 +524,6 @@ object ThemeManager {
                     if (childId == R.id.menu_item_delete || childId == R.id.menu_icon_delete) {
                         child.setColorFilter(if (p.isDark) Color.parseColor("#F87171") else Color.parseColor("#CF222E"))
                     } else if (childId == R.id.menu_part_dot) {
-                        // 保留实时状态点着色
                     } else if (childId == R.id.menu_mount_icon ||
                         childId == R.id.menu_icon_format ||
                         childId == R.id.menu_icon_resize ||
@@ -638,7 +641,6 @@ object ThemeManager {
                 }
             }
 
-            // 拖动把手与细分割线着色
             if (child !is ViewGroup && child !is TextView && child !is ImageView && child !is Button) {
                 val density = child.resources.displayMetrics.density
                 val lp = child.layoutParams

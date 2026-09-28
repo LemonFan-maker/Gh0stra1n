@@ -156,7 +156,6 @@ class LiquidGlassBottomBar @JvmOverloads constructor(
         cardView.addView(innerContainer)
         addView(cardView)
 
-        // 应用默认主题与选中状态
         applyTheme(ThemeManager.getCurrentPalette(context))
 
         post {
@@ -241,7 +240,6 @@ class LiquidGlassBottomBar @JvmOverloads constructor(
                 setColor(palette.glassBg)
                 setStroke(dp(1.5f), palette.glassBorder)
             } else {
-                // 常规柔和胶囊指示色
                 setColor(palette.tabIndicatorBg)
                 val strokeColor = if (palette.isDark) Color.argb(40, 255, 255, 255) else Color.argb(25, 0, 0, 0)
                 setStroke(dp(0.8f), strokeColor)
@@ -291,7 +289,6 @@ class LiquidGlassBottomBar @JvmOverloads constructor(
                     val minX = 0f
                     val maxX = innerWidth - tabWidth
                     val rawTargetX = initialIndicatorTranslationX + moveDelta
-                    // 左右边缘轻微橡皮筋回弹，中央区间 1:1 无阻力敏捷跟随 (减少阻尼)
                     val targetX = when {
                         rawTargetX < minX -> minX - (minX - rawTargetX) * 0.35f
                         rawTargetX > maxX -> maxX + (rawTargetX - maxX) * 0.35f
@@ -322,7 +319,6 @@ class LiquidGlassBottomBar @JvmOverloads constructor(
                     exitLiquidGlassMode(hoverIndex)
                     return true
                 } else {
-                    // 普通点击轻触事件
                     val elapsed = System.currentTimeMillis() - downTime
                     val dx = Math.abs(event.x - downX)
                     if (elapsed < 300 && dx < touchSlop) {
@@ -345,6 +341,14 @@ class LiquidGlassBottomBar @JvmOverloads constructor(
             }
         }
         return super.onTouchEvent(event)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        handler.removeCallbacks(longPressRunnable)
+        isLongPressScheduled = false
+        isLiquidDragging = false
+        parent?.requestDisallowInterceptTouchEvent(false)
     }
 
     fun selectTab(index: Int, notify: Boolean = true, animate: Boolean = true) {

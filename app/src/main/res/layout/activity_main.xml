@@ -2232,6 +2232,65 @@
                         android:layout_marginStart="6dp" />
                 </LinearLayout>
 
+                <!-- v1.1.4 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_changelog_v114"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/about_changelog_v114_title"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/badge_changelog_latest"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_pill_green"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="3dp"
+                                android:text="LATEST"
+                                android:textColor="#FFFFFFFF"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/maple_mono" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/about_changelog_v114_desc"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="12sp"
+                            android:layout_marginTop="8dp"
+                            android:lineSpacingExtra="3dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <!-- v1.1.3 -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_changelog_v113"
@@ -2265,18 +2324,6 @@
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:id="@+id/badge_changelog_latest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_pill_green"
-                                android:paddingHorizontal="8dp"
-                                android:paddingVertical="3dp"
-                                android:text="LATEST"
-                                android:textColor="#FFFFFFFF"
-                                android:textSize="10sp"
-                                android:textStyle="bold"
-                                android:fontFamily="@font/maple_mono" />
                         </LinearLayout>
 
                         <TextView
@@ -2446,7 +2493,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- v1.0.2 -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_changelog_v102"
                     android:layout_width="match_parent"
@@ -2483,7 +2529,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- v1.0.1 -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_changelog_v101"
                     android:layout_width="match_parent"
@@ -2520,7 +2565,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- v1.0.0 -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_changelog_v100"
                     android:layout_width="match_parent"
@@ -2557,11 +2601,10 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- 页脚版权信息 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Gh0stra1n · Designed for Android System Enthusiasts\nCopyright © 2026 OrionisLi. All Rights Reserved."
+                    android:text="Gh0stra1n - Designed for Android System Enthusiasts\nCopyright © 2026 OrionisLi. All Rights Reserved."
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="11sp"
                     android:gravity="center"
@@ -2573,7 +2616,6 @@
         </ScrollView>
     </FrameLayout>
 
-    <!-- ==================== Apple 风格液态玻璃悬浮底栏 (Liquid Glass Bottom Bar) ==================== -->
     <com.orionisli.gh0stra1n.LiquidGlassBottomBar
         android:id="@+id/liquid_bottom_bar"
         android:layout_width="match_parent"

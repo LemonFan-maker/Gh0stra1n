@@ -122,7 +122,6 @@ class MainActivity : AppCompatActivity() {
 
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
-    // 动态主题色彩体系
     private val currentPalette: ThemePalette
         get() = ThemeManager.getCurrentPalette(this)
 
@@ -177,7 +176,7 @@ class MainActivity : AppCompatActivity() {
         applyCurrentTheme()
 
         controller = OverlayController(
-            { state, detail -> runOnUiThread { renderState(state, detail) } },
+            { state, detail -> runOnUiThread { if (!isFinishing && !isDestroyed) renderState(state, detail) } },
             settings = settings,
         )
         controller.boot()
@@ -207,13 +206,19 @@ class MainActivity : AppCompatActivity() {
         refreshRows()
     }
 
+    override fun onDestroy() {
+        if (::controller.isInitialized) controller.detach()
+        AppLogger.removeListener(logListener)
+        super.onDestroy()
+    }
+
     private val logSpannableList = mutableListOf<CharSequence>()
 
     private fun formatLogEntry(entry: LogEntry): CharSequence {
         val ssb = SpannableStringBuilder()
 
         val timeStart = ssb.length
-        ssb.append("[${entry.time}] ")
+        ssb.append("[${entry.time}]")
         ssb.setSpan(
             ForegroundColorSpan(Color.rgb(140, 134, 123)),
             timeStart,
@@ -229,15 +234,15 @@ class MainActivity : AppCompatActivity() {
             LogLevel.DEBUG -> "DEBUG"
         }
         val levelColor = when (entry.level) {
-            LogLevel.ERROR -> Color.rgb(220, 38, 38)     // #DC2626
-            LogLevel.WARN -> Color.rgb(217, 119, 6)      // #D97706
-            LogLevel.INFO -> Color.rgb(29, 78, 216)      // #1D4ED8
-            LogLevel.SU -> Color.rgb(105, 63, 180)       // #693FB4
-            LogLevel.DEBUG -> Color.rgb(100, 116, 139)   // #64748B
+            LogLevel.ERROR -> Color.rgb(220, 38, 38)
+            LogLevel.WARN -> Color.rgb(217, 119, 6)
+            LogLevel.INFO -> Color.rgb(29, 78, 216)
+            LogLevel.SU -> Color.rgb(105, 63, 180)
+            LogLevel.DEBUG -> Color.rgb(100, 116, 139)
         }
 
         val levelStart = ssb.length
-        ssb.append("[$levelName] ")
+        ssb.append("[$levelName]")
         ssb.setSpan(
             ForegroundColorSpan(levelColor),
             levelStart,
@@ -253,9 +258,9 @@ class MainActivity : AppCompatActivity() {
 
         if (entry.level != LogLevel.SU && entry.tag.isNotEmpty() && !entry.tag.equals(levelName, ignoreCase = true)) {
             val tagStart = ssb.length
-            ssb.append("[${entry.tag}] ")
+            ssb.append("[${entry.tag}]")
             ssb.setSpan(
-                ForegroundColorSpan(Color.rgb(100, 116, 139)), // 标签次级灰蓝 #64748B
+                ForegroundColorSpan(Color.rgb(100, 116, 139)),
                 tagStart,
                 ssb.length,
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -356,6 +361,36 @@ class MainActivity : AppCompatActivity() {
         scrollLog.post { scrollLog.fullScroll(View.FOCUS_DOWN) }
     }
 
+    private val logRebuildPending = java.util.concurrent.atomic.AtomicBoolean(false)
+    private val logRebuildRunnable = Runnable {
+        logRebuildPending.set(false)
+        if (isFinishing || isDestroyed) return@Runnable
+        rebuildLogView()
+    }
+
+    private fun logSpawnTrim() {
+        logSpannableList.removeAt(0)
+        if (logRebuildPending.compareAndSet(false, true)) {
+            txtLog.post(logRebuildRunnable)
+        }
+    }
+
+    private val logListener: (LogEntry) -> Unit = { entry ->
+        runOnUiThread {
+            if (isFinishing || isDestroyed) return@runOnUiThread
+            val formatted = formatLogEntry(entry)
+            logSpannableList.add(formatted)
+            if (logSpannableList.size > 500) {
+                logSpawnTrim()
+            } else {
+                txtLog.append(formatted)
+                txtLog.append("\n")
+                scrollLog.post { scrollLog.fullScroll(View.FOCUS_DOWN) }
+            }
+        }
+    }
+
+
     private fun initLogging() {
         val existing = AppLogger.getAllLogs()
         logSpannableList.clear()
@@ -371,24 +406,11 @@ class MainActivity : AppCompatActivity() {
             rebuildLogView()
         }
 
-        AppLogger.addListener { entry ->
-            runOnUiThread {
-                val formatted = formatLogEntry(entry)
-                logSpannableList.add(formatted)
-                if (logSpannableList.size > 500) {
-                    logSpannableList.removeAt(0)
-                    rebuildLogView()
-                } else {
-                    txtLog.append(formatted)
-                    txtLog.append("\n")
-                    scrollLog.post { scrollLog.fullScroll(View.FOCUS_DOWN) }
-                }
-            }
-        }
+        AppLogger.removeListener(logListener)
+            AppLogger.addListener(logListener)
     }
 
     private fun initViews() {
-        // Header & Status
         headerStatusPill = findViewById(R.id.header_status_pill)
         statusDot = findViewById(R.id.status_dot)
         txtState = findViewById(R.id.status_state)
@@ -396,7 +418,6 @@ class MainActivity : AppCompatActivity() {
         txtDetail = findViewById(R.id.status_detail)
         txtQuickSummary = findViewById(R.id.txt_quick_summary)
 
-        // Device Info Chip (动态识别机型、代号与系统版本)
         val txtDeviceInfo = findViewById<TextView>(R.id.txt_device_info)
         val cardDeviceInfo = findViewById<View>(R.id.card_device_info)
         txtDeviceInfo?.text = DeviceInfoHelper.getDeviceSummary()
@@ -469,7 +490,6 @@ class MainActivity : AppCompatActivity() {
             liquidBottomBar.selectTab(Tab.PARTITIONS.ordinal, notify = true, animate = true)
         }
 
-        // Action Buttons
         btnMount = findViewById(R.id.btn_mount)
         btnUnmount = findViewById(R.id.btn_unmount)
         btnReboot = findViewById(R.id.btn_reboot)
@@ -486,7 +506,6 @@ class MainActivity : AppCompatActivity() {
         btnUnmountAllPart.setOnClickListener { onUnmountClick(it) }
         btnDeleteAllPart.setOnClickListener { onDeleteAllPartitionsClick(it) }
 
-        // Settings
         setWarn = findViewById(R.id.set_warn)
         setAutoMount = findViewById(R.id.set_auto_mount)
         setNoatime = findViewById(R.id.set_noatime)
@@ -541,12 +560,10 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        // RecyclerViews
         partitionRecyclerView = findViewById(R.id.partition_recycler_view)
         partitionRecyclerView.layoutManager = LinearLayoutManager(this)
         partitionRecyclerView.adapter = partitionAdapter
 
-        // Logs
         txtLog = findViewById(R.id.txt_log)
         scrollLog = findViewById(R.id.scroll_log)
         btnCopyLog = findViewById(R.id.btn_copy_log)
@@ -564,7 +581,6 @@ class MainActivity : AppCompatActivity() {
             clearLogs()
         }
 
-        // Tab Views
         tabControlView = findViewById(R.id.tab_control)
         tabPartitionsView = findViewById(R.id.tab_partitions)
         tabLogsView = findViewById(R.id.tab_logs)
@@ -625,7 +641,7 @@ class MainActivity : AppCompatActivity() {
         val txtAboutVersion = findViewById<TextView>(R.id.txt_about_version)
         val versionName = BuildConfig.VERSION_NAME
         val gitHash = BuildConfig.GIT_COMMIT_HASH
-        txtAboutVersion?.text = "v$versionName · $gitHash"
+        txtAboutVersion?.text = "v$versionName - $gitHash"
 
         val btnRepo = findViewById<View>(R.id.btn_about_repo)
         if (btnRepo != null) {
@@ -637,7 +653,7 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(repoUrl))
                     startActivity(intent)
                 } catch (e: Exception) {
-                    AppLogger.e("UI", "打开开源链接失败: ${e.message}")
+                    AppLogger.e("UI", "打开开源链接失败：${e.message}")
                 }
             }
         }
@@ -775,13 +791,11 @@ class MainActivity : AppCompatActivity() {
         liquidBottomBar.applyTheme(p)
         findViewById<View>(R.id.root_layout)?.setBackgroundColor(p.windowBg)
 
-        // 主胶囊按钮色彩与文字同步
         btnMount.backgroundTintList = ColorStateList.valueOf(p.accent)
         btnSettingsSave.backgroundTintList = ColorStateList.valueOf(p.accent)
         btnSettingsBackup.backgroundTintList = ColorStateList.valueOf(p.accent)
         btnSettingsRestore.backgroundTintList = ColorStateList.valueOf(p.accent)
 
-        // 次级操作按钮与图标色彩同步
         listOf(btnReboot, btnRefreshStatus, btnRefreshPartitions).forEach { btn ->
             btn.backgroundTintList = ColorStateList.valueOf(p.cardInner)
             btn.strokeColor = ColorStateList.valueOf(p.cardBorder)
@@ -834,7 +848,7 @@ class MainActivity : AppCompatActivity() {
         dialog.setContentView(sheetView)
 
         val screenHeight = resources.displayMetrics.heightPixels
-        val halfHeight = (screenHeight * 0.52).toInt() // 半屏高度
+        val halfHeight = (screenHeight * 0.52).toInt()
 
         dialog.behavior.apply {
             maxHeight = halfHeight
@@ -878,7 +892,6 @@ class MainActivity : AppCompatActivity() {
             ThemeManager.stylePill(pill, PillType.GRAY, currentPalette)
         }
 
-        // 视图组件索引
         val itemFormat = sheetView.findViewById<View>(R.id.menu_item_format)
         val itemMountUnmount = sheetView.findViewById<View>(R.id.menu_item_mount_unmount)
         val itemResize = sheetView.findViewById<View>(R.id.menu_item_resize)
@@ -997,12 +1010,12 @@ class MainActivity : AppCompatActivity() {
                     .setMessage(getString(R.string.dialog_format_msg_fmt, item.def.id, item.def.mountPoint))
                     .setPositiveButton(R.string.dialog_format_btn) { _, _ ->
                         HapticUtil.confirm()
-                        AppLogger.i("UI", ">>> 用户确认二次确认: 格式化分区 [${item.def.id}]")
+                        AppLogger.i("UI", "格式化分区${item.def.id}")
                         controller.formatPartition(item.def)
                     }
                     .setNegativeButton(R.string.btn_cancel) { _, _ ->
                         HapticUtil.click()
-                        AppLogger.i("UI", ">>> 用户取消格式化分区 [${item.def.id}]")
+                        AppLogger.i("UI", "取消格式化分区${item.def.id}")
                     }
                     .show()
             }
@@ -1011,10 +1024,10 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
                 HapticUtil.click()
                 if (isLive) {
-                    AppLogger.i("UI", ">>> 用户触发: 卸载单个分区 [${item.def.id}]")
+                    AppLogger.i("UI", "卸载单个分区${item.def.id}")
                     controller.unmountPartition(item.def)
                 } else {
-                    AppLogger.i("UI", ">>> 用户触发: 挂载单个分区 [${item.def.id}]")
+                    AppLogger.i("UI", "挂载单个分区${item.def.id}")
                     controller.mountPartition(item.def)
                 }
             }
@@ -1054,12 +1067,12 @@ class MainActivity : AppCompatActivity() {
                     .setMessage(getString(R.string.dialog_delete_part_msg_fmt, item.def.id, item.def.mountPoint, item.def.id))
                     .setPositiveButton(R.string.dialog_delete_part_btn) { _, _ ->
                         HapticUtil.confirm()
-                        AppLogger.i("UI", ">>> 用户确认二次确认: 删除分区 [${item.def.id}]")
+                        AppLogger.i("UI", "删除分区${item.def.id}")
                         controller.deletePartition(item.def)
                     }
                     .setNegativeButton(R.string.btn_cancel) { _, _ ->
                         HapticUtil.click()
-                        AppLogger.i("UI", ">>> 用户取消删除分区 [${item.def.id}]")
+                        AppLogger.i("UI", "取消删除分区${item.def.id}")
                     }
                     .show()
             }
@@ -1156,6 +1169,7 @@ class MainActivity : AppCompatActivity() {
 
             Thread {
                 runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
                     Toast.makeText(this, getString(R.string.toast_resize_in_progress, item.def.id, chosenMiB), Toast.LENGTH_SHORT).show()
                 }
                 val res = if (item.isLive) {
@@ -1165,6 +1179,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
                     if (res.isSuccess) {
                         HapticUtil.success()
                         Toast.makeText(this, getString(R.string.toast_resize_success, item.def.id, chosenMiB), Toast.LENGTH_LONG).show()
@@ -1215,11 +1230,11 @@ class MainActivity : AppCompatActivity() {
         txtSizes.text = getString(R.string.dialog_compact_cap_fmt, totalMiB, diskMiB)
         txtImageName.text = upper.substringAfterLast('/')
 
-        // 异步查询最小极限
         Thread {
             val minBytes = ImageManager.getMinimumFsSize(upper)
             val minMiB = if (minBytes != null) (minBytes / (1024 * 1024)) + 16L else ManifestStore.MIN_SIZE_MIB
             runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
                 txtMinLimit.text = getString(R.string.dialog_compact_shrink_limit_fmt, minMiB)
                 editShrink.hint = ">= $minMiB MiB"
             }
@@ -1230,6 +1245,7 @@ class MainActivity : AppCompatActivity() {
             Thread {
                 val r = ImageManager.tuneReservedBlocks(upper, pct)
                 runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
                     if (r.isSuccess) {
                         HapticUtil.success()
                         Toast.makeText(this, getString(R.string.toast_tune_success_fmt, pct), Toast.LENGTH_SHORT).show()
@@ -1262,12 +1278,12 @@ class MainActivity : AppCompatActivity() {
                     HapticUtil.confirm()
                     Thread {
                         runOnUiThread {
+                            if (isFinishing || isDestroyed) return@runOnUiThread
                             Toast.makeText(this, getString(R.string.toast_shrink_in_progress, item.def.id), Toast.LENGTH_SHORT).show()
                         }
-                        val res = ImageManager.shrinkImage(item.def, upper, targetMiB * 1024 * 1024L) { logMsg ->
-                            AppLogger.i("SHRINK", logMsg)
-                        }
+                        val res = ImageManager.shrinkImage(item.def, upper, targetMiB * 1024 * 1024L)
                         runOnUiThread {
+                            if (isFinishing || isDestroyed) return@runOnUiThread
                             if (res.isSuccess) {
                                 HapticUtil.success()
                                 Toast.makeText(this, getString(R.string.toast_shrink_success_fmt, item.def.id, targetMiB), Toast.LENGTH_LONG).show()
@@ -1296,23 +1312,25 @@ class MainActivity : AppCompatActivity() {
         if (isLive) {
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.menu_fsck)
-                .setMessage("当前分区 [${item.def.id}] 处于活跃挂载状态。\n\nLinux 要求在离线未挂载状态下执行 e2fsck 检查以避免破坏元数据。\n是否立即安全卸载该分区并执行自检？")
+                .setMessage("当前分区${item.def.id}处于活跃挂载状态。\n\nLinux要求在离线未挂载状态下执行e2fsck检查以避免破坏元数据。\n是否立即安全卸载该分区并执行自检？")
                 .setPositiveButton("卸载并自检") { _, _ ->
                     HapticUtil.confirm()
                     Thread {
-                        AppLogger.i("UI", ">>> 用户触发: 卸载并自检分区 [${item.def.id}]")
-                        val uRes = ImageManager.unmountStack(item.def) { _ -> }
+                        AppLogger.i("UI", "卸载并自检分区${item.def.id}")
+                        val uRes = ImageManager.unmountStack(item.def)
                         if (uRes.isFailure) {
                             runOnUiThread {
-                                Toast.makeText(this, "卸载失败: ${uRes.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                                if (isFinishing || isDestroyed) return@runOnUiThread
+                                Toast.makeText(this, "卸载失败：${uRes.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                             }
                             return@Thread
                         }
                         val (ok, report) = ImageManager.runManualFsck(item.def)
                         runOnUiThread {
+                            if (isFinishing || isDestroyed) return@runOnUiThread
                             refreshRows()
                             MaterialAlertDialogBuilder(this)
-                                .setTitle(if (ok) "自检通过 (Clean)" else "自检发现异常")
+                                .setTitle(if (ok) "自检通过（Clean）" else "自检发现异常")
                                 .setMessage(report)
                                 .setPositiveButton("重新挂载") { _, _ ->
                                     HapticUtil.confirm()
@@ -1327,11 +1345,12 @@ class MainActivity : AppCompatActivity() {
                 .show()
         } else {
             Thread {
-                AppLogger.i("UI", ">>> 用户触发: 手动离线自检分区 [${item.def.id}]")
+                AppLogger.i("UI", "手动离线自检分区${item.def.id}")
                 val (ok, report) = ImageManager.runManualFsck(item.def)
                 runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
                     MaterialAlertDialogBuilder(this)
-                        .setTitle(if (ok) "自检通过 (Clean)" else "自检发现异常")
+                        .setTitle(if (ok) "自检通过（Clean）" else "自检发现异常")
                         .setMessage(report)
                         .setPositiveButton(android.R.string.ok, null)
                         .show()
@@ -1661,10 +1680,9 @@ class MainActivity : AppCompatActivity() {
         HapticUtil.click(v)
         Toast.makeText(this, getString(R.string.toast_backup_in_progress), Toast.LENGTH_SHORT).show()
         Thread {
-            val res = ImageManager.backupUpperData { logMsg ->
-                AppLogger.i("BACKUP", logMsg)
-            }
+            val res = ImageManager.backupUpperData()
             runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
                 if (res.isSuccess) {
                     HapticUtil.success()
                     Toast.makeText(this, getString(R.string.toast_backup_success_fmt, res.getOrThrow()), Toast.LENGTH_LONG).show()
@@ -1686,7 +1704,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val itemLabels = backups.map { b ->
-            "${b.filename}\n${b.sizeDisplay}  •  ${b.dateDisplay}"
+            "${b.filename}\n${b.sizeDisplay} ${b.dateDisplay}"
         }.toTypedArray()
 
         MaterialAlertDialogBuilder(this)
@@ -1714,10 +1732,9 @@ class MainActivity : AppCompatActivity() {
     private fun executeRestore(backup: ImageManager.BackupInfo) {
         Toast.makeText(this, getString(R.string.restore_in_progress), Toast.LENGTH_SHORT).show()
         Thread {
-            val res = ImageManager.restoreUpperData(backup.fullPath) { logMsg ->
-                AppLogger.i("RESTORE", logMsg)
-            }
+            val res = ImageManager.restoreUpperData(backup.fullPath)
             runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
                 if (res.isSuccess) {
                     HapticUtil.success()
                     refreshRows()
@@ -1885,6 +1902,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     runOnUiThread {
+                        if (isFinishing || isDestroyed) return@runOnUiThread
                         partitionAdapter.submitList(partitionItems)
                         val liveCount = PartitionTable.ALL.count { it.id in live }
                         txtQuickSummary.text = if (liveCount > 0) getString(R.string.overview_mount_count_fmt, liveCount) else getString(R.string.overview_mount_count_none)
@@ -2048,8 +2066,8 @@ class MainActivity : AppCompatActivity() {
         txtFs.text = getString(R.string.detail_fs_desc)
 
         val baseDir = PartitionTable.BASE_DIR
-        txtUpper.text = "• Upper: $baseDir/mnt_${part.id}/u"
-        txtWork.text = "• Work:  $baseDir/mnt_${part.id}/w"
+        txtUpper.text = "Upper：$baseDir/mnt_${part.id}/u"
+        txtWork.text = "Work：$baseDir/mnt_${part.id}/w"
         txtLower.text = getString(R.string.detail_lower_desc_fmt, part.mountPoint)
 
         btnBrowse.backgroundTintList = ColorStateList.valueOf(currentPalette.accent)
@@ -2111,7 +2129,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onMountClick(v: View) {
         HapticUtil.click(v)
-        AppLogger.i("UI", ">>> 用户触发: 挂载 OverlayFS")
+        AppLogger.i("UI", "挂载OverlayFS")
 
         val hasAny = PartitionTable.ALL.any { (latestPartStats[it.id]?.imageCount ?: 0) > 0 }
             || ImageManager.hasAnyImage()
@@ -2137,7 +2155,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onUnmountClick(v: View) {
         HapticUtil.click(v)
-        AppLogger.i("UI", ">>> 用户触发: 卸载 OverlayFS")
+        AppLogger.i("UI", "卸载OverlayFS")
         controller.unmountAll()
     }
 
@@ -2148,12 +2166,12 @@ class MainActivity : AppCompatActivity() {
             .setMessage(R.string.dialog_reboot_msg)
             .setPositiveButton(R.string.dialog_reboot_btn) { _, _ ->
                 HapticUtil.confirm()
-                AppLogger.i("UI", ">>> 用户确认二次确认: 安全重启 (S6)")
+                AppLogger.i("UI", "安全重启")
                 controller.rebootWithTeardown()
             }
             .setNegativeButton(R.string.btn_cancel) { _, _ ->
                 HapticUtil.click()
-                AppLogger.i("UI", ">>> 用户取消安全重启")
+                AppLogger.i("UI", "取消安全重启")
             }
             .show()
     }
@@ -2165,19 +2183,19 @@ class MainActivity : AppCompatActivity() {
             .setMessage(R.string.dialog_delete_all_msg)
             .setPositiveButton(R.string.dialog_delete_all_btn) { _, _ ->
                 HapticUtil.confirm()
-                AppLogger.i("UI", ">>> 用户确认二次确认: 删除所有分区镜像数据")
+                AppLogger.i("UI", "删除所有分区镜像数据")
                 controller.deleteAllPartitions()
             }
             .setNegativeButton(R.string.btn_cancel) { _, _ ->
                 HapticUtil.click()
-                AppLogger.i("UI", ">>> 用户取消删除所有分区镜像")
+                AppLogger.i("UI", "取消删除所有分区镜像")
             }
             .show()
     }
 
     fun onRefreshClick(v: View) {
         HapticUtil.click(v)
-        AppLogger.i("UI", ">>> 用户触发: 刷新状态")
+        AppLogger.i("UI", "刷新状态")
         if (controller.state == State.NO_ROOT) {
             controller.boot()
         }
@@ -2193,18 +2211,19 @@ class MainActivity : AppCompatActivity() {
         val autoFsckVal = setAutoFsck.isChecked
         val showHiddenVal = setShowHidden.isChecked
 
+        setWarn.setText(w.toString())
+
+        Thread {
         settings.warnThresholdPct = w
         settings.bootAutoMount = autoMountVal
         settings.noatimeMount = noatimeVal
         settings.autoFsck = autoFsckVal
         settings.showHiddenFiles = showHiddenVal
-        setWarn.setText(w.toString())
-
-        Thread {
             val remountCount = ImageManager.remountLivePartitions(noatimeVal)
             runOnUiThread {
-                val remountMsg = if (remountCount > 0) " (已即时同步 $remountCount 个运行中挂载点)" else ""
-                AppLogger.i("SETTINGS", "设置已保存$remountMsg: 空间告警=$w% 启动恢复=$autoMountVal noatime=$noatimeVal 自动fsck=$autoFsckVal 隐藏文件=$showHiddenVal")
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                val remountMsg = if (remountCount > 0) "(已即时同步${remountCount}个运行中挂载点)" else ""
+                AppLogger.i("SETTINGS", "设置已保存$remountMsg：空间告警=$w%，启动恢复=$autoMountVal，noatime=$noatimeVal，自动fsck=$autoFsckVal，隐藏文件=$showHiddenVal")
                 Toast.makeText(this, getString(R.string.toast_settings_saved) + remountMsg, Toast.LENGTH_SHORT).show()
                 refreshRows()
             }
@@ -2288,7 +2307,6 @@ class MainActivity : AppCompatActivity() {
                 holder.stats.visibility = View.VISIBLE
                 holder.stats.text = item.stats
             } else {
-                // 无镜像时：隐藏配额显示，不显示容量配额；只在右侧显示“无镜像”
                 holder.layerInfo.visibility = View.GONE
                 holder.stats.visibility = View.VISIBLE
                 holder.stats.text = holder.itemView.context.getString(R.string.part_no_image)
@@ -2310,11 +2328,9 @@ class MainActivity : AppCompatActivity() {
             ViewAnimUtil.addPressScaleEffect(holder.rootCard)
             ViewAnimUtil.addPressScaleEffect(holder.btnMore)
 
-            // 点击卡片直接进入分区内部文件管理器预览
             holder.rootCard.setOnClickListener {
                 onItemClick(item)
             }
-            // 长按卡片或点击三个点弹出操作菜单
             holder.rootCard.setOnLongClickListener {
                 onMenuClick(item)
                 true

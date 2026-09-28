@@ -58,6 +58,7 @@ class CreateImageActivity : AppCompatActivity() {
     private lateinit var btnCreateImage: MaterialButton
 
     private var targetPartId: String = "system"
+    private val isCreateRunning = java.util.concurrent.atomic.AtomicBoolean(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
@@ -79,6 +80,11 @@ class CreateImageActivity : AppCompatActivity() {
         setupInsets()
         loadInitialPreset()
         setupListeners()
+    }
+
+    override fun onDestroy() {
+        isCreateRunning.set(false)
+        super.onDestroy()
     }
 
     private fun initViews() {
@@ -157,11 +163,12 @@ class CreateImageActivity : AppCompatActivity() {
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
+    private fun canTouchUi(): Boolean = !isFinishing && !isDestroyed
+
     private fun loadInitialPreset() {
         val requestedPart = intent.getStringExtra(EXTRA_PARTITION_ID) ?: "system"
         targetPartId = requestedPart
 
-        // 选中对应的Partition Chip
         when (requestedPart) {
             "system" -> findViewById<Chip>(R.id.chip_system).isChecked = true
             "vendor" -> findViewById<Chip>(R.id.chip_vendor).isChecked = true
@@ -170,21 +177,26 @@ class CreateImageActivity : AppCompatActivity() {
             "odm" -> findViewById<Chip>(R.id.chip_odm).isChecked = true
         }
 
-        // 加载预设参数
-        val preset = ManifestStore.loadPreset()
-        val partDef = PartitionTable.byId[targetPartId]
-        val initialSize = if (preset.defaultSizeMiB == 1024L && partDef != null) {
-            partDef.defaultSizeMiB
-        } else {
-            preset.defaultSizeMiB
-        }
-        applyPresetToUi(preset.copy(defaultSizeMiB = initialSize))
+        Thread {
+            val preset = ManifestStore.loadPreset()
+            val partDef = PartitionTable.byId[requestedPart]
+            val initialSize = if (preset.defaultSizeMiB == 1024L && partDef != null) {
+                partDef.defaultSizeMiB
+            } else {
+                preset.defaultSizeMiB
+            }
+            val resolved = preset.copy(defaultSizeMiB = initialSize)
+            runOnUiThread {
+                if (!canTouchUi()) return@runOnUiThread
+                applyPresetToUi(resolved)
+            }
+        }.start()
 
-        // 异步标明已有镜像的分区芯片
         Thread {
             for (p in PartitionTable.ALL) {
                 val hasImg = ImageManager.listImages(p).first.isNotEmpty()
                 runOnUiThread {
+                    if (!canTouchUi()) return@runOnUiThread
                     val chipId = when (p.id) {
                         "system" -> R.id.chip_system
                         "vendor" -> R.id.chip_vendor
@@ -343,18 +355,35 @@ class CreateImageActivity : AppCompatActivity() {
             return
         }
 
-        val part = PartitionTable.byId[targetPartId]
-        if (part != null && ImageManager.listImages(part).first.isNotEmpty()) {
-            HapticUtil.warning()
-            Toast.makeText(this, getString(R.string.create_image_already_exists, targetPartId), Toast.LENGTH_LONG).show()
-            return
-        }
+        val partId = targetPartId
+        val part = PartitionTable.byId[partId]
+        val sizeText = txtSizeReadable.text
 
+        Thread {
+            val exists = part != null && ImageManager.listImages(part).first.isNotEmpty()
+            runOnUiThread {
+                if (!canTouchUi()) return@runOnUiThread
+                if (exists) {
+                    HapticUtil.warning()
+                    Toast.makeText(this, getString(R.string.create_image_already_exists, partId), Toast.LENGTH_LONG).show()
+                    return@runOnUiThread
+                }
+                showCreateConfirmDialog(partId, sizeMiB, preset, sizeText)
+            }
+        }.start()
+    }
+
+    private fun showCreateConfirmDialog(
+        partId: String,
+        sizeMiB: Long,
+        preset: ManifestStore.ImagePresetConfig,
+        sizeText: CharSequence
+    ) {
         val msg = getString(
             R.string.create_image_confirm_msg_fmt,
-            targetPartId,
+            partId,
             sizeMiB,
-            txtSizeReadable.text,
+            sizeText,
             preset.blockSize,
             preset.bytesPerInode,
             preset.reservedRatioPct
@@ -374,6 +403,8 @@ class CreateImageActivity : AppCompatActivity() {
     }
 
     private fun executeCreate(sizeMiB: Long, preset: ManifestStore.ImagePresetConfig) {
+        if (!isCreateRunning.compareAndSet(false, true)) return
+
         btnCreateImage.isEnabled = false
         btnCreateImage.text = getString(R.string.create_image_in_progress)
 
@@ -381,9 +412,12 @@ class CreateImageActivity : AppCompatActivity() {
             ManifestStore.savePreset(preset)
         }
 
+        val partId = targetPartId
         Thread {
-            val res = ImageManager.createImageWithPreset(targetPartId, sizeMiB, preset)
+            val res = ImageManager.createImageWithPreset(partId, sizeMiB, preset)
             runOnUiThread {
+                if (!canTouchUi()) return@runOnUiThread
+                isCreateRunning.set(false)
                 btnCreateImage.isEnabled = true
                 btnCreateImage.text = getString(R.string.create_image_btn_submit)
 

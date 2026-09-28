@@ -83,7 +83,6 @@ class NcduAdapter(
         val p = ThemeManager.getCurrentPalette(holder.itemView.context)
 
         if (hasParent && position == 0) {
-            // ".." 上级目录入口
             holder.icon.setImageResource(R.drawable.ic_arrow_up)
             holder.icon.imageTintList = ColorStateList.valueOf(p.textSecondary)
             holder.name.text = holder.itemView.context.getString(R.string.explorer_parent_dir)
@@ -107,7 +106,6 @@ class NcduAdapter(
         val item = displayItems[itemIndex]
         val isSelected = (item == selectedNode)
 
-        // 名称与图标
         if (item.isDirectory) {
             holder.icon.setImageResource(R.drawable.ic_folder)
             val folderColor = if (p.isDark) Color.parseColor("#FBBF24") else Color.rgb(217, 119, 6)
@@ -121,7 +119,6 @@ class NcduAdapter(
             holder.name.setTextColor(p.textPrimary)
         }
 
-        // 隐藏文件标识
         if (item.isHidden) {
             holder.badgeHidden.visibility = View.VISIBLE
             ThemeManager.stylePill(holder.badgeHidden, PillType.GRAY, p)
@@ -129,18 +126,16 @@ class NcduAdapter(
             holder.badgeHidden.visibility = View.GONE
         }
 
-        // 权限与所有者信息
         if (item.permissions.isNotEmpty() || item.owner.isNotEmpty()) {
             holder.txtMeta.visibility = View.VISIBLE
             val permStr = if (item.permissions.isNotEmpty()) item.permissions else "-rw-r--r--"
             val ownerStr = if (item.owner.isNotEmpty()) item.owner else "root:root"
-            holder.txtMeta.text = "$permStr · $ownerStr"
+            holder.txtMeta.text = "$permStr - $ownerStr"
             holder.txtMeta.setTextColor(p.textSecondary)
         } else {
             holder.txtMeta.visibility = View.GONE
         }
 
-        // 大小
         holder.size.text = item.formattedSize()
         holder.size.setTextColor(p.textPrimary)
 
@@ -159,7 +154,7 @@ class NcduAdapter(
         holder.ratioDesc.setTextColor(p.textSecondary)
 
         if (isSelected) {
-            holder.card.strokeColor = Color.rgb(220, 38, 38) // #DC2626 红边
+            holder.card.strokeColor = Color.rgb(220, 38, 38) // #DC2626红边
             holder.card.strokeWidth = dp(holder.itemView, 2)
             holder.card.setCardBackgroundColor(if (p.isDark) Color.parseColor("#3B1818") else Color.parseColor("#FFF1F2"))
         } else {

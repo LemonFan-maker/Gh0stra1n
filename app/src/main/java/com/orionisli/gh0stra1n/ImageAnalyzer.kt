@@ -22,7 +22,7 @@ object ImageAnalyzer {
         }
 
         val targetImage = imgs.first()
-        AppLogger.i("ANALYSIS", ">>> 开始解析分区 [${part.id}] 文件树与镜像元数据: ${targetImage.substringAfterLast('/')}")
+        AppLogger.i("ANALYSIS", "开始解析分区${part.id}文件树与镜像元数据：${targetImage.substringAfterLast('/')}")
 
         val tuneRes = SuChannel.run("/system/bin/tune2fs -l $targetImage", 15, logCmd = false)
         val metadata = if (tuneRes.ok) {
@@ -42,11 +42,7 @@ object ImageAnalyzer {
                 /system/bin/toybox find $mntDir -printf "%s\t%M\t%u\t%g\t%P\n"
             """.trimIndent()
         } else {
-            val loopRes = ImageManager.attachLoop(targetImage)
-            if (loopRes.isFailure) {
-                return Result.failure(loopRes.exceptionOrNull()!!)
-            }
-            val dev = loopRes.getOrThrow()
+            val dev = ImageManager.attachLoop(targetImage).getOrElse { return Result.failure(it) }
             """
                 mkdir -p $inspectDir
                 mount -t ext4 -o ro $dev $inspectDir
@@ -94,7 +90,6 @@ object ImageAnalyzer {
             val segments = relPath.split('/').filter { it.isNotBlank() }
             if (segments.isEmpty()) continue
 
-            // 逐级确保父目录存在
             var currentParent = rootNode
             var accumulatedPath = ""
 
@@ -109,7 +104,6 @@ object ImageAnalyzer {
                 }
             }
 
-            // 当前叶子节点/最终目录
             val leafName = segments.last()
             val fullLeafPath = if (accumulatedPath.isEmpty()) leafName else "$accumulatedPath/$leafName"
 
@@ -139,7 +133,7 @@ object ImageAnalyzer {
         rootNode.recalculate()
 
         val duration = SystemClock.elapsedRealtime() - startTime
-        AppLogger.i("ANALYSIS", "镜像文件系统解析完成: 耗时 ${duration}ms, 扫描 $scannedCount 个条目 (包含隐藏项), 根目录聚合: ${rootNode.formattedSize()}")
+        AppLogger.i("ANALYSIS", "镜像文件系统解析完成：耗时${duration}ms，扫描${scannedCount}个条目(含隐藏项)，根目录聚合：${rootNode.formattedSize()}")
 
         return Result.success(
             ImageAnalysisResult(
@@ -192,7 +186,7 @@ object ImageAnalyzer {
                 val ascii = chunk.map { if (it in 32..126) it.toInt().toChar() else '.' }.joinToString("")
                 "$offset: $hex |$ascii|"
             }.joinToString("\n")
-            Pair(false, "[Binary Hex Dump · 256 bytes max]\n\n$hexDump")
+            Pair(false, "[Binary Hex Dump - 256 bytes max]\n\n$hexDump")
         } else {
             Pair(true, rawOutput)
         }

@@ -128,7 +128,6 @@ class Gh0stOverlayService : Service() {
             val settings = SettingsStore(this@Gh0stOverlayService)
             val res = ImageManager.mountStack(
                 part = part,
-                log = {},
                 neededBytes = 0L,
                 noatime = settings.noatimeMount,
                 autoFsck = settings.autoFsck
@@ -143,7 +142,7 @@ class Gh0stOverlayService : Service() {
         override fun unmountPartition(partitionName: String?): Boolean {
             val id = (partitionName ?: return false).trim().removePrefix("/")
             val part = PartitionTable.byId[id] ?: return false
-            val res = ImageManager.unmountStack(part) {}
+            val res = ImageManager.unmountStack(part)
             if (res.isSuccess) {
                 val live = ImageManager.livePartitions()
                 ManifestStore.recordLastMount(live, if (live.isEmpty()) "DETACH" else "LIVE")

@@ -19,7 +19,6 @@
         android:paddingHorizontal="12dp"
         android:paddingVertical="10dp">
 
-        <!-- 文件类型图标容器 -->
         <FrameLayout
             android:id="@+id/layout_icon_container"
             android:layout_width="38dp"
@@ -36,14 +35,12 @@
                 app:tint="#D97706" />
         </FrameLayout>
 
-        <!-- 文件主信息区 -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- 文件名与隐藏标识 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,7 +75,6 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-            <!-- Linux 属性与大小描述 (大小 · 权限 · 所有者) -->
             <TextView
                 android:id="@+id/txt_file_details"
                 android:layout_width="match_parent"
@@ -87,12 +83,11 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/maple_mono_regular"
                 android:singleLine="true"
-                android:text="10 B · -rw-rw-rw- · root:root"
+                android:text="10 B - -rw-rw-rw- - root:root"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- 右侧快速操作或菜单 -->
         <ImageView
             android:id="@+id/btn_file_more"
             android:layout_width="32dp"

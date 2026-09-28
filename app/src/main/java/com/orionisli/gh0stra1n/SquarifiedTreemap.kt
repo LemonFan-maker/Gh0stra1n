@@ -6,7 +6,7 @@ import kotlin.math.min
 
 object SquarifiedTreemap {
 
-    private const val MIN_RECURSION_PX = 8f // 目录递归细分的最小像素尺寸阈值
+    private const val MIN_RECURSION_PX = 8f
 
     fun layout(root: FileNode, bounds: RectF) {
         root.rect.set(bounds)
@@ -29,18 +29,15 @@ object SquarifiedTreemap {
 
         val totalArea = bounds.width().toDouble() * bounds.height().toDouble()
 
-        // 将每个节点的物理权重映射为像素面积
         val itemsWithArea = sorted.map { it to (getWeight(it) / totalWeight * totalArea) }
 
         squarify(itemsWithArea, mutableListOf(), bounds)
 
-        // 递归为各子目录布局（若子矩形面积充足）
         for (node in sorted) {
             if (node.isDirectory && node.children.isNotEmpty()) {
                 val w = node.rect.width()
                 val h = node.rect.height()
                 if (w >= MIN_RECURSION_PX && h >= MIN_RECURSION_PX) {
-                    // 内缩 0.5dp 留出轮廓间隙
                     val innerBounds = RectF(
                         node.rect.left + 0.5f,
                         node.rect.top + 0.5f,

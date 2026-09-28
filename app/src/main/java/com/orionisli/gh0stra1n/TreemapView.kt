@@ -17,7 +17,6 @@ class TreemapView @JvmOverloads constructor(
     private var highlightedNode: FileNode? = null
     var onNodeClicked: ((FileNode) -> Unit)? = null
 
-    // 绘制画笔
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
@@ -32,19 +31,19 @@ class TreemapView @JvmOverloads constructor(
         setShadowLayer(dp(2).toFloat(), 1f, 1f, Color.argb(200, 0, 0, 0))
     }
     private val subTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(226, 232, 240) // #E2E8F0
+        color = Color.rgb(226, 232, 240)
         textSize = dp(8).toFloat()
         setShadowLayer(dp(2).toFloat(), 1f, 1f, Color.argb(200, 0, 0, 0))
     }
 
     private val highlightGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.argb(120, 220, 38, 38) // 50% #DC2626
+        color = Color.argb(120, 220, 38, 38)
         strokeWidth = dp(5).toFloat()
     }
     private val highlightBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.rgb(220, 38, 38) // 纯正鲜红 #DC2626
+        color = Color.rgb(220, 38, 38)
         strokeWidth = dp(2.8f)
     }
     private val badgeBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -116,7 +115,6 @@ class TreemapView @JvmOverloads constructor(
         super.onDraw(canvas)
         val root = rootNode ?: return
 
-        // 递归渲染所有文件叶子/可视目录
         drawNode(canvas, root)
 
         highlightedNode?.let { node ->
@@ -160,7 +158,6 @@ class TreemapView @JvmOverloads constructor(
             canvas.drawRect(node.rect, fillPaint)
             canvas.drawRect(node.rect, tileBorderPaint)
 
-            // 递归绘制其子节点
             for (child in node.children) {
                 drawNode(canvas, child)
             }

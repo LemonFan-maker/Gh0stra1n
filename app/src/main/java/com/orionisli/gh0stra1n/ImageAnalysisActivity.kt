@@ -53,6 +53,13 @@ class ImageAnalysisActivity : AppCompatActivity() {
     private var partitionDef: PartitionDef = PartitionTable.ALL.first()
     private var rootNode: FileNode? = null
     private var currentDirNode: FileNode? = null
+    private var analysisGeneration = 0
+
+    override fun onDestroy() {
+        analysisGeneration++
+        super.onDestroy()
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
@@ -181,10 +188,12 @@ class ImageAnalysisActivity : AppCompatActivity() {
         layoutLoading.visibility = View.VISIBLE
         layoutContent.visibility = View.INVISIBLE
         txtLoadingMsg.text = getString(R.string.analysis_loading_fmt, partitionDef.id)
+        val gen = ++analysisGeneration
 
         Thread {
             val result = ImageAnalyzer.analyze(partitionDef)
             runOnUiThread {
+                if (isFinishing || isDestroyed || gen != analysisGeneration) return@runOnUiThread
                 layoutLoading.visibility = View.GONE
                 if (result.isSuccess) {
                     val analysis = result.getOrThrow()

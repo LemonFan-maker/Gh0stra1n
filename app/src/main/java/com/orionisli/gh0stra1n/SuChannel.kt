@@ -48,11 +48,29 @@ object SuChannel {
         val p = ProcessBuilder(binary, "-c", cmd)
             .redirectErrorStream(true)
             .start()
+        val out = StringBuilder()
+        val drain = Thread {
+            try {
+                p.inputStream.bufferedReader().use { r ->
+                    val buf = CharArray(8192)
+                    while (true) {
+                        val n = r.read(buf)
+                        if (n < 0) break
+                        synchronized(out) { out.appendRange(buf, 0, n) }
+                    }
+                }
+            } catch (_: Throwable) {
+            }
+        }
+        drain.isDaemon = true
+        drain.start()
         val res = if (!p.waitFor(timeoutSec.toLong(), TimeUnit.SECONDS)) {
             p.destroyForcibly()
-            SuResult(-1, "<timeout ${timeoutSec}s>")
+            drain.join(1000)
+            SuResult(-1, synchronized(out) { out.toString() })
         } else {
-            SuResult(p.exitValue(), p.inputStream.bufferedReader().readText())
+            drain.join(2000)
+            SuResult(p.exitValue(), synchronized(out) { out.toString() })
         }
         if (logCmd) {
             AppLogger.su(cmd, res.exit, res.out)
@@ -67,20 +85,20 @@ object SuChannel {
     }
 
     fun probeRoot(): Boolean {
-        AppLogger.i("SU", "正在探测 Root 特权通道...")
+        AppLogger.i("SU", "正在探测Root通道...")
         for (candidate in CANDIDATES) {
             try {
                 val r = runWithBinary(candidate, "id", timeoutSec = 8, logCmd = false)
                 if (r.ok && r.out.contains("uid=0")) {
                     activeSu = candidate
                     rootProvider = identifyRootProvider(candidate)
-                    AppLogger.i("SU", "Root 特权通道就绪: $rootProvider (命令: $activeSu, 输出: ${r.out.trim()})")
+                    AppLogger.i("SU", "Root通道就绪：$rootProvider(命令：$activeSu，输出：${r.out.trim()})")
                     return true
                 }
             } catch (_: Exception) {
             }
         }
-        AppLogger.w("SU", "Root 探测失败或未授权：遍历 su 路径均未获得 root (uid=0) 权限，请在 Magisk / KernelSU / APatch 中授权")
+        AppLogger.w("SU", "Root探测失败或未授权，请在Magisk / KernelSU / APatch中授权")
         return false
     }
 
@@ -106,6 +124,6 @@ object SuChannel {
         if (suVer.ok && suVer.out.isNotBlank()) {
             return "Root ($binary, ${suVer.out.trim()})"
         }
-        return "通用 Root ($binary)"
+        return "通用Root ($binary)"
     }
 }

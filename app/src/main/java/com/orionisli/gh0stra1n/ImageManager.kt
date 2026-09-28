@@ -44,17 +44,17 @@ object ImageManager {
                 "mv $tmp ${PartitionTable.BASE_DIR}/$partId-\$UUID.img && " +
                 "sync && echo ${PartitionTable.BASE_DIR}/$partId-\$UUID.img"
 
-        AppLogger.i("CREATE", "正在创建分区 [$partId] 镜像 (大小=${sizeMiB}MB, 块=${preset.blockSize}, Inode比=${preset.bytesPerInode})...")
+        AppLogger.i("CREATE", "正在创建分区${partId}镜像(大小=${sizeMiB}MB，块=${preset.blockSize}，Inode比=${preset.bytesPerInode})...")
         val mk = SuChannel.run(cmd, 60, logCmd = true)
         val path = mk.out.trim().lines().lastOrNull()
         return if (mk.ok && !path.isNullOrBlank() && path.startsWith(PartitionTable.BASE_DIR)) {
-            AppLogger.i("CREATE", "镜像创建成功: ${path.substringAfterLast('/')}")
+            AppLogger.i("CREATE", "镜像创建成功：${path.substringAfterLast('/')}")
             PartitionTable.ALL.firstOrNull { it.id == partId }?.let {
                 ManifestStore.reconcile(it)
             }
             Result.success(path)
         } else {
-            AppLogger.e("CREATE", "镜像创建失败: ${mk.out}")
+            AppLogger.e("CREATE", "镜像创建失败：${mk.out}")
             Result.failure(RuntimeException("createImage failed: $mk"))
         }
     }
@@ -114,7 +114,7 @@ object ImageManager {
         if (r.ok && !dev.isNullOrBlank()) {
             return Result.success(dev)
         }
-        return Result.failure(RuntimeException("loop attach 失败: ${r.out}"))
+        return Result.failure(RuntimeException("loop attach失败：${r.out}"))
     }
 
     fun growImage(image: String, newBytes: Long): Result<Unit> {
@@ -137,7 +137,7 @@ object ImageManager {
         val loopCheck = SuChannel.run("losetup -a 2>/dev/null | grep '${image.substringAfterLast('/')}' | head -1 | cut -d: -f1", 10)
         val loopDev = loopCheck.out.trim()
 
-        AppLogger.i("RESIZE", "正在对 [${part.id}] 进行在线热扩容: $image -> ${newBytes / (1024 * 1024)}MiB")
+        AppLogger.i("RESIZE", "正在对${part.id}进行在线扩容：${image}到${newBytes / (1024 * 1024)}MiB")
         val cmd = if (loopDev.startsWith("/dev/block/loop")) {
             "truncate -s $newBytes $image && " +
             "losetup -c $loopDev && " +
@@ -150,7 +150,7 @@ object ImageManager {
 
         val r = SuChannel.run(cmd, 120, logCmd = true)
         return if (r.ok && r.out.contains("ONLINE-GROW-OK")) {
-            AppLogger.i("RESIZE", "[${part.id}] 扩容成功已生效")
+            AppLogger.i("RESIZE", "${part.id}扩容成功已生效")
             // 更新manifest
             val entry = ManifestStore.reconcile(part)
             val base = image.substringAfterLast('/')
@@ -161,20 +161,20 @@ object ImageManager {
             }
             Result.success(Unit)
         } else {
-            AppLogger.e("RESIZE", "[${part.id}] 扩容失败: ${r.out}")
-            Result.failure(RuntimeException("在线扩容失败: ${r.out}"))
+            AppLogger.e("RESIZE", "${part.id}扩容失败：${r.out}")
+            Result.failure(RuntimeException("在线扩容失败：${r.out}"))
         }
     }
 
     fun tuneReservedBlocks(image: String, percent: Int): Result<String> {
-        AppLogger.i("TUNE", "正在调整保留块比例为 ${percent}%: ${image.substringAfterLast('/')}")
+        AppLogger.i("TUNE", "正在调整保留块比例为${percent}%：${image.substringAfterLast('/')}")
         val r = SuChannel.run("/system/bin/tune2fs -m $percent $image 2>&1", 15, logCmd = true)
         return if (r.ok) {
-            AppLogger.i("TUNE", "保留块比例设置成功: ${r.out.trim()}")
+            AppLogger.i("TUNE", "保留块比例设置成功：${r.out.trim()}")
             Result.success(r.out.trim())
         } else {
-            AppLogger.e("TUNE", "保留块比例设置失败: ${r.out}")
-            Result.failure(RuntimeException("tune2fs 失败: ${r.out}"))
+            AppLogger.e("TUNE", "保留块比例设置失败：${r.out}")
+            Result.failure(RuntimeException("tune2fs失败：${r.out}"))
         }
     }
 
@@ -188,16 +188,15 @@ object ImageManager {
         return blocks * bs
     }
 
-    fun shrinkImage(part: PartitionDef, image: String, targetBytes: Long, log: (String) -> Unit): Result<Unit> {
-        AppLogger.i("SHRINK", "=== 开始收缩镜像 [${part.id}]: 目标大小=${targetBytes / (1024 * 1024)}MiB ===")
-        log("准备安全收缩 ${part.id}...")
+    fun shrinkImage(part: PartitionDef, image: String, targetBytes: Long): Result<Unit> {
+        AppLogger.i("SHRINK", "开始收缩镜像${part.id}：目标大小=${targetBytes / (1024 * 1024)}MiB")
+        AppLogger.i("SHRINK", "准备安全收缩${part.id}...")
 
         val live = livePartitions()
         val wasLive = part.id in live
         if (wasLive) {
-            log("正在安全卸载以进行离线收缩...")
-            val uRes = unmountStack(part, log)
-            if (uRes.isFailure) return Result.failure(uRes.exceptionOrNull()!!)
+            AppLogger.i("SHRINK", "正在卸载以进行离线收缩...")
+            unmountStack(part).exceptionOrNull()?.let { return Result.failure(it) }
         }
 
         val targetMiB = targetBytes / (1024 * 1024)
@@ -207,8 +206,8 @@ object ImageManager {
                 "sync && echo SHRINK-OK"
         val r = SuChannel.run(cmd, 120, logCmd = true)
         if (!r.ok || !r.out.contains("SHRINK-OK")) {
-            AppLogger.e("SHRINK", "收缩失败: ${r.out}")
-            return Result.failure(RuntimeException("收缩失败: ${r.out}"))
+            AppLogger.e("SHRINK", "收缩失败：${r.out}")
+            return Result.failure(RuntimeException("收缩失败：${r.out}"))
         }
 
         val entry = ManifestStore.reconcile(part)
@@ -220,12 +219,12 @@ object ImageManager {
         }
 
         if (wasLive) {
-            log("收缩完成，正在重新挂载...")
-            mountStack(part, log)
+            AppLogger.i("SHRINK", "收缩完成，正在挂载...")
+            mountStack(part)
         }
 
-        AppLogger.i("SHRINK", "[${part.id}] 镜像收缩成功: ${targetMiB}MiB")
-        log("${part.id} 成功收缩至 ${targetMiB}MiB")
+        AppLogger.i("SHRINK", "${part.id}镜像收缩成功：${targetMiB}MiB")
+        AppLogger.i("SHRINK", "${part.id}成功收缩至${targetMiB}MiB")
         return Result.success(Unit)
     }
 
@@ -268,21 +267,20 @@ object ImageManager {
         return list.sortedByDescending { it.modifiedTime }
     }
 
-    fun backupUpperData(log: (String) -> Unit): Result<String> {
+    fun backupUpperData(): Result<String> {
         val destDir = "/sdcard/Gh0stra1n_Backup"
         val timeStamp = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US).format(java.util.Date())
         val archive = "$destDir/gh0stra1n_backup_$timeStamp.tar.gz"
         val b = PartitionTable.BASE_DIR
 
-        AppLogger.i("BACKUP", "=== 开始备份所有 OverlayFS 修改层至 $archive ===")
-        log("正在准备备份环境...")
+        AppLogger.i("BACKUP", "开始备份所有OverlayFS修改层至$archive")
+        AppLogger.i("BACKUP", "正在准备备份环境...")
         SuChannel.run("mkdir -p $destDir && chmod 777 $destDir 2>/dev/null", 10)
 
         val live = livePartitions().toSet()
         val tempMounted = mutableListOf<Triple<String, String, String>>() // (partId, loop, mnt)
 
         try {
-            // 对未挂载但存在镜像的分区进行只读临时挂载以读取 u/ 数据
             for (p in PartitionTable.ALL) {
                 if (p.id !in live) {
                     val (imgs, _) = listImages(p)
@@ -312,27 +310,27 @@ object ImageManager {
             }
 
             if (availableTargets.isEmpty()) {
-                AppLogger.w("BACKUP", "未检测到任何已挂载或已配置的修改层(u/)，无需备份")
-                return Result.failure(RuntimeException("未检测到任何分区修改层(u/)，请先创建镜像或挂载"))
+                AppLogger.w("BACKUP", "未检测到任何已挂载或已配置的修改层，无需备份")
+                return Result.failure(RuntimeException("未检测到任何分区修改层（u/），请先创建镜像或挂载"))
             }
 
             val targetsStr = availableTargets.joinToString(" ")
-            log("正在计算各文件 SHA-256 校验和...")
-            AppLogger.i("BACKUP", "正在生成 SHA256SUMS 清单: $targetsStr")
+            AppLogger.i("BACKUP", "正在计算各文件SHA-256校验和...")
+            AppLogger.i("BACKUP", "正在生成SHA256SUMS清单：$targetsStr")
             val shaRes = SuChannel.run(
                 "cd $b && " +
                 "rm -f SHA256SUMS && " +
                 "find $targetsStr -type f -exec sha256sum {} + > SHA256SUMS 2>&1 && " +
                 "echo SHA-OK", 60, logCmd = true)
             if (!shaRes.ok || !shaRes.out.contains("SHA-OK")) {
-                AppLogger.e("BACKUP", "生成 SHA-256 清单失败: ${shaRes.out}")
-                return Result.failure(RuntimeException("生成校验清单失败: ${shaRes.out.trim()}"))
+                AppLogger.e("BACKUP", "生成SHA-256清单失败：${shaRes.out}")
+                return Result.failure(RuntimeException("生成校验清单失败：${shaRes.out.trim()}"))
             }
 
             val fileCountRes = SuChannel.run("wc -l < $b/SHA256SUMS", 10)
             val count = fileCountRes.out.trim().toIntOrNull() ?: 0
-            AppLogger.i("BACKUP", "已计算 $count 个常规文件的 SHA-256 校验和")
-            log("已生成 $count 个文件的哈希校验清单，正在打包压缩...")
+            AppLogger.i("BACKUP", "已计算${count}个文件的SHA-256校验和")
+            AppLogger.i("BACKUP", "已生成${count}个文件的哈希校验清单，正在打包压缩...")
 
             val r = SuChannel.run(
                 "cd $b && " +
@@ -341,12 +339,12 @@ object ImageManager {
                 "chmod 666 $archive && sync && echo BACKUP-OK", 120, logCmd = true)
 
             return if (r.ok && r.out.contains("BACKUP-OK")) {
-                AppLogger.i("BACKUP", "备份完成: $archive (包含 SHA256SUMS)")
-                log("备份成功生成: $archive")
+                AppLogger.i("BACKUP", "备份完成：$archive")
+                AppLogger.i("BACKUP", "备份成功生成：$archive")
                 Result.success(archive)
             } else {
-                AppLogger.e("BACKUP", "备份失败: ${r.out}")
-                Result.failure(RuntimeException("备份失败: ${r.out.trim()}"))
+                AppLogger.e("BACKUP", "备份失败：${r.out}")
+                Result.failure(RuntimeException("备份失败：${r.out.trim()}"))
             }
         } finally {
             SuChannel.run("rm -f $b/SHA256SUMS", 5)
@@ -356,26 +354,26 @@ object ImageManager {
         }
     }
 
-    fun restoreUpperData(archivePath: String, log: (String) -> Unit): Result<String> {
+    fun restoreUpperData(archivePath: String): Result<String> {
         val b = PartitionTable.BASE_DIR
         val tmpDir = "/data/local/tmp/gh0stra1n_restore_tmp"
-        AppLogger.i("RESTORE", "=== 开始从备份恢复 OverlayFS 修改层: $archivePath ===")
-        log("正在准备隔离解包与校验环境...")
+        AppLogger.i("RESTORE", "开始恢复OverlayFS修改层：$archivePath")
+        AppLogger.i("RESTORE", "正在准备隔离解包与校验环境...")
 
         try {
             SuChannel.run("rm -rf $tmpDir && mkdir -p $tmpDir", 10)
 
-            log("正在解包归档至隔离环境...")
+            AppLogger.i("RESTORE", "正在解包归档至隔离环境...")
             val extractRes = SuChannel.run("tar -xzf $archivePath -C $tmpDir 2>&1 && echo EXTRACT-OK", 120, logCmd = true)
             if (!extractRes.ok || !extractRes.out.contains("EXTRACT-OK")) {
-                AppLogger.e("RESTORE", "解压归档失败: ${extractRes.out}")
-                return Result.failure(RuntimeException("解压归档失败: ${extractRes.out.trim()}"))
+                AppLogger.e("RESTORE", "解压归档失败：${extractRes.out}")
+                return Result.failure(RuntimeException("解压归档失败：${extractRes.out.trim()}"))
             }
 
-            log("正在执行防篡改与 SHA-256 完整性自检...")
+            AppLogger.i("RESTORE", "正在执行防篡改与SHA-256完整性自检...")
             val shaFileCheck = SuChannel.run("test -f $tmpDir/SHA256SUMS && echo EXISTS", 5)
             if (!shaFileCheck.ok || !shaFileCheck.out.contains("EXISTS")) {
-                val err = "归档文件缺少 SHA256SUMS 校验清单，无法确认文件真实性与完整性，恢复已阻断！"
+                val err = "归档文件缺少SHA256SUMS校验清单，无法确认文件真实性与完整性，恢复已阻断！"
                 AppLogger.e("RESTORE", err)
                 return Result.failure(SecurityException(err))
             }
@@ -389,7 +387,7 @@ object ImageManager {
                 val expectedCountRes = SuChannel.run("wc -l < $tmpDir/SHA256SUMS", 10)
                 val expectedCount = expectedCountRes.out.trim().toIntOrNull() ?: -1
                 if (actualCount != expectedCount) {
-                    val err = "归档内文件数量与校验清单不符 (实际 $actualCount 个, 清单记录 $expectedCount 个)！检测到植入文件或文件缺失，恢复已阻断！"
+                    val err = "归档内文件数量与校验清单不符：实际${actualCount}个，清单记录${expectedCount}个！检测到植入文件或文件缺失，恢复已阻断！"
                     AppLogger.e("RESTORE", err)
                     return Result.failure(SecurityException(err))
                 }
@@ -400,7 +398,7 @@ object ImageManager {
                     val failedDetails = verifyRes.out.lines()
                         .filter { it.contains("FAILED") || it.contains("FAILED open") }
                         .joinToString("\n") { it.trim() }
-                    val err = "SHA-256 校验失败！检测到文件被篡改或损坏：\n${failedDetails.ifBlank { verifyRes.out.trim() }}"
+                    val err = "SHA-256校验失败！检测到文件被篡改或损坏：\n${failedDetails.ifBlank { verifyRes.out.trim() }}"
                     AppLogger.e("RESTORE", err)
                     return Result.failure(SecurityException(err))
                 }
@@ -412,8 +410,8 @@ object ImageManager {
                 }
             }
 
-            AppLogger.i("RESTORE", "完整性校验通过！共校验 $actualCount 个文件，无任何篡改")
-            log("完整性校验通过 (已验证 $actualCount 个文件)，开始写入各分区修改层...")
+            AppLogger.i("RESTORE", "完整性校验通过！共校验${actualCount}个文件，无任何篡改")
+            AppLogger.i("RESTORE", "完整性校验通过(已验证${actualCount}个文件)，开始写入各分区修改层...")
 
             val live = livePartitions().toSet()
             val restoredPartitions = mutableListOf<String>()
@@ -423,16 +421,16 @@ object ImageManager {
                 val hasData = SuChannel.run("test -d $partUpperDir && echo HAS_DIR", 5).out.contains("HAS_DIR")
                 if (!hasData) continue
 
-                log("正在还原 [${p.id}] 修改层...")
-                AppLogger.i("RESTORE", "[${p.id}] 正在还原 upper 数据...")
+                AppLogger.i("RESTORE", "正在还原${p.id}修改层...")
+                AppLogger.i("RESTORE", "${p.id}正在还原upper数据...")
 
                 if (p.id in live) {
                     val targetDir = "$b/mnt_${p.id}/u"
                     SuChannel.run("mkdir -p $targetDir", 5)
                     val cpRes = SuChannel.run("cp -a $partUpperDir/. $targetDir/ && echo CP-OK", 60)
                     if (!cpRes.ok || !cpRes.out.contains("CP-OK")) {
-                        AppLogger.e("RESTORE", "[${p.id}] LIVE 写入失败: ${cpRes.out}")
-                        return Result.failure(RuntimeException("写入 [${p.id}] 修改层失败: ${cpRes.out}"))
+                        AppLogger.e("RESTORE", "${p.id} LIVE写入失败：${cpRes.out}")
+                        return Result.failure(RuntimeException("写入${p.id}修改层失败：${cpRes.out}"))
                     }
                     restoredPartitions.add(p.id)
                 } else {
@@ -441,21 +439,15 @@ object ImageManager {
                         imgs.first()
                     } else {
                         val entry = ManifestStore.reconcile(p)
-                        val created = createImage(p, entry.defaultSizeMiB)
-                        if (created.isFailure) {
-                            return Result.failure(created.exceptionOrNull()!!)
-                        }
-                        created.getOrThrow()
+                        createImage(p, entry.defaultSizeMiB).getOrElse { return Result.failure(it) }
                     }
 
-                    val loopRes = attachLoop(upper)
-                    if (loopRes.isFailure) return Result.failure(loopRes.exceptionOrNull()!!)
-                    val loop = loopRes.getOrThrow()
+                    val loop = attachLoop(upper).getOrElse { return Result.failure(it) }
                     val mnt = "$b/mnt_${p.id}"
                     val mountRes = SuChannel.run("mkdir -p $mnt && mount -t ext4 $loop $mnt && echo OK", 15)
                     if (!mountRes.ok || !mountRes.out.contains("OK")) {
                         SuChannel.run("losetup -d $loop 2>/dev/null", 5)
-                        return Result.failure(RuntimeException("临时挂载 [${p.id}] 镜像失败: ${mountRes.out}"))
+                        return Result.failure(RuntimeException("临时挂载${p.id}镜像失败：${mountRes.out}"))
                     }
 
                     try {
@@ -463,7 +455,7 @@ object ImageManager {
                         SuChannel.run("mkdir -p $targetDir", 5)
                         val cpRes = SuChannel.run("cp -a $partUpperDir/. $targetDir/ && echo CP-OK", 60)
                         if (!cpRes.ok || !cpRes.out.contains("CP-OK")) {
-                            return Result.failure(RuntimeException("写入 [${p.id}] 修改层失败: ${cpRes.out}"))
+                            return Result.failure(RuntimeException("写入${p.id}修改层失败：${cpRes.out}"))
                         }
                         restoredPartitions.add(p.id)
                     } finally {
@@ -474,12 +466,12 @@ object ImageManager {
 
             SuChannel.run("sync", 10)
             val summary = if (restoredPartitions.isNotEmpty()) {
-                "成功恢复 ${restoredPartitions.size} 个分区的修改层 (${restoredPartitions.joinToString(", ")})"
+                "成功恢复${restoredPartitions.size}个分区的修改层(${restoredPartitions.joinToString(", ")})"
             } else {
                 "归档中未包含任何分区的修改层数据"
             }
-            AppLogger.i("RESTORE", "恢复完成: $summary")
-            log(summary)
+            AppLogger.i("RESTORE", "恢复完成：$summary")
+            AppLogger.i("RESTORE", summary)
             return Result.success(summary)
         } finally {
             SuChannel.run("rm -rf $tmpDir", 10)
@@ -491,11 +483,11 @@ object ImageManager {
         val images: List<String>
     )
 
-    fun preflight(part: PartitionDef, neededBytes: Long = 0L, log: (String) -> Unit): Result<PreflightResult> {
+    fun preflight(part: PartitionDef, neededBytes: Long = 0L): Result<PreflightResult> {
         val (imgs, _) = listImages(part)
         if (imgs.isEmpty()) {
-            val errMsg = "分区 [${part.id}] 镜像未初始化，请先创建镜像"
-            log(errMsg)
+            val errMsg = "分区${part.id}镜像未初始化，请先创建镜像"
+            AppLogger.i("MOUNT", errMsg)
             return Result.failure(IllegalStateException(errMsg))
         }
         val upper = imgs.first()
@@ -508,22 +500,22 @@ object ImageManager {
         else -> "${b / 1024}KiB"
     }
 
-    fun fsck(part: PartitionDef, image: String, enabled: Boolean = true, log: ((String) -> Unit)? = null): String? {
+    fun fsck(part: PartitionDef, image: String, enabled: Boolean = true): String? {
         if (!enabled) {
-            AppLogger.i("FSCK", "[${part.id}] 挂载前自动自检已根据设置关闭，跳过自检")
-            log?.invoke("fsck: 已跳过 (自动自检未开启)")
+            AppLogger.i("FSCK", "${part.id}挂载前自动自检已根据设置关闭，跳过自检")
+            AppLogger.i("FSCK", "fsck:已跳过")
             return null
         }
         val imgName = image.substringAfterLast('/')
         val cmd = "/system/bin/e2fsck -p $image"
-        AppLogger.i("FSCK", "[${part.id}] 正在执行文件系统自检: $cmd")
-        log?.invoke("fsck: 正在自检 $imgName ...")
+        AppLogger.i("FSCK", "${part.id}正在执行文件系统自检：$cmd")
+        AppLogger.i("FSCK", "fsck:正在自检$imgName...")
         var r = SuChannel.run("$cmd 2>&1; echo RC=\$?", 60, logCmd = true)
         var rc = r.out.substringAfter("RC=", "?").trim()
         var outDetail = r.out.substringBefore("RC=").trim().lines().joinToString(" ") { it.trim() }
 
         if (rc != "0" && rc != "1" && rc != "2") {
-            AppLogger.w("FSCK", "[${part.id}] 预检报告需进一步自愈 (RC=$rc)，执行 e2fsck -y 自动修复...")
+            AppLogger.w("FSCK", "${part.id}预检报告需进一步修复(RC=$rc)，执行e2fsck -y自动修复...")
             val healCmd = "/system/bin/e2fsck -y $image"
             r = SuChannel.run("$healCmd 2>&1; echo RC=\$?", 60, logCmd = true)
             rc = r.out.substringAfter("RC=", "?").trim()
@@ -533,11 +525,11 @@ object ImageManager {
         val err = if (rc == "0" || rc == "1" || rc == "2") null else "e2fsck $rc: $outDetail"
         if (err == null) {
             val statusDesc = if (outDetail.isNotBlank()) outDetail else "clean"
-            AppLogger.i("FSCK", "[${part.id}] 文件系统自检通过/已自愈 (RC=$rc): $statusDesc")
-            log?.invoke("fsck: $statusDesc (RC=$rc)")
+            AppLogger.i("FSCK", "${part.id}文件系统自检通过/已修复(RC=$rc)：$statusDesc")
+            AppLogger.i("FSCK", "fsck: $statusDesc (RC=$rc)")
         } else {
-            AppLogger.e("FSCK", "[${part.id}] 自检修复异常: $err")
-            log?.invoke("fsck: 异常 $err")
+            AppLogger.e("FSCK", "${part.id}自检修复异常：$err")
+            AppLogger.i("FSCK", "fsck:异常$err")
         }
         return err
     }
@@ -550,17 +542,17 @@ object ImageManager {
         val upper = imgs.first()
         val imgName = upper.substringAfterLast('/')
         val cmd = "/system/bin/e2fsck -y -v $upper"
-        AppLogger.i("FSCK", "[${part.id}] 手动触发文件系统自检修复: $cmd")
+        AppLogger.i("FSCK", "${part.id}手动触发文件系统自检修复：$cmd")
         val r = SuChannel.run("$cmd 2>&1; echo RC=\$?", 60, logCmd = true)
         val rc = r.out.substringAfter("RC=", "?").trim()
         val detail = r.out.substringBefore("RC=").trim()
         val ok = rc == "0" || rc == "1" || rc == "2"
         if (ok) {
-            AppLogger.i("FSCK", "[${part.id}] 手动自检成功 (RC=$rc): $detail")
+            AppLogger.i("FSCK", "${part.id}手动自检成功(RC=$rc)：$detail")
         } else {
-            AppLogger.e("FSCK", "[${part.id}] 手动自检报错 (RC=$rc): $detail")
+            AppLogger.e("FSCK", "${part.id}手动自检报错(RC=$rc)：$detail")
         }
-        return ok to "执行命令: $cmd\n退出代码: RC=$rc (${if (ok) "正常/已修复" else "异常"})\n\n自检报告:\n${detail.ifBlank { "文件系统状态正常 (Clean)" }}"
+        return ok to "执行命令：$cmd\n退出代码：RC=$rc(${if(ok)"正常/已修复"else"异常"})\n\n自检报告：\n${detail.ifBlank{"文件系统状态正常(Clean)"}}"
     }
 
     fun remountLivePartitions(noatime: Boolean): Int {
@@ -568,62 +560,54 @@ object ImageManager {
         if (live.isEmpty()) return 0
         var count = 0
         val b = PartitionTable.BASE_DIR
-        val ext4Opt = if (noatime) "remount,noatime" else "remount,atime,relatime"
-        val ovlOpt = if (noatime) "remount,noatime" else "remount,atime,relatime"
+        val remountOpt = if (noatime) "remount,noatime" else "remount,atime,relatime"
         for (id in live) {
             val part = PartitionTable.byId[id] ?: continue
             val mnt = "$b/mnt_${part.id}"
-            SuChannel.run("mount -o $ext4Opt $mnt 2>/dev/null", 10)
-            SuChannel.run("mount -o $ovlOpt ${part.mountPoint} 2>/dev/null", 10)
+            SuChannel.run("mount -o $remountOpt $mnt 2>/dev/null", 10)
+            SuChannel.run("mount -o $remountOpt ${part.mountPoint} 2>/dev/null", 10)
             count++
         }
-        val strategy = if (noatime) "noatime (已开启闪存寿命保护)" else "relatime (标准模式)"
-        AppLogger.i("SETTINGS", "已对当前活跃的 $count 个 OverlayFS 挂载点即时同步挂载策略: $strategy")
+        val strategy = if (noatime) "noatime(已开启闪存寿命保护)" else "relatime(标准模式)"
+        AppLogger.i("SETTINGS", "已对当前活跃的${count}个挂载点即时同步挂载策略：$strategy")
         return count
     }
 
     fun mountStack(
         part: PartitionDef,
-        log: (String) -> Unit,
         neededBytes: Long = 0L,
         noatime: Boolean = true,
         autoFsck: Boolean = true
     ): Result<Unit> {
         val strategyDesc = if (noatime) "noatime" else "relatime"
-        AppLogger.i("MOUNT", "=== 开始挂载分区 [${part.id}] (${part.mountPoint}) [策略: $strategyDesc, autoFsck=$autoFsck] ===")
-        val preRes = preflight(part, neededBytes, log)
-        if (preRes.isFailure) {
-            AppLogger.e("MOUNT", "[${part.id}] 预检失败: ${preRes.exceptionOrNull()?.message}")
-            return Result.failure(preRes.exceptionOrNull()!!)
+        AppLogger.i("MOUNT", "开始挂载分区${part.id}(${part.mountPoint})，策略：$strategyDesc，autoFsck=$autoFsck")
+        val (upper, imgs) = preflight(part, neededBytes).getOrElse {
+            AppLogger.e("MOUNT", "${part.id}预检失败：${it.message}")
+            return Result.failure(it)
         }
-        val (upper, imgs) = preRes.getOrThrow()
-        AppLogger.i("MOUNT", "[${part.id}] 选定 Upper 镜像: ${upper.substringAfterLast('/')}")
+        AppLogger.i("MOUNT", "${part.id}选定Upper镜像：${upper.substringAfterLast('/')}")
 
-        fsck(part, upper, enabled = autoFsck, log = log)?.let {
-            AppLogger.e("MOUNT", "[${part.id}] 自检失败，终止挂载: $it")
+        fsck(part, upper, enabled = autoFsck)?.let {
+            AppLogger.e("MOUNT", "${part.id}自检失败，终止挂载：$it")
             return Result.failure(RuntimeException(it))
         }
 
         val b = PartitionTable.BASE_DIR
         val mnt = "$b/mnt_${part.id}"
 
-        val upperLoopRes = attachLoop(upper)
-        if (upperLoopRes.isFailure) {
-            AppLogger.e("MOUNT", "[${part.id}] loop 关联失败")
-            return Result.failure(upperLoopRes.exceptionOrNull()!!)
+        val upperLoop = attachLoop(upper).getOrElse {
+            AppLogger.e("MOUNT", "${part.id} loop关联失败")
+            return Result.failure(it)
         }
-        val upperLoop = upperLoopRes.getOrThrow()
-        AppLogger.i("MOUNT", "[${part.id}] 环回设备绑定: $upperLoop <- ${upper.substringAfterLast('/')}")
-        log("upper $upperLoop <- ${upper.substringAfterLast('/')}")
+        AppLogger.i("MOUNT", "${part.id}环回设备绑定：$upperLoop<-${upper.substringAfterLast('/')}")
+        AppLogger.i("MOUNT", "upper $upperLoop <- ${upper.substringAfterLast('/')}")
 
         val lowers = imgs.drop(1)
         val lowerDirs = mutableListOf<String>()
         val lowerSetupCmds = StringBuilder()
         var n = 0
         for (img in lowers) {
-            val loopRes = attachLoop(img)
-            if (loopRes.isFailure) return Result.failure(loopRes.exceptionOrNull()!!)
-            val loop = loopRes.getOrThrow()
+            val loop = attachLoop(img).getOrElse { return Result.failure(it) }
             val d = "$b/low${n}_${part.id}"
             val ext4LowerOpts = if (noatime) "-o ro,noatime" else "-o ro"
             lowerSetupCmds.append("mkdir -p $d && ")
@@ -631,13 +615,13 @@ object ImageManager {
             lowerSetupCmds.append("if grep -q ' $d ' /proc/mounts; then umount -l $d 2>/dev/null; fi; ")
             lowerSetupCmds.append("mount -t ext4 $ext4LowerOpts $loop $d; fi && ")
             lowerDirs.add(d)
-            AppLogger.i("MOUNT", "[${part.id}] 挂载 lower 镜像: $loop <- ${img.substringAfterLast('/')}")
-            log("lower $loop <- ${img.substringAfterLast('/')} (ro)")
+            AppLogger.i("MOUNT", "${part.id}挂载lower镜像：$loop<-${img.substringAfterLast('/')}")
+            AppLogger.i("MOUNT", "lower $loop <- ${img.substringAfterLast('/')} (ro)")
             n++
         }
 
         val lowerdir = (lowerDirs + part.mountPoint).joinToString(":")
-        AppLogger.i("MOUNT", "[${part.id}] 执行 OverlayFS 挂载至 ${part.mountPoint}")
+        AppLogger.i("MOUNT", "${part.id}执行挂载至${part.mountPoint}")
 
         val ext4UpperOpts = if (noatime) "-o noatime" else ""
         val remountNoatime = if (noatime) "mount -o remount,noatime ${part.mountPoint} 2>/dev/null; " else ""
@@ -663,18 +647,18 @@ object ImageManager {
 
         val r = SuChannel.run(pipelineCmd, 30, logCmd = true)
         if (!r.ok || !r.out.contains("lowerdir=") || !r.out.contains("upperdir=")) {
-            AppLogger.e("MOUNT", "[${part.id}] overlay mount 失败: $r")
+            AppLogger.e("MOUNT", "${part.id} overlay mount失败：$r")
             return Result.failure(RuntimeException("overlay mount: $r"))
         }
 
         val finalStrategy = if (noatime) "noatime (闪存保护)" else "relatime"
-        AppLogger.i("MOUNT", "[${part.id}] 挂载验证成功 (LIVE, $finalStrategy)")
-        log("overlay LIVE: ${r.out.trim().split(" ").take(3).joinToString(" ")}")
+        AppLogger.i("MOUNT", "${part.id}挂载验证成功(LIVE, $finalStrategy)")
+        AppLogger.i("MOUNT", "overlay LIVE: ${r.out.trim().split(" ").take(3).joinToString(" ")}")
         return Result.success(Unit)
     }
 
-    fun unmountStack(part: PartitionDef, log: (String) -> Unit): Result<Unit> {
-        AppLogger.i("UMOUNT", "=== 开始卸载分区 [${part.id}] (${part.mountPoint}) ===")
+    fun unmountStack(part: PartitionDef): Result<Unit> {
+        AppLogger.i("UMOUNT", "开始卸载分区${part.id}(${part.mountPoint})")
         val b = PartitionTable.BASE_DIR
         val cmd = buildString {
             append("if grep ' ${part.mountPoint} ' /proc/mounts | grep -q ovl_gh0stra1n; then ")
@@ -690,35 +674,43 @@ object ImageManager {
             append("for lp in \$(losetup -j \$img 2>/dev/null | cut -d: -f1); do ")
             append("losetup -d \$lp 2>/dev/null; ")
             append("done; done; ")
-            append("sync; grep -c '${part.id}' /proc/mounts")
+            append("sync; grep -cE '^ovl_gh0stra1n_${part.id} | ${b}/(mnt_${part.id}|low[0-9]+_${part.id}) ' /proc/mounts || true")
         }
         val r = SuChannel.run(cmd, 25, logCmd = true)
-        AppLogger.i("UMOUNT", "[${part.id}] 底层 ext4、overlay 与 loop 设备清理释放完成 (剩余挂载: ${r.out.trim()})")
-        log("residue mounts: ${r.out.trim()}")
+        val residue = r.out.trim().toIntOrNull()
+        if (r.exit == -1 || residue == null) {
+            AppLogger.e("UMOUNT", "${part.id}卸载检查失败,无法确认残留挂载")
+            return Result.failure(RuntimeException("卸载检查超时:${part.id}"))
+        }
+        if (residue > 0) {
+            AppLogger.e("UMOUNT", "${part.id}仍有${residue}处残留挂载")
+            return Result.failure(RuntimeException("分区${part.id}卸载后仍有${residue}处残留挂载"))
+        }
+        AppLogger.i("UMOUNT", "${part.id}底层ext4、overlay与loop设备清理释放完成")
         return Result.success(Unit)
     }
 
     fun livePartitions(): List<String> {
         val r = SuChannel.run(
-            "awk '\$3==\"overlay\" && \$1 ~ /ovl/ {print \$2}' /proc/mounts | sort -u", 15)
+            "awk '\$3==\"overlay\" && \$1 ~ /^ovl_gh0stra1n_/ {print \$2}' /proc/mounts | sort -u", 15)
         if (!r.ok) return emptyList()
         return r.out.trim().lines().mapNotNull { mp ->
             PartitionTable.ALL.firstOrNull { it.mountPoint == mp }?.id
         }
     }
 
-    fun deletePartitionData(part: PartitionDef, log: (String) -> Unit = {}): Result<Unit> {
-        AppLogger.i("DELETE", "=== 开始删除分区 [${part.id}] (${part.mountPoint}) 数据 ===")
-        log("开始安全清理 ${part.id}...")
+    fun deletePartitionData(part: PartitionDef): Result<Unit> {
+        AppLogger.i("DELETE", "开始删除分区${part.id}(${part.mountPoint})数据")
+        AppLogger.i("DELETE", "开始安全清理${part.id}...")
 
         val live = livePartitions()
         if (part.id in live) {
-            AppLogger.i("DELETE", "[${part.id}] 当前处于挂载状态，先执行卸载")
-            val uRes = unmountStack(part, log)
+            AppLogger.i("DELETE", "${part.id}当前处于挂载状态，先执行卸载")
+            val uRes = unmountStack(part)
             if (uRes.isFailure) {
                 val err = uRes.exceptionOrNull()?.message ?: "卸载失败"
-                AppLogger.e("DELETE", "[${part.id}] 卸载中断，终止删除: $err")
-                return Result.failure(RuntimeException("卸载失败: $err"))
+                AppLogger.e("DELETE", "${part.id}卸载中断，终止删除：$err")
+                return Result.failure(RuntimeException("卸载失败：$err"))
             }
         }
 
@@ -726,53 +718,60 @@ object ImageManager {
         val cmd = "rm -f $b/${part.id}-*.img && rm -rf $b/mnt_${part.id} $b/work_${part.id} $b/low*_${part.id} && sync"
         val r = SuChannel.run(cmd, 30)
         if (!r.ok) {
-            AppLogger.e("DELETE", "[${part.id}] 清理镜像文件失败: ${r.out}")
-            return Result.failure(RuntimeException("清理镜像文件失败: ${r.out}"))
+            AppLogger.e("DELETE", "${part.id}清理镜像文件失败：${r.out}")
+            return Result.failure(RuntimeException("清理镜像文件失败：${r.out}"))
         }
 
         ManifestStore.clearPartImages(part.id)
-        AppLogger.i("DELETE", "[${part.id}] 镜像与工作目录删除成功")
-        log("${part.id} 镜像文件已删除")
+        AppLogger.i("DELETE", "${part.id}镜像与工作目录删除成功")
+        AppLogger.i("DELETE", "${part.id}镜像文件已删除")
         return Result.success(Unit)
     }
 
-    fun deleteAllPartitionData(log: (String) -> Unit = {}): Result<Unit> {
-        AppLogger.i("DELETE", "=== 开始删除全部分区镜像数据 ===")
-        log("开始清理全部分区数据...")
+    fun deleteAllPartitionData(): Result<Unit> {
+        AppLogger.i("DELETE", "开始删除全部分区镜像数据")
+        AppLogger.i("DELETE", "开始清理全部分区数据...")
 
+        val stuck = mutableListOf<String>()
         for (p in PartitionTable.ALL) {
-            val uRes = unmountStack(p, log)
+            val uRes = unmountStack(p)
             if (uRes.isFailure) {
-                AppLogger.w("DELETE", "[${p.id}] 卸载遇到警告: ${uRes.exceptionOrNull()?.message}")
+                val err = uRes.exceptionOrNull()?.message ?: "卸载失败"
+                AppLogger.w("DELETE", "${p.id}卸载遇到警告：$err")
+                stuck.add(p.id)
             }
+        }
+        if (stuck.isNotEmpty()) {
+            AppLogger.e("DELETE", "仍有分区残留挂载(${stuck.joinToString(",")})，终止删除")
+            return Result.failure(RuntimeException("以下分区未能干净卸载：${stuck.joinToString(",")}"))
         }
 
         val b = PartitionTable.BASE_DIR
         val cmd = "rm -f $b/*.img && rm -rf $b/mnt_* $b/work_* $b/low*_* && sync"
         val r = SuChannel.run(cmd, 60)
         if (!r.ok) {
-            AppLogger.e("DELETE", "清理镜像文件失败: ${r.out}")
-            return Result.failure(RuntimeException("清理全部镜像失败: ${r.out}"))
+            AppLogger.e("DELETE", "清理镜像文件失败：${r.out}")
+            return Result.failure(RuntimeException("清理全部镜像失败：${r.out}"))
         }
 
         ManifestStore.clearAllPartImages()
         AppLogger.i("DELETE", "全部分区镜像与缓存目录已完全清除")
-        log("全部镜像与工作目录已删除")
+        AppLogger.i("DELETE", "全部镜像与工作目录已删除")
         return Result.success(Unit)
     }
 
-    fun formatPartitionData(part: PartitionDef, log: (String) -> Unit = {}): Result<Unit> {
-        AppLogger.i("FORMAT", "=== 开始格式化分区 [${part.id}] (${part.mountPoint}) 镜像 ===")
-        log("开始安全卸载 ${part.id}...")
+    fun formatPartitionData(part: PartitionDef): Result<Unit> {
+        AppLogger.i("FORMAT", "开始格式化分区${part.id}(${part.mountPoint})镜像")
+        AppLogger.i("FORMAT", "开始安全卸载${part.id}...")
 
         val live = livePartitions()
         if (part.id in live) {
-            AppLogger.i("FORMAT", "[${part.id}] 当前处于挂载状态，先执行卸载")
-            val uRes = unmountStack(part, log)
+            AppLogger.i("FORMAT", "${part.id}当前处于挂载状态，先执行卸载")
+            val uRes = unmountStack(part)
             if (uRes.isFailure) {
                 val err = uRes.exceptionOrNull()?.message ?: "卸载失败"
-                AppLogger.e("FORMAT", "[${part.id}] 卸载中断，终止格式化: $err")
-                return Result.failure(RuntimeException("卸载失败: $err"))
+                AppLogger.e("FORMAT", "${part.id}卸载中断，终止格式化：$err")
+                return Result.failure(RuntimeException("卸载失败：$err"))
             }
         }
 
@@ -780,26 +779,23 @@ object ImageManager {
         val b = PartitionTable.BASE_DIR
         if (imgs.isNotEmpty()) {
             val upper = imgs.first()
-            log("正在格式化 ext4 镜像: ${upper.substringAfterLast('/')}")
-            AppLogger.i("FORMAT", "正在执行 mke2fs 格式化: $upper")
+            AppLogger.i("FORMAT", "正在格式化ext4镜像：${upper.substringAfterLast('/')}")
+            AppLogger.i("FORMAT", "正在执行mke2fs格式化：$upper")
             val fmtCmd = "/system/bin/mke2fs -F -q -t ext4 -I 256 $upper && " +
                     "rm -rf $b/mnt_${part.id}/* $b/work_${part.id}/* && sync"
             val r = SuChannel.run(fmtCmd, 30)
             if (!r.ok) {
-                AppLogger.e("FORMAT", "格式化失败: ${r.out}")
-                return Result.failure(RuntimeException("格式化失败: ${r.out}"))
+                AppLogger.e("FORMAT", "格式化失败：${r.out}")
+                return Result.failure(RuntimeException("格式化失败：${r.out}"))
             }
         } else {
             val entry = ManifestStore.reconcile(part)
             val size = entry.defaultSizeMiB.coerceIn(ManifestStore.MIN_SIZE_MIB, ManifestStore.MAX_SIZE_MIB)
-            val created = createImage(part, size)
-            if (created.isFailure) {
-                return Result.failure(created.exceptionOrNull()!!)
-            }
+            createImage(part, size).getOrElse { return Result.failure(it) }
         }
 
-        AppLogger.i("FORMAT", "分区 [${part.id}] 格式化完成")
-        log("${part.id} 格式化完成，已恢复为干净 ext4 卷")
+        AppLogger.i("FORMAT", "分区${part.id}格式化完成")
+        AppLogger.i("FORMAT", "${part.id}格式化完成，已恢复为干净ext4卷")
         return Result.success(Unit)
     }
 }

@@ -7,7 +7,6 @@
     android:background="?attr/colorSurface"
     android:padding="20dp">
 
-    <!-- 标题 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,7 +44,6 @@
             android:fontFamily="@font/maple_mono" />
     </LinearLayout>
 
-    <!-- 镜像当前概况卡片 -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,7 +82,7 @@
                     android:id="@+id/txt_compact_sizes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1024 MiB · 32 MiB"
+                    android:text="1024 MiB - 32 MiB"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -103,7 +101,6 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 方案 1: tune2fs 保留块优化 -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -173,7 +170,6 @@
         android:background="?attr/colorOutlineVariant"
         android:layout_marginBottom="14dp" />
 
-    <!-- 方案 2: 文件系统逻辑体积收缩 -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -225,7 +221,6 @@
             app:cornerRadius="10dp" />
     </LinearLayout>
 
-    <!-- 底部关闭按钮 -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_compact_close"
         style="@style/Widget.Material3.Button.OutlinedButton"

@@ -63,7 +63,6 @@
                 android:textSize="9sp"
                 android:visibility="gone" />
 
-            <!-- 大小与条目统计 -->
             <TextView
                 android:id="@+id/txt_size"
                 android:layout_width="wrap_content"
@@ -75,7 +74,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- 权限与所有者信息 (Linux 文件管理器特色) -->
         <TextView
             android:id="@+id/txt_meta"
             android:layout_width="wrap_content"
@@ -83,11 +81,10 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="2dp"
             android:fontFamily="@font/maple_mono_regular"
-            android:text="-rw-rw-rw- · root:root"
+            android:text="-rw-rw-rw- - root:root"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="10sp" />
 
-        <!-- ncdu 占用比例条与百分比 -->
         <LinearLayout
             android:id="@+id/layout_bar"
             android:layout_width="match_parent"

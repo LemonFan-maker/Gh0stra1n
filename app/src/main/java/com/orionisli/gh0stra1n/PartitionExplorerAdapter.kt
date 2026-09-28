@@ -121,7 +121,6 @@ class PartitionExplorerAdapter(
         holder.btnMore.imageTintList = ColorStateList.valueOf(p.textSecondary)
 
         if (hasParent && position == 0) {
-            // ".." 返回上级目录
             holder.icon.setImageResource(R.drawable.ic_arrow_up)
             holder.icon.imageTintList = ColorStateList.valueOf(p.textSecondary)
             val parentBg = GradientDrawable().apply {
@@ -151,7 +150,6 @@ class PartitionExplorerAdapter(
         holder.name.text = item.name
         holder.btnMore.visibility = View.VISIBLE
 
-        // 图标与色彩
         if (item.isDirectory) {
             holder.icon.setImageResource(R.drawable.ic_folder)
             val folderIconColor = if (p.isDark) Color.parseColor("#FBBF24") else Color.rgb(217, 119, 6)
@@ -167,7 +165,7 @@ class PartitionExplorerAdapter(
             val itemsCount = holder.itemView.context.getString(R.string.explorer_items_count_fmt, item.fileCount)
             val permStr = if (item.permissions.isNotEmpty()) item.permissions else "drwxr-xr-x"
             val ownerStr = if (item.owner.isNotEmpty()) item.owner else "root:root"
-            holder.details.text = "$itemsCount · $permStr · $ownerStr"
+            holder.details.text = "$itemsCount - $permStr - $ownerStr"
             holder.details.setTextColor(p.textSecondary)
         } else {
             holder.icon.setImageResource(R.drawable.ic_file)
@@ -183,11 +181,10 @@ class PartitionExplorerAdapter(
             val sizeStr = item.formattedSize()
             val permStr = if (item.permissions.isNotEmpty()) item.permissions else "-rw-r--r--"
             val ownerStr = if (item.owner.isNotEmpty()) item.owner else "root:root"
-            holder.details.text = "$sizeStr · $permStr · $ownerStr"
+            holder.details.text = "$sizeStr - $permStr - $ownerStr"
             holder.details.setTextColor(p.textSecondary)
         }
 
-        // 隐藏文件标识
         if (item.isHidden) {
             holder.badgeHidden.visibility = View.VISIBLE
             ThemeManager.stylePill(holder.badgeHidden, PillType.GRAY, p)
@@ -195,13 +192,11 @@ class PartitionExplorerAdapter(
             holder.badgeHidden.visibility = View.GONE
         }
 
-        // 主体点击
         holder.card.setOnClickListener {
             HapticUtil.click(it)
             onItemClick(item)
         }
 
-        // 右侧更多操作
         holder.btnMore.setOnClickListener {
             HapticUtil.click(it)
             onMoreClick(item)

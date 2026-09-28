@@ -19,6 +19,5 @@ object PartitionTable {
 
     val byId: Map<String, PartitionDef> = ALL.associateBy { it.id }
 
-    // 镜像文件名模式
     fun glob(part: PartitionDef): String = "${BASE_DIR}/${part.id}-*.img"
 }

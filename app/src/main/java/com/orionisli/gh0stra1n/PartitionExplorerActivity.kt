@@ -67,6 +67,12 @@ class PartitionExplorerActivity : AppCompatActivity() {
     private var partitionDef: PartitionDef = PartitionTable.ALL.first()
     private var rootNode: FileNode? = null
     private var currentDirNode: FileNode? = null
+    private var loadGeneration = 0
+
+    override fun onDestroy() {
+        loadGeneration++
+        super.onDestroy()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
@@ -140,7 +146,6 @@ class PartitionExplorerActivity : AppCompatActivity() {
             startLoadDirectoryTree()
         }
 
-        // 搜索栏展开/关闭
         btnSearch.setOnClickListener {
             HapticUtil.click(it)
             if (layoutSearch.visibility == View.VISIBLE) {
@@ -169,7 +174,6 @@ class PartitionExplorerActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // 隐藏文件显示开关
         btnToggleHidden.setOnClickListener {
             HapticUtil.click(it)
             adapter.showHiddenFiles = !adapter.showHiddenFiles
@@ -186,13 +190,11 @@ class PartitionExplorerActivity : AppCompatActivity() {
             updateFolderStats()
         }
 
-        // 排序选项
         btnSort.setOnClickListener {
             HapticUtil.click(it)
             showSortOptionsDialog()
         }
 
-        // 快捷层级入口
         chipLayerRoot.setOnClickListener {
             HapticUtil.click(it)
             rootNode?.let { r -> navigateToDirectory(r) }
@@ -216,7 +218,6 @@ class PartitionExplorerActivity : AppCompatActivity() {
             }
         }
 
-        // 初始化文件管理器适配器
         adapter = PartitionExplorerAdapter(
             onItemClick = { clickedItem ->
                 if (clickedItem.isDirectory) {
@@ -267,16 +268,18 @@ class PartitionExplorerActivity : AppCompatActivity() {
         layoutLoading.visibility = View.VISIBLE
         layoutContent.visibility = View.INVISIBLE
         txtLoadingMsg.text = getString(R.string.explorer_loading)
+        val gen = ++loadGeneration
+
 
         Thread {
             val result = ImageAnalyzer.analyze(partitionDef)
             runOnUiThread {
+                if (isFinishing || isDestroyed || gen != loadGeneration) return@runOnUiThread
                 layoutLoading.visibility = View.GONE
                 if (result.isSuccess) {
                     val analysis = result.getOrThrow()
                     layoutContent.visibility = View.VISIBLE
                     rootNode = analysis.rootNode
-                    // 默认定位进入 root 或 u/
                     val initialDir = analysis.rootNode.children.firstOrNull { it.isDirectory && it.name == "u" } ?: analysis.rootNode
                     navigateToDirectory(initialDir)
                     HapticUtil.success()
@@ -403,6 +406,7 @@ class PartitionExplorerActivity : AppCompatActivity() {
                         Thread {
                             val (_, content) = ImageAnalyzer.readFilePreview(partitionDef, node.path)
                             runOnUiThread {
+                                if (isFinishing || isDestroyed) return@runOnUiThread
                                 copyToClipboard("FileContent", content, getString(R.string.toast_file_content_copied))
                             }
                         }.start()
@@ -501,6 +505,7 @@ class PartitionExplorerActivity : AppCompatActivity() {
             val (isText, content) = ImageAnalyzer.readFilePreview(partitionDef, node.path)
             loadedContent = content
             runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
                 txtSectionHeader.text = if (isText) getString(R.string.preview_text_header) else getString(R.string.preview_hex_header)
                 txtContentPreview.text = content
                 if (!isText) {
