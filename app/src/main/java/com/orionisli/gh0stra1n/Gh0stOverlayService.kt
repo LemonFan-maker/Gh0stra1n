@@ -1,14 +1,60 @@
 package com.orionisli.gh0stra1n
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
+import android.os.Binder
+import android.os.Build
 import android.os.IBinder
+import android.os.Parcel
+import android.os.Process
 import android.system.Os
+import androidx.core.app.NotificationCompat
 import com.orionisli.gh0stra1n.ipc.IGh0stOverlayService
 
 class Gh0stOverlayService : Service() {
 
+    companion object {
+        const val CHANNEL_ID = "gh0st_overlay_daemon_channel"
+        const val NOTIFICATION_ID = 2339
+        const val PERMISSION_ACCESS_OVERLAY = "com.orionisli.gh0stra1n.permission.ACCESS_OVERLAY_SERVICE"
+    }
+
     private val binder = object : IGh0stOverlayService.Stub() {
+
+        override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+            enforceCallerAuthorized()
+            return super.onTransact(code, data, reply, flags)
+        }
+
+        private fun enforceCallerAuthorized() {
+            val callingUid = Binder.getCallingUid()
+            if (callingUid == Process.myUid()) {
+                return
+            }
+
+            val hasPermission = checkCallingOrSelfPermission(PERMISSION_ACCESS_OVERLAY) == PackageManager.PERMISSION_GRANTED
+            if (hasPermission) {
+                return
+            }
+
+            val match = packageManager.checkSignatures(callingUid, Process.myUid())
+            if (match == PackageManager.SIGNATURE_MATCH) {
+                return
+            }
+
+            val callerPkgs = packageManager.getPackagesForUid(callingUid)?.joinToString() ?: "UID $callingUid"
+            throw SecurityException(
+                "Access denied to Gh0stOverlayService: Caller [$callerPkgs] (UID $callingUid) does not hold signature permission or have matching signature."
+            )
+        }
+
         override fun isRootAlive(): Boolean {
             return SuChannel.probeRoot()
         }
@@ -120,7 +166,82 @@ class Gh0stOverlayService : Service() {
         }
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        startForegroundCompat()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startForegroundCompat()
+        return START_STICKY
+    }
+
     override fun onBind(intent: Intent?): IBinder {
+        startForegroundCompat()
         return binder
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        return true
+    }
+
+    private fun startForegroundCompat() {
+        try {
+            createNotificationChannel()
+            val notif = buildNotification()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    notif,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    notif,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, notif)
+            }
+        } catch (e: Throwable) {
+            AppLogger.w("Gh0stOverlayService", "startForeground failed: ${e.message}")
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                getString(R.string.overlay_daemon_channel_name),
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = getString(R.string.overlay_daemon_channel_desc)
+                setShowBadge(false)
+            }
+            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.createNotificationChannel(channel)
+        }
+    }
+
+    private fun buildNotification(): Notification {
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        val pendingIntent = launchIntent?.let {
+            PendingIntent.getActivity(
+                this,
+                0,
+                it,
+                PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0)
+            )
+        }
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.overlay_daemon_notif_title))
+            .setContentText(getString(R.string.overlay_daemon_notif_text))
+            .setSmallIcon(R.drawable.ic_shield_alert)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(pendingIntent)
+            .build()
     }
 }

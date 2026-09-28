@@ -24,15 +24,35 @@ android {
         applicationId = "com.orionisli.gh0stra1n"
         minSdk = 28
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.1.2"
+        versionCode = 8
+        versionName = "1.1.3"
         buildConfigField("String", "GIT_COMMIT_HASH", "\"$gitCommitHash\"")
+    }
+
+    signingConfigs {
+        create("release") {
+            val storeFilePath = project.findProperty("RELEASE_STORE_FILE") as? String
+                ?: System.getenv("RELEASE_STORE_FILE")
+            val keystoreFile = storeFilePath?.let { file(it) }
+
+            if (keystoreFile != null && keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as? String
+                    ?: System.getenv("RELEASE_STORE_PASSWORD")
+                keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as? String
+                    ?: System.getenv("RELEASE_KEY_ALIAS")
+                keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as? String
+                    ?: System.getenv("RELEASE_KEY_PASSWORD")
+            } else {
+                initWith(getByName("debug"))
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isMinifyEnabled = false

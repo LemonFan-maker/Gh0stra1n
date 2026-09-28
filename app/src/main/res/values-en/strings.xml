@@ -404,6 +404,8 @@
     <string name="about_license_title">Open Source License</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">Changelog</string>
+    <string name="about_changelog_v113_title">v1.1.3 · Background Daemon &amp; Signature IPC Security</string>
+    <string name="about_changelog_v113_desc">• Upgraded Gh0stOverlayService to independent daemon process (:daemon) surviving task swipe\n• Adapted Android 14+ Foreground Service with low-priority silent notification and START_STICKY self-healing\n• Enforced signature-level permissions and runtime UID verification against unauthorized callers\n• Seamlessly integrated companion app IPC with unified Release signing and CI/CD pipeline</string>
     <string name="about_changelog_v112_title">v1.1.2 · Dynamic Host Device &amp; System Probing</string>
     <string name="about_changelog_v112_desc">• Eliminated hardcoded host device strings; introduced dynamic DeviceInfoHelper\n• Auto-detects OEM marketing model names (vivo/iQOO, Xiaomi/Redmi, OPPO/OnePlus, Honor, etc.)\n• Dynamically probes Linux kernel device codenames and Android OS version at runtime\n• Interactive device info chip with click-to-copy full hardware specs &amp; CPU ABI to clipboard\n• Decoupled header subtitles and synchronized runtime host initialization logs</string>
     <string name="about_changelog_v111_title">v1.1.1 · AIDL IPC Service Integration</string>
@@ -418,4 +420,10 @@
     <string name="about_changelog_v101_desc">• Concurrent multi-partition pipelined mounting for significantly faster startup\n• Added UI debounce and thread-level state refresh guard\n• Integrated GitHub Actions CI/CD automated build pipelines</string>
     <string name="about_changelog_v100_title">v1.0.0 · Initial Open Source Release</string>
     <string name="about_changelog_v100_desc">• First official open-source release\n• Flash-free system partition takeover via OverlayFS\n• Skeuomorphic liquid glass navigation bar &amp; Material You theming</string>
+
+    <!-- Daemon & Notification -->
+    <string name="overlay_daemon_channel_name">Gh0stra1n Daemon Service</string>
+    <string name="overlay_daemon_channel_desc">Keeps the OverlayFS IPC daemon running stably in the background</string>
+    <string name="overlay_daemon_notif_title">Gh0stra1n Daemon Active</string>
+    <string name="overlay_daemon_notif_text">OverlayFS IPC AIDL bridge is ready</string>
 </resources>

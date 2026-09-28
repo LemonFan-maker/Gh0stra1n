@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <permission
+        android:name="com.orionisli.gh0stra1n.permission.ACCESS_OVERLAY_SERVICE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.orionisli.gh0stra1n.permission.ACCESS_OVERLAY_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:label="Gh0stra1n"
@@ -38,10 +46,16 @@
 
         <service
             android:name=".Gh0stOverlayService"
-            android:exported="true">
+            android:process=":daemon"
+            android:exported="true"
+            android:permission="com.orionisli.gh0stra1n.permission.ACCESS_OVERLAY_SERVICE"
+            android:foregroundServiceType="specialUse">
             <intent-filter>
                 <action android:name="com.orionisli.gh0stra1n.OVERLAY_SERVICE" />
             </intent-filter>
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="OverlayFS status monitor and background IPC daemon" />
         </service>
     </application>
 </manifest>

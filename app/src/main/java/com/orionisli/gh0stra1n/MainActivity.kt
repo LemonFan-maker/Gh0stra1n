@@ -7,11 +7,13 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
@@ -179,6 +181,25 @@ class MainActivity : AppCompatActivity() {
             settings = settings,
         )
         controller.boot()
+        startOverlayDaemon()
+    }
+
+    private fun startOverlayDaemon() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+            }
+        }
+        try {
+            val intent = Intent(this, Gh0stOverlayService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(this, intent)
+            } else {
+                startService(intent)
+            }
+        } catch (e: Throwable) {
+            AppLogger.w("MainActivity", "Failed to start Gh0stOverlayService: ${e.message}")
+        }
     }
 
     override fun onResume() {

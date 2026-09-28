@@ -404,6 +404,8 @@
     <string name="about_license_title">開源協議</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">版本更新日誌</string>
+    <string name="about_changelog_v113_title">v1.1.3 · 守護進程常駐與跨進程簽名安全隔離</string>
+    <string name="about_changelog_v113_desc">• 全新升級 Gh0stOverlayService 為獨立守護進程 (:daemon)，退出不中斷\n• 適配 Android 14+ 前台服務與低優先級靜默常駐通知，支援 START_STICKY 故障自癒\n• 引入 Signature 簽名級權限與執行時期 UID 鑑權雙重隔離，嚴防未授權惡意調用\n• 適配同系列工具跨進程無縫通訊，重構 Release 簽名與 CI/CD 流水線</string>
     <string name="about_changelog_v112_title">v1.1.2 · 動態識別宿主機型與系統環境</string>
     <string name="about_changelog_v112_desc">• 移除所有寫死的宿主裝置資訊，全新引入 DeviceInfoHelper 動態解析器\n• 自動匹配各大主流廠商商業市場機型名稱 (vivo/iQOO、小米/Redmi、OPPO/一加、榮耀等)\n• 自動獲取底層 Linux 官方硬體代號 (Codename) 與系統 Android 主版本\n• 頂部機型卡片增加點擊反饋，支援一鍵將詳細硬體與架構資訊複製到剪貼簿\n• 統一主介面頂欄副標題與底層初始化日誌輸出，徹底完成裝置解耦</string>
     <string name="about_changelog_v111_title">v1.1.1 · 引入 AIDL 跨進程通訊服務</string>
@@ -418,4 +420,10 @@
     <string name="about_changelog_v101_desc">• 多分區並發多執行緒管道化裝載，速度顯著提升\n• 介面增加防抖與執行緒級重新整理保護機制\n• 接入 GitHub Actions 自動化 CI/CD 流水線</string>
     <string name="about_changelog_v100_title">v1.0.0 · 首發開源版本</string>
     <string name="about_changelog_v100_desc">• 首個正式開源版本發布\n• 實現基於 OverlayFS 的免重刷系統分區接管\n• 擬物液態玻璃底部導航與 Material You 主題系統</string>
+
+    <!-- 守護進程與服務通知 -->
+    <string name="overlay_daemon_channel_name">Gh0stra1n 守護服務</string>
+    <string name="overlay_daemon_channel_desc">保持 OverlayFS 跨進程通訊服務在背景穩定運行</string>
+    <string name="overlay_daemon_notif_title">Gh0stra1n 守護中</string>
+    <string name="overlay_daemon_notif_text">OverlayFS 跨進程 AIDL 橋接服務已就緒</string>
 </resources>
