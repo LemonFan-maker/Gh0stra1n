@@ -25,11 +25,11 @@
 
 ## 编译与安装
 
-环境要求：JDK17+，Android SDK，Gradle。
+环境要求：JDK 17+ 与 Android SDK。Gradle 由项目自带的 wrapper 提供，无需另行安装。
 
 ```bash
 # 编译
-gradle assembleDebug
+./gradlew assembleDebug
 
 # 安装
 adb install -r app/build/outputs/apk/debug/app-debug.apk
