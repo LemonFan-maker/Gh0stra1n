@@ -18,14 +18,14 @@ concurrency:
 jobs:
   build:
     name: Build & Package APK
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -82,8 +82,12 @@ jobs:
           if [[ "$GITHUB_REF_NAME" == v* ]]; then
             VERSION="$GITHUB_REF_NAME"
           else
-            GRADLE_VER=$(grep 'versionName =' app/build.gradle.kts | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
-            VERSION="v${GRADLE_VER:-1.0.1}"
+            GRADLE_VER=$(sed -nE 's/^[[:space:]]*versionName = "([^"]+)".*/\1/p' app/build.gradle.kts | head -1)
+            if [ -z "$GRADLE_VER" ]; then
+              echo "::error::Could not read versionName from app/build.gradle.kts; refusing to name the artefacts with a stale default."
+              exit 1
+            fi
+            VERSION="v$GRADLE_VER"
           fi
           
           cp app/build/outputs/apk/release/app-release.apk "dist/Gh0stra1n-${VERSION}-release.apk"
@@ -94,7 +98,7 @@ jobs:
           cd ..
 
       - name: Upload APK Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Gh0stra1n-APKs
           path: dist/*
@@ -102,7 +106,7 @@ jobs:
 
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*
           generate_release_notes: true
