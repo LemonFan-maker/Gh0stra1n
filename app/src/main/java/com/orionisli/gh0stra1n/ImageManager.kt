@@ -114,7 +114,7 @@ object ImageManager {
         if (r.ok && !dev.isNullOrBlank()) {
             return Result.success(dev)
         }
-        return Result.failure(RuntimeException("loop attach失败：${r.out}"))
+        return Result.failure(RuntimeException("losetup attach failed: ${r.out}"))
     }
 
     fun growImage(image: String, newBytes: Long): Result<Unit> {
@@ -162,7 +162,7 @@ object ImageManager {
             Result.success(Unit)
         } else {
             AppLogger.e("RESIZE", "${part.id}扩容失败：${r.out}")
-            Result.failure(RuntimeException("在线扩容失败：${r.out}"))
+            Result.failure(RuntimeException("online grow (resize2fs): ${r.out}"))
         }
     }
 
@@ -174,7 +174,7 @@ object ImageManager {
             Result.success(r.out.trim())
         } else {
             AppLogger.e("TUNE", "保留块比例设置失败：${r.out}")
-            Result.failure(RuntimeException("tune2fs失败：${r.out}"))
+            Result.failure(RuntimeException("tune2fs -m $percent: ${r.out}"))
         }
     }
 
@@ -207,7 +207,7 @@ object ImageManager {
         val r = SuChannel.run(cmd, 120, logCmd = true)
         if (!r.ok || !r.out.contains("SHRINK-OK")) {
             AppLogger.e("SHRINK", "收缩失败：${r.out}")
-            return Result.failure(RuntimeException("收缩失败：${r.out}"))
+            return Result.failure(RuntimeException("e2fsck + resize2fs -f ${targetMiB}M + truncate: ${r.out}"))
         }
 
         val entry = ManifestStore.reconcile(part)
@@ -311,7 +311,7 @@ object ImageManager {
 
             if (availableTargets.isEmpty()) {
                 AppLogger.w("BACKUP", "未检测到任何已挂载或已配置的修改层，无需备份")
-                return Result.failure(RuntimeException("未检测到任何分区修改层（u/），请先创建镜像或挂载"))
+                return Result.failure(RuntimeException("no partition upper layer (u/) found; create an image or mount first"))
             }
 
             val targetsStr = availableTargets.joinToString(" ")
@@ -324,7 +324,7 @@ object ImageManager {
                 "echo SHA-OK", 60, logCmd = true)
             if (!shaRes.ok || !shaRes.out.contains("SHA-OK")) {
                 AppLogger.e("BACKUP", "生成SHA-256清单失败：${shaRes.out}")
-                return Result.failure(RuntimeException("生成校验清单失败：${shaRes.out.trim()}"))
+                return Result.failure(RuntimeException("sha256 manifest generation failed: ${shaRes.out.trim()}"))
             }
 
             val fileCountRes = SuChannel.run("wc -l < $b/SHA256SUMS", 10)
@@ -344,7 +344,7 @@ object ImageManager {
                 Result.success(archive)
             } else {
                 AppLogger.e("BACKUP", "备份失败：${r.out}")
-                Result.failure(RuntimeException("备份失败：${r.out.trim()}"))
+                Result.failure(RuntimeException("tar -czf ${archive.substringAfterLast('/')}: ${r.out.trim()}"))
             }
         } finally {
             SuChannel.run("rm -f $b/SHA256SUMS", 5)
@@ -367,7 +367,7 @@ object ImageManager {
             val extractRes = SuChannel.run("tar -xzf $archivePath -C $tmpDir 2>&1 && echo EXTRACT-OK", 120, logCmd = true)
             if (!extractRes.ok || !extractRes.out.contains("EXTRACT-OK")) {
                 AppLogger.e("RESTORE", "解压归档失败：${extractRes.out}")
-                return Result.failure(RuntimeException("解压归档失败：${extractRes.out.trim()}"))
+                return Result.failure(RuntimeException("archive extraction failed: ${extractRes.out.trim()}"))
             }
 
             AppLogger.i("RESTORE", "正在执行防篡改与SHA-256完整性自检...")
@@ -430,7 +430,7 @@ object ImageManager {
                     val cpRes = SuChannel.run("cp -a $partUpperDir/. $targetDir/ && echo CP-OK", 60)
                     if (!cpRes.ok || !cpRes.out.contains("CP-OK")) {
                         AppLogger.e("RESTORE", "${p.id} LIVE写入失败：${cpRes.out}")
-                        return Result.failure(RuntimeException("写入${p.id}修改层失败：${cpRes.out}"))
+                        return Result.failure(RuntimeException("upper layer write failed for ${p.id}: ${cpRes.out}"))
                     }
                     restoredPartitions.add(p.id)
                 } else {
@@ -447,7 +447,7 @@ object ImageManager {
                     val mountRes = SuChannel.run("mkdir -p $mnt && mount -t ext4 $loop $mnt && echo OK", 15)
                     if (!mountRes.ok || !mountRes.out.contains("OK")) {
                         SuChannel.run("losetup -d $loop 2>/dev/null", 5)
-                        return Result.failure(RuntimeException("临时挂载${p.id}镜像失败：${mountRes.out}"))
+                        return Result.failure(RuntimeException("temp mount of ${p.id} image failed: ${mountRes.out}"))
                     }
 
                     try {
@@ -455,7 +455,7 @@ object ImageManager {
                         SuChannel.run("mkdir -p $targetDir", 5)
                         val cpRes = SuChannel.run("cp -a $partUpperDir/. $targetDir/ && echo CP-OK", 60)
                         if (!cpRes.ok || !cpRes.out.contains("CP-OK")) {
-                            return Result.failure(RuntimeException("写入${p.id}修改层失败：${cpRes.out}"))
+                            return Result.failure(RuntimeException("upper layer write failed for ${p.id}: ${cpRes.out}"))
                         }
                         restoredPartitions.add(p.id)
                     } finally {
@@ -680,11 +680,11 @@ object ImageManager {
         val residue = r.out.trim().toIntOrNull()
         if (r.exit == -1 || residue == null) {
             AppLogger.e("UMOUNT", "${part.id}卸载检查失败,无法确认残留挂载")
-            return Result.failure(RuntimeException("卸载检查超时:${part.id}"))
+            return Result.failure(RuntimeException("unmount verification timed out: ${part.id}"))
         }
         if (residue > 0) {
             AppLogger.e("UMOUNT", "${part.id}仍有${residue}处残留挂载")
-            return Result.failure(RuntimeException("分区${part.id}卸载后仍有${residue}处残留挂载"))
+            return Result.failure(RuntimeException("${part.id} still has ${residue} mount(s) after unmount"))
         }
         AppLogger.i("UMOUNT", "${part.id}底层ext4、overlay与loop设备清理释放完成")
         return Result.success(Unit)
@@ -708,9 +708,9 @@ object ImageManager {
             AppLogger.i("DELETE", "${part.id}当前处于挂载状态，先执行卸载")
             val uRes = unmountStack(part)
             if (uRes.isFailure) {
-                val err = uRes.exceptionOrNull()?.message ?: "卸载失败"
+                val err = uRes.exceptionOrNull()?.message ?: "unmount failed"
                 AppLogger.e("DELETE", "${part.id}卸载中断，终止删除：$err")
-                return Result.failure(RuntimeException("卸载失败：$err"))
+                return Result.failure(RuntimeException("unmount failed: $err"))
             }
         }
 
@@ -719,7 +719,7 @@ object ImageManager {
         val r = SuChannel.run(cmd, 30)
         if (!r.ok) {
             AppLogger.e("DELETE", "${part.id}清理镜像文件失败：${r.out}")
-            return Result.failure(RuntimeException("清理镜像文件失败：${r.out}"))
+            return Result.failure(RuntimeException("image file cleanup failed: ${r.out}"))
         }
 
         ManifestStore.clearPartImages(part.id)
@@ -743,7 +743,7 @@ object ImageManager {
         }
         if (stuck.isNotEmpty()) {
             AppLogger.e("DELETE", "仍有分区残留挂载(${stuck.joinToString(",")})，终止删除")
-            return Result.failure(RuntimeException("以下分区未能干净卸载：${stuck.joinToString(",")}"))
+            return Result.failure(RuntimeException("partitions not cleanly unmounted: ${stuck.joinToString(",")}"))
         }
 
         val b = PartitionTable.BASE_DIR
@@ -751,7 +751,7 @@ object ImageManager {
         val r = SuChannel.run(cmd, 60)
         if (!r.ok) {
             AppLogger.e("DELETE", "清理镜像文件失败：${r.out}")
-            return Result.failure(RuntimeException("清理全部镜像失败：${r.out}"))
+            return Result.failure(RuntimeException("cleanup of all images failed: ${r.out}"))
         }
 
         ManifestStore.clearAllPartImages()
@@ -769,9 +769,9 @@ object ImageManager {
             AppLogger.i("FORMAT", "${part.id}当前处于挂载状态，先执行卸载")
             val uRes = unmountStack(part)
             if (uRes.isFailure) {
-                val err = uRes.exceptionOrNull()?.message ?: "卸载失败"
+                val err = uRes.exceptionOrNull()?.message ?: "unmount failed"
                 AppLogger.e("FORMAT", "${part.id}卸载中断，终止格式化：$err")
-                return Result.failure(RuntimeException("卸载失败：$err"))
+                return Result.failure(RuntimeException("unmount failed: $err"))
             }
         }
 
@@ -786,7 +786,7 @@ object ImageManager {
             val r = SuChannel.run(fmtCmd, 30)
             if (!r.ok) {
                 AppLogger.e("FORMAT", "格式化失败：${r.out}")
-                return Result.failure(RuntimeException("格式化失败：${r.out}"))
+                return Result.failure(RuntimeException("format failed: ${r.out}"))
             }
         } else {
             val entry = ManifestStore.reconcile(part)

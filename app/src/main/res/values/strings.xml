@@ -23,6 +23,7 @@
     <string name="status_unmounted_desc">已全部安全卸载，系统恢复原始状态。</string>
     <string name="status_noroot_desc">未检测到Root权限，特权挂载不可用。</string>
     <string name="status_failed_desc">操作失败，请在控制台查看详细日志。</string>
+    <string name="status_failed_fmt">操作失败：%s</string>
     <string name="status_init_desc">正在初始化系统与特权环境...</string>
     <string name="state_live_title">活跃挂载</string>
     <string name="state_mounting_title">正在挂载</string>
@@ -166,6 +167,7 @@
     <string name="toast_resize_in_progress">正在扩展%1$s镜像容量至%2$d MiB...</string>
     <string name="toast_resize_success">%1$s扩容成功！当前容量：%2$d MiB</string>
     <string name="toast_resize_failed">扩容失败：%s</string>
+    <string name="toast_unmount_failed_fmt">卸载失败：%s</string>
 
     <!-- 压缩弹窗 -->
     <string name="dialog_compact_title">镜像压缩与空间整理</string>

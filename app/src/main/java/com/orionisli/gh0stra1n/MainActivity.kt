@@ -1321,7 +1321,7 @@ class MainActivity : AppCompatActivity() {
                         if (uRes.isFailure) {
                             runOnUiThread {
                                 if (isFinishing || isDestroyed) return@runOnUiThread
-                                Toast.makeText(this, "卸载失败：${uRes.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this, getString(R.string.toast_unmount_failed_fmt, uRes.exceptionOrNull()?.message ?: ""), Toast.LENGTH_LONG).show()
                             }
                             return@Thread
                         }
@@ -1769,7 +1769,8 @@ class MainActivity : AppCompatActivity() {
             State.MOUNTING -> getString(R.string.status_mounting_desc)
             State.TEARDOWN -> getString(R.string.status_teardown_desc)
             State.DETACH -> getString(R.string.status_unmounted_desc)
-            State.FAILED -> detail.ifBlank { getString(R.string.status_failed_desc) }
+            State.FAILED -> if (detail.isBlank()) getString(R.string.status_failed_desc)
+                            else getString(R.string.status_failed_fmt, detail)
             State.BOOT -> getString(R.string.status_init_desc)
         }
 

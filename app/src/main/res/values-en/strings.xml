@@ -23,6 +23,7 @@
     <string name="status_unmounted_desc">All partitions unmounted. Restored to stock state.</string>
     <string name="status_noroot_desc">Root privileges not found. OverlayFS unavailable.</string>
     <string name="status_failed_desc">Operation failed. Check console logs for details.</string>
+    <string name="status_failed_fmt">Operation failed: %s</string>
     <string name="status_init_desc">Initializing environment and privileges...</string>
     <string name="state_live_title">LIVE</string>
     <string name="state_mounting_title">MOUNTING</string>
@@ -166,6 +167,7 @@
     <string name="toast_resize_in_progress">Expanding [%1$s] capacity to %2$d MiB...</string>
     <string name="toast_resize_success">[%1$s] Capacity expanded to %2$d MiB!</string>
     <string name="toast_resize_failed">Expansion failed: %s</string>
+    <string name="toast_unmount_failed_fmt">Unmount failed: %s</string>
 
     <!-- Compact Dialog -->
     <string name="dialog_compact_title">Compact &amp; Shrink Image</string>
