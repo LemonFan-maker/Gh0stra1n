@@ -1,21 +1,14 @@
 package com.orionisli.gh0stra1n
 
-import android.content.Context
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ImageAnalysisActivity : AppCompatActivity() {
 
@@ -60,25 +53,15 @@ class ImageAnalysisActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        when (sp.getString("ui_theme", "sakura")) {
-            "beige" -> setTheme(R.style.Theme_Gh0stra1n_Beige)
-            "slate" -> setTheme(R.style.Theme_Gh0stra1n_Slate)
-            "cyber" -> setTheme(R.style.Theme_Gh0stra1n_CyberDark)
-            "matcha" -> setTheme(R.style.Theme_Gh0stra1n_Matcha)
-            "nord", "aurora" -> setTheme(R.style.Theme_Gh0stra1n_Nord)
-            "sakura" -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
-            else -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
-        }
+        ThemeManager.applyStyleTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_analysis)
         ThemeManager.applyToActivity(this)
 
         HapticUtil.init(this)
         initViews()
-        setupInsets()
+        attachHeaderListInsets(findViewById(R.id.root_image_analysis), findViewById(R.id.header_bar), recyclerNcdu)
 
         targetPartId = intent.getStringExtra(EXTRA_PARTITION_ID) ?: "system"
         partitionDef = PartitionTable.byId[targetPartId] ?: PartitionTable.ALL.first()
@@ -167,23 +150,6 @@ class ImageAnalysisActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupInsets() {
-        val root = findViewById<View>(R.id.root_image_analysis)
-        val header = findViewById<View>(R.id.header_bar)
-
-        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-            header.setPadding(dp(16), statusBars.top + dp(6), dp(16), dp(6))
-            recyclerNcdu.setPadding(0, 0, 0, navBars.bottom + dp(16))
-
-            insets
-        }
-    }
-
-    private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
-
     private fun startAnalysis() {
         layoutLoading.visibility = View.VISIBLE
         layoutContent.visibility = View.INVISIBLE
@@ -195,21 +161,17 @@ class ImageAnalysisActivity : AppCompatActivity() {
             runOnUiThread {
                 if (isFinishing || isDestroyed || gen != analysisGeneration) return@runOnUiThread
                 layoutLoading.visibility = View.GONE
-                if (result.isSuccess) {
-                    val analysis = result.getOrThrow()
-                    layoutContent.visibility = View.VISIBLE
-                    bindAnalysisData(analysis)
-                    HapticUtil.success()
-                } else {
-                    HapticUtil.error()
-                    val error = result.exceptionOrNull()?.message ?: ""
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.analysis_failed_title)
-                        .setMessage(error)
-                        .setPositiveButton(R.string.btn_retry) { _, _ -> startAnalysis() }
-                        .setNegativeButton(R.string.back) { _, _ -> finish() }
-                        .show()
-                }
+                result.fold(
+                    onSuccess = {
+                        layoutContent.visibility = View.VISIBLE
+                        bindAnalysisData(it)
+                        HapticUtil.success()
+                    },
+                    onFailure = { e ->
+                        HapticUtil.error()
+                        showTreeLoadFailure(this, R.string.analysis_failed_title, e) { startAnalysis() }
+                    },
+                )
             }
         }.start()
     }
@@ -274,53 +236,6 @@ class ImageAnalysisActivity : AppCompatActivity() {
     }
 
     private fun rebuildBreadcrumbs(currentDir: FileNode) {
-        layoutBreadcrumb.removeAllViews()
-        val crumbs = currentDir.getBreadcrumbList()
-        val p = ThemeManager.getCurrentPalette(this)
-
-        for (i in crumbs.indices) {
-            val node = crumbs[i]
-            val isLast = (i == crumbs.size - 1)
-
-            val crumbView = TextView(this).apply {
-                text = if (node.path == "/") getString(R.string.explorer_root_breadcrumb) else "${node.name}/"
-                textSize = 11f
-                typeface = Typeface.MONOSPACE
-                setTextColor(if (isLast) p.accent else p.textSecondary)
-                val density = resources.displayMetrics.density
-                val pillBg = android.graphics.drawable.GradientDrawable().apply {
-                    cornerRadius = 12f * density
-                    if (isLast) {
-                        setColor(p.accentBg)
-                        setStroke((1 * density).toInt(), p.accent)
-                    } else {
-                        setColor(p.cardInner)
-                        setStroke((1 * density).toInt(), p.cardBorder)
-                    }
-                }
-                background = pillBg
-                setPadding(dp(8), dp(3), dp(8), dp(3))
-                gravity = Gravity.CENTER
-                setOnClickListener {
-                    HapticUtil.click(it)
-                    navigateToDirectory(node)
-                }
-            }
-            ViewAnimUtil.addPressScaleEffect(crumbView)
-            layoutBreadcrumb.addView(crumbView)
-
-            if (!isLast) {
-                val arrow = TextView(this).apply {
-                    text = " > "
-                    textSize = 10f
-                    setTextColor(p.textMuted)
-                }
-                layoutBreadcrumb.addView(arrow)
-            }
-        }
-
-        scrollBreadcrumb.post {
-            scrollBreadcrumb.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
-        }
+        rebuildBreadcrumbBar(layoutBreadcrumb, scrollBreadcrumb, currentDir) { navigateToDirectory(it) }
     }
 }

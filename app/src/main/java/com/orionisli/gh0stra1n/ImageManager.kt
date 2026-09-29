@@ -286,9 +286,8 @@ object ImageManager {
                     val (imgs, _) = listImages(p)
                     if (imgs.isNotEmpty()) {
                         val upper = imgs.first()
-                        val loopRes = attachLoop(upper)
-                        if (loopRes.isSuccess) {
-                            val loop = loopRes.getOrThrow()
+                        val loop = attachLoop(upper).getOrNull()
+                        if (loop != null) {
                             val mnt = "$b/mnt_${p.id}"
                             val mountRes = SuChannel.run("mkdir -p $mnt && mount -t ext4 -o ro $loop $mnt && echo OK", 15)
                             if (mountRes.ok && mountRes.out.contains("OK")) {

@@ -15,8 +15,7 @@ object HapticUtil {
 
     fun init(context: Context) {
         val appContext = context.applicationContext
-        val sp = appContext.getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        strength = sp.getInt("haptic_strength", 2)
+        strength = SettingsStore(appContext).hapticStrength
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vm = appContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
             vm?.defaultVibrator

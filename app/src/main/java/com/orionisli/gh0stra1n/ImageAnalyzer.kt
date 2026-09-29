@@ -159,9 +159,8 @@ object ImageAnalyzer {
             if (imgs.isEmpty()) return Pair(false, "Error: Image file not found for this partition")
             val targetImage = imgs.first()
             val inspectDir = "${PartitionTable.BASE_DIR}/inspect_${part.id}"
-            val loopRes = ImageManager.attachLoop(targetImage)
-            if (loopRes.isFailure) return Pair(false, "Error: ${loopRes.exceptionOrNull()?.message}")
-            val dev = loopRes.getOrThrow()
+            val dev = ImageManager.attachLoop(targetImage)
+                .getOrElse { return Pair(false, "Error: ${it.message}") }
             val cmd = """
                 mkdir -p $inspectDir
                 mount -t ext4 -o ro $dev $inspectDir

@@ -384,13 +384,10 @@
     <string name="about_license_title">Open Source License</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">Changelog</string>
+    <string name="about_changelog_v115_title">v1.1.5 - Structure Dedup &amp; Language-Neutral Failure Details</string>
+    <string name="about_changelog_v115_desc">Merged duplicated theme bootstrap, dp conversion, breadcrumb bar and failure dialog code into shared implementations\nAll settings reads and writes now go through SettingsStore instead of raw SharedPreferences\nRemoved 13 unreferenced drawables and eliminated every remaining cross-file duplicate block\n19 low-level failure details now carry only the failing command and raw output, keeping them neutral across all three locales\nCI now fails fast on blank signing secrets, restored the keystore decode step and refreshed deprecated actions</string>
     <string name="about_changelog_v114_title">v1.1.4 - Pipe Deadlock Fixes &amp; UI Copy Cleanup</string>
-    <string name="about_changelog_v114_desc">Fixed pipe deadlock that silently dropped su output beyond 64KiB
-Unmount residue now matches exactly and verifies truthfully instead of reporting false success
-Added 24 lifecycle guards across the main and explorer screens to stop crashes on back or theme switch
-Cached settings and device info reads, cutting root forks on startup and save from 8 down to 1
-Log panel now appends incrementally past 500 entries instead of rebuilding the entire list each time
-Trimmed 42 UI strings, removing redundant modifiers from titles</string>
+    <string name="about_changelog_v114_desc">Fixed pipe deadlock that silently dropped su output beyond 64KiB\nUnmount residue now matches exactly and verifies truthfully instead of reporting false success\nAdded 24 lifecycle guards across the main and explorer screens to stop crashes on back or theme switch\nCached settings and device info reads, cutting root forks on startup and save from 8 down to 1\nLog panel now appends incrementally past 500 entries instead of rebuilding the entire list each time\nTrimmed 42 UI strings, removing redundant modifiers from titles</string>
     <string name="about_changelog_v113_title">v1.1.3 - Background Daemon &amp; Signature IPC Security</string>
     <string name="about_changelog_v113_desc">Upgraded Gh0stOverlayService to independent daemon process (:daemon) surviving task swipe\nAdapted Android 14+ Foreground Service with low-priority silent notification and START_STICKY self-healing\nEnforced signature-level permissions and runtime UID verification against unauthorized callers\nSeamlessly integrated companion app IPC with unified Release signing and CI/CD pipeline</string>
     <string name="about_changelog_v112_title">v1.1.2 - Dynamic Host Device &amp; System Probing</string>

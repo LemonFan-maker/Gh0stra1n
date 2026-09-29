@@ -239,10 +239,19 @@ object ThemeManager {
         }
     }
 
-    fun getCurrentPalette(context: Context): ThemePalette {
-        val sp = context.getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        val name = sp.getString("ui_theme", "sakura") ?: "sakura"
-        return getPalette(name)
+    fun getCurrentPalette(context: Context): ThemePalette =
+        getPalette(SettingsStore(context).uiTheme)
+
+    fun applyStyleTheme(activity: Activity) {
+        val style = when (SettingsStore(activity).uiTheme.lowercase()) {
+            "beige" -> R.style.Theme_Gh0stra1n_Beige
+            "slate" -> R.style.Theme_Gh0stra1n_Slate
+            "cyber" -> R.style.Theme_Gh0stra1n_CyberDark
+            "matcha" -> R.style.Theme_Gh0stra1n_Matcha
+            "nord", "aurora" -> R.style.Theme_Gh0stra1n_Nord
+            else -> R.style.Theme_Gh0stra1n_Sakura
+        }
+        activity.setTheme(style)
     }
 
     fun stylePill(view: TextView, type: PillType, p: ThemePalette) {

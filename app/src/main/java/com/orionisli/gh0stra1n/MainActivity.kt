@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var controller: OverlayController
-    private lateinit var settings: SettingsStore
+    private val settings by lazy { SettingsStore(this) }
 
     // Header & Status
     private lateinit var headerStatusPill: TextView
@@ -152,16 +152,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        when (sp.getString("ui_theme", "sakura")) {
-            "beige" -> setTheme(R.style.Theme_Gh0stra1n_Beige)
-            "slate" -> setTheme(R.style.Theme_Gh0stra1n_Slate)
-            "cyber" -> setTheme(R.style.Theme_Gh0stra1n_CyberDark)
-            "matcha" -> setTheme(R.style.Theme_Gh0stra1n_Matcha)
-            "nord", "aurora" -> setTheme(R.style.Theme_Gh0stra1n_Nord)
-            "sakura" -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
-            else -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
-        }
+        ThemeManager.applyStyleTheme(this)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -612,8 +603,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
-
     private fun updateCellTextColors(cell: View, primary: Int, secondary: Int) {
         if (cell !is ViewGroup) return
         for (i in 0 until cell.childCount) {
@@ -660,8 +649,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initNavigation(savedInstanceState: Bundle? = null) {
-        val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        val defaultIndex = sp.getInt("last_active_tab", Tab.CONTROL.ordinal)
+        val defaultIndex = settings.lastActiveTab
         val savedIndex = savedInstanceState?.getInt("active_tab_index", defaultIndex) ?: defaultIndex
         val initialTab = Tab.values().getOrElse(savedIndex) { Tab.CONTROL }
 
@@ -750,10 +738,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         currentTab = tab
-        getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-            .edit()
-            .putInt("last_active_tab", tab.ordinal)
-            .apply()
+        settings.lastActiveTab = tab.ordinal
 
         views.forEach { v ->
             if (v == targetView) {
@@ -1360,7 +1345,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initSettings() {
-        settings = SettingsStore(this)
         setWarn.setText(settings.warnThresholdPct.toString())
         setAutoMount.isChecked = settings.bootAutoMount
         setNoatime.isChecked = settings.noatimeMount
@@ -1408,11 +1392,7 @@ class MainActivity : AppCompatActivity() {
         if (settings.uiTheme == themeName) return
         HapticUtil.confirm()
         settings.uiTheme = themeName
-        getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-            .edit()
-            .putString("ui_theme", themeName)
-            .putInt("last_active_tab", currentTab.ordinal)
-            .apply()
+        settings.lastActiveTab = currentTab.ordinal
         updateThemeButtonsUi()
         Toast.makeText(this, getString(R.string.toast_theme_changing), Toast.LENGTH_SHORT).show()
         recreate()

@@ -92,7 +92,7 @@ class NcduAdapter(
             holder.size.text = ""
             holder.layoutBar.visibility = View.GONE
             holder.card.strokeColor = p.cardBorder
-            holder.card.strokeWidth = dp(holder.itemView, 1)
+            holder.card.strokeWidth = holder.itemView.dp(1)
             holder.card.setCardBackgroundColor(p.cardInner)
 
             holder.card.setOnClickListener {
@@ -155,11 +155,11 @@ class NcduAdapter(
 
         if (isSelected) {
             holder.card.strokeColor = Color.rgb(220, 38, 38) // #DC2626红边
-            holder.card.strokeWidth = dp(holder.itemView, 2)
+            holder.card.strokeWidth = holder.itemView.dp(2)
             holder.card.setCardBackgroundColor(if (p.isDark) Color.parseColor("#3B1818") else Color.parseColor("#FFF1F2"))
         } else {
             holder.card.strokeColor = p.cardBorder
-            holder.card.strokeWidth = dp(holder.itemView, 1)
+            holder.card.strokeWidth = holder.itemView.dp(1)
             holder.card.setCardBackgroundColor(p.cardBg)
         }
 
@@ -167,9 +167,5 @@ class NcduAdapter(
             HapticUtil.click(it)
             onItemClick(item)
         }
-    }
-
-    private fun dp(view: View, v: Int): Int {
-        return (v * view.resources.displayMetrics.density).toInt()
     }
 }

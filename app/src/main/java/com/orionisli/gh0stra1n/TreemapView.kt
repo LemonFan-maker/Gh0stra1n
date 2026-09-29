@@ -67,7 +67,6 @@ class TreemapView @JvmOverloads constructor(
         }
     }
 
-    private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
     private fun dp(v: Float): Float = v * resources.displayMetrics.density
 
     fun setRootNode(root: FileNode?) {

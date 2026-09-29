@@ -43,6 +43,10 @@ class SettingsStore(context: Context) {
         get() = sp.getString(KEY_UI_THEME, "sakura") ?: "sakura"
         set(v) = sp.edit().putString(KEY_UI_THEME, v).apply()
 
+    var lastActiveTab: Int
+        get() = sp.getInt(KEY_LAST_TAB, 0)
+        set(v) = sp.edit().putInt(KEY_LAST_TAB, v).apply()
+
     var terminalTheme: String
         get() = sp.getString(KEY_TERM_THEME, "parchment") ?: "parchment"
         set(v) = sp.edit().putString(KEY_TERM_THEME, v).apply()
@@ -77,6 +81,7 @@ class SettingsStore(context: Context) {
         private const val KEY_AUTO_FSCK = "auto_fsck"
         private const val KEY_SHOW_HIDDEN = "show_hidden_files"
         private const val KEY_UI_THEME = "ui_theme"
+        private const val KEY_LAST_TAB = "last_active_tab"
         private const val KEY_TERM_THEME = "terminal_theme"
         private const val KEY_TERM_BG_CUSTOM = "terminal_bg_custom"
         private const val KEY_TERM_FG_CUSTOM = "terminal_fg_custom"

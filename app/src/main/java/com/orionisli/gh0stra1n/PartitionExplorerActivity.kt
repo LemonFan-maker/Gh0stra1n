@@ -5,11 +5,9 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -20,8 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -75,23 +71,14 @@ class PartitionExplorerActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sp = getSharedPreferences("gh0stra1n_settings", Context.MODE_PRIVATE)
-        when (sp.getString("ui_theme", "sakura")) {
-            "beige" -> setTheme(R.style.Theme_Gh0stra1n_Beige)
-            "slate" -> setTheme(R.style.Theme_Gh0stra1n_Slate)
-            "cyber" -> setTheme(R.style.Theme_Gh0stra1n_CyberDark)
-            "matcha" -> setTheme(R.style.Theme_Gh0stra1n_Matcha)
-            "nord", "aurora" -> setTheme(R.style.Theme_Gh0stra1n_Nord)
-            "sakura" -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
-            else -> setTheme(R.style.Theme_Gh0stra1n_Sakura)
-        }
+        ThemeManager.applyStyleTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_partition_explorer)
         ThemeManager.applyToActivity(this)
 
         HapticUtil.init(this)
         initViews()
-        setupInsets()
+        attachHeaderListInsets(findViewById(R.id.root_partition_explorer), findViewById(R.id.header_bar), recyclerFiles)
 
         targetPartId = intent.getStringExtra(EXTRA_PARTITION_ID) ?: "system"
         partitionDef = PartitionTable.byId[targetPartId] ?: PartitionTable.ALL.first()
@@ -247,52 +234,30 @@ class PartitionExplorerActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupInsets() {
-        val root = findViewById<View>(R.id.root_partition_explorer)
-        val header = findViewById<View>(R.id.header_bar)
-
-        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-            header.setPadding(dp(16), statusBars.top + dp(6), dp(16), dp(6))
-            recyclerFiles.setPadding(0, 0, 0, navBars.bottom + dp(16))
-
-            insets
-        }
-    }
-
-    private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
-
     private fun startLoadDirectoryTree() {
         layoutLoading.visibility = View.VISIBLE
         layoutContent.visibility = View.INVISIBLE
         txtLoadingMsg.text = getString(R.string.explorer_loading)
         val gen = ++loadGeneration
 
-
         Thread {
             val result = ImageAnalyzer.analyze(partitionDef)
             runOnUiThread {
                 if (isFinishing || isDestroyed || gen != loadGeneration) return@runOnUiThread
                 layoutLoading.visibility = View.GONE
-                if (result.isSuccess) {
-                    val analysis = result.getOrThrow()
-                    layoutContent.visibility = View.VISIBLE
-                    rootNode = analysis.rootNode
-                    val initialDir = analysis.rootNode.children.firstOrNull { it.isDirectory && it.name == "u" } ?: analysis.rootNode
-                    navigateToDirectory(initialDir)
-                    HapticUtil.success()
-                } else {
-                    HapticUtil.error()
-                    val error = result.exceptionOrNull()?.message ?: ""
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.explorer_load_failed_title)
-                        .setMessage(error)
-                        .setPositiveButton(R.string.btn_retry) { _, _ -> startLoadDirectoryTree() }
-                        .setNegativeButton(R.string.back) { _, _ -> finish() }
-                        .show()
-                }
+                result.fold(
+                    onSuccess = { analysis ->
+                        layoutContent.visibility = View.VISIBLE
+                        rootNode = analysis.rootNode
+                        val initialDir = analysis.rootNode.children.firstOrNull { it.isDirectory && it.name == "u" } ?: analysis.rootNode
+                        navigateToDirectory(initialDir)
+                        HapticUtil.success()
+                    },
+                    onFailure = { e ->
+                        HapticUtil.error()
+                        showTreeLoadFailure(this, R.string.explorer_load_failed_title, e) { startLoadDirectoryTree() }
+                    },
+                )
             }
         }.start()
     }
@@ -525,54 +490,6 @@ class PartitionExplorerActivity : AppCompatActivity() {
     }
 
     private fun rebuildBreadcrumbs(currentDir: FileNode) {
-        layoutBreadcrumb.removeAllViews()
-        val crumbs = currentDir.getBreadcrumbList()
-        val p = ThemeManager.getCurrentPalette(this)
-
-        for (i in crumbs.indices) {
-            val node = crumbs[i]
-            val isLast = (i == crumbs.size - 1)
-
-            val crumbView = TextView(this).apply {
-                val displayName = if (node.path == "/") getString(R.string.explorer_root_breadcrumb) else "${node.name}/"
-                text = displayName
-                textSize = 11f
-                typeface = Typeface.MONOSPACE
-                setTextColor(if (isLast) p.accent else p.textSecondary)
-                val density = resources.displayMetrics.density
-                val pillBg = android.graphics.drawable.GradientDrawable().apply {
-                    cornerRadius = 12f * density
-                    if (isLast) {
-                        setColor(p.accentBg)
-                        setStroke((1 * density).toInt(), p.accent)
-                    } else {
-                        setColor(p.cardInner)
-                        setStroke((1 * density).toInt(), p.cardBorder)
-                    }
-                }
-                background = pillBg
-                setPadding(dp(8), dp(3), dp(8), dp(3))
-                gravity = Gravity.CENTER
-                setOnClickListener {
-                    HapticUtil.click(it)
-                    navigateToDirectory(node)
-                }
-            }
-            ViewAnimUtil.addPressScaleEffect(crumbView)
-            layoutBreadcrumb.addView(crumbView)
-
-            if (!isLast) {
-                val arrow = TextView(this).apply {
-                    text = " > "
-                    textSize = 10f
-                    setTextColor(p.textMuted)
-                }
-                layoutBreadcrumb.addView(arrow)
-            }
-        }
-
-        scrollBreadcrumb.post {
-            scrollBreadcrumb.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
-        }
+        rebuildBreadcrumbBar(layoutBreadcrumb, scrollBreadcrumb, currentDir) { navigateToDirectory(it) }
     }
 }

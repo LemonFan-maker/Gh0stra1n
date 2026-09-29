@@ -384,13 +384,10 @@
     <string name="about_license_title">開源協議</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">版本更新日誌</string>
+    <string name="about_changelog_v115_title">v1.1.5 - 介面結構去重與失敗詳情中立化</string>
+    <string name="about_changelog_v115_desc">主題引導、dp換算、麵包屑列與失敗彈窗等跨頁面複製代碼收斂為共享實作\n設定讀寫全部改走SettingsStore，介面代碼不再直連原始SharedPreferences\n移除13個未引用圖標資源，全倉5行以上跨檔案重複塊清零\n19條底層失敗詳情改為僅含命令與原始輸出，三語介面錯誤展示不再混入翻譯\nCI簽名金鑰缺失時快速失敗，恢復keystore解碼步驟並刷新棄用的Actions</string>
     <string name="about_changelog_v114_title">v1.1.4 - 管道阻塞修復與介面文案精簡</string>
-    <string name="about_changelog_v114_desc">修復su命令輸出超64KiB時管道寫滿導致的阻塞與靜默失敗
-卸載殘留改為精確匹配並真實校驗，殘留未清空時不再謊報成功
-主介面與分區瀏覽補齊24處生命週期守衛，杜絕返回與切主題時的崩潰
-設定與裝置資訊讀取引入快取，啟動與儲存的root fork由8次降至1次
-日誌面板超過500條後改為增量追加，修復每次輸出全量重建導致的卡頓
-精簡42條介面文案，去除標題中的冗餘修飾</string>
+    <string name="about_changelog_v114_desc">修復su命令輸出超64KiB時管道寫滿導致的阻塞與靜默失敗\n卸載殘留改為精確匹配並真實校驗，殘留未清空時不再謊報成功\n主介面與分區瀏覽補齊24處生命週期守衛，杜絕返回與切主題時的崩潰\n設定與裝置資訊讀取引入快取，啟動與儲存的root fork由8次降至1次\n日誌面板超過500條後改為增量追加，修復每次輸出全量重建導致的卡頓\n精簡42條介面文案，去除標題中的冗餘修飾</string>
     <string name="about_changelog_v113_title">v1.1.3 - 守護進程常駐與跨進程簽名安全隔離</string>
     <string name="about_changelog_v113_desc">全新升級Gh0stOverlayService為獨立守護進程（:daemon），退出不中斷\n適配Android 14+ 前台服務與低優先級靜默常駐通知，支援START_STICKY故障自癒\n引入Signature簽名級權限與執行時期UID鑑權雙重隔離，嚴防未授權惡意調用\n適配同系列工具跨進程無縫通訊，重構Release簽名與CI/CD流水線</string>
     <string name="about_changelog_v112_title">v1.1.2 - 動態識別宿主機型與系統環境</string>
