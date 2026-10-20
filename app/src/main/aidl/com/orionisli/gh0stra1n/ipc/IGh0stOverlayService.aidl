@@ -9,5 +9,4 @@ interface IGh0stOverlayService {
     boolean unmountPartition(String partitionName);
     void syncStorage();
     boolean restartZygote();
-    boolean executeRootCommand(String command);
 }

@@ -24,6 +24,10 @@ class Gh0stOverlayService : Service() {
         const val CHANNEL_ID = "gh0st_overlay_daemon_channel"
         const val NOTIFICATION_ID = 2339
         const val PERMISSION_ACCESS_OVERLAY = "com.orionisli.gh0stra1n.permission.ACCESS_OVERLAY_SERVICE"
+
+        private val ALLOWED_CALLER_PACKAGES = setOf(
+            "com.orionisli.ovl0ad3r",
+        )
     }
 
     private val binder = object : IGh0stOverlayService.Stub() {
@@ -39,20 +43,34 @@ class Gh0stOverlayService : Service() {
                 return
             }
 
-            val hasPermission = checkCallingOrSelfPermission(PERMISSION_ACCESS_OVERLAY) == PackageManager.PERMISSION_GRANTED
-            if (hasPermission) {
-                return
+            val signatureMatch = packageManager.checkSignatures(callingUid, Process.myUid()) ==
+                PackageManager.SIGNATURE_MATCH
+            if (!signatureMatch) {
+                throw SecurityException(
+                    "Access denied to Gh0stOverlayService: caller UID $callingUid is not signed by the service certificate."
+                )
             }
 
-            val match = packageManager.checkSignatures(callingUid, Process.myUid())
-            if (match == PackageManager.SIGNATURE_MATCH) {
-                return
+            val callerPackages = resolveCallerPackages(callingUid)
+            if (callerPackages.none { it in ALLOWED_CALLER_PACKAGES }) {
+                val caller = callerPackages.joinToString().ifBlank { "UID $callingUid" }
+                throw SecurityException(
+                    "Access denied to Gh0stOverlayService: caller [$caller] is not in the allowed package list."
+                )
             }
+        }
 
-            val callerPkgs = packageManager.getPackagesForUid(callingUid)?.joinToString() ?: "UID $callingUid"
-            throw SecurityException(
-                "Access denied to Gh0stOverlayService: Caller [$callerPkgs] (UID $callingUid) does not hold signature permission or have matching signature."
-            )
+        private fun resolveCallerPackages(uid: Int): Array<String> {
+            val packages = packageManager.getPackagesForUid(uid)
+            if (!packages.isNullOrEmpty()) return packages
+
+            return ALLOWED_CALLER_PACKAGES.filter { pkg ->
+                try {
+                    packageManager.getPackageInfo(pkg, 0).applicationInfo?.uid == uid
+                } catch (_: Exception) {
+                    false
+                }
+            }.toTypedArray()
         }
 
         override fun isRootAlive(): Boolean {
@@ -157,11 +175,6 @@ class Gh0stOverlayService : Service() {
 
         override fun restartZygote(): Boolean {
             return SuChannel.run("setprop ctl.restart zygote").ok
-        }
-
-        override fun executeRootCommand(command: String?): Boolean {
-            if (command.isNullOrBlank()) return false
-            return SuChannel.run(command).ok
         }
     }
 
