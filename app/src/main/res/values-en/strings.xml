@@ -12,19 +12,19 @@
     <!-- Top Header & Status -->
     <string name="header_desc">Rootless OverlayFS Manager</string>
     <string name="btn_refresh">Refresh</string>
-    <string name="btn_safe_reboot">Safe Reboot</string>
+    <string name="btn_safe_reboot">Unmount and Reboot</string>
 
     <!-- Status Descriptions -->
     <string name="status_ready_text">Ready</string>
-    <string name="status_ready_desc">System ready. Tap below to mount system partitions.</string>
-    <string name="status_live_desc">OverlayFS mounted. Partitions successfully intercepted.</string>
-    <string name="status_mounting_desc">Mounting OverlayFS partition stack...</string>
-    <string name="status_teardown_desc">Safely unmounting partitions and flushing...</string>
-    <string name="status_unmounted_desc">All partitions unmounted. Restored to stock state.</string>
-    <string name="status_noroot_desc">Root privileges not found. OverlayFS unavailable.</string>
+    <string name="status_ready_desc">Environment ready. Mount system partitions below.</string>
+    <string name="status_live_desc">OverlayFS mounted. Partitions are writable.</string>
+    <string name="status_mounting_desc">Mounting partitions...</string>
+    <string name="status_teardown_desc">Unmounting partitions and syncing...</string>
+    <string name="status_unmounted_desc">All partitions unmounted.</string>
+    <string name="status_noroot_desc">Root not detected. Mounting unavailable.</string>
     <string name="status_failed_desc">Operation failed. Check console logs for details.</string>
     <string name="status_failed_fmt">Operation failed: %s</string>
-    <string name="status_init_desc">Initializing environment and privileges...</string>
+    <string name="status_init_desc">Initializing...</string>
     <string name="state_live_title">LIVE</string>
     <string name="state_mounting_title">MOUNTING</string>
     <string name="state_teardown_title">TEARDOWN</string>
@@ -37,11 +37,11 @@
     <string name="btn_mount_overlayfs">Mount OverlayFS</string>
     <string name="btn_unmount_overlayfs">Unmount OverlayFS</string>
     <string name="overview_title">Partition Overview</string>
-    <string name="overview_sub">5 Core System Partitions</string>
+    <string name="overview_sub">5 System Partitions</string>
     <string name="overview_mount_count_default">0/5 Mounted</string>
     <string name="overview_mount_count_fmt">%d/5 Mounted</string>
     <string name="overview_mount_count_none">0/5 Mounted</string>
-    <string name="overview_total_label">Total Allocated</string>
+    <string name="overview_total_label">Total</string>
 
     <!-- Partitions Tab -->
     <string name="part_tab_title">Partitions</string>
@@ -53,7 +53,7 @@
     <string name="menu_pill_exists">Exists</string>
     <string name="menu_disabled_no_image_hint">No image found. Please create a new image first.</string>
     <string name="menu_disabled_has_image_hint">Image already exists. Only one image is allowed per partition.</string>
-    <string name="create_image_already_exists">Partition [%1$s] already has an image file. Only one image is allowed per partition! Please delete the existing image first.</string>
+    <string name="create_image_already_exists">Partition [%1$s] already has an image file. Only one image per partition. Delete the existing image first.</string>
 
     <!-- Payloads Tab -->
 
@@ -61,24 +61,24 @@
     <string name="log_tab_title">Console</string>
     <string name="log_btn_copy">Copy</string>
     <string name="log_btn_clear">Clear</string>
-    <string name="log_init_text">[Gh0stra1n] Console Ready\n</string>
+    <string name="log_init_text">Gh0stra1n console\n</string>
     <string name="toast_log_copied">Logs copied to clipboard</string>
     <string name="toast_log_cleared">Logs cleared</string>
 
     <!-- Settings Tab -->
     <string name="settings_group_mount">Mount</string>
     <string name="settings_auto_mount_title">Restore Mounts on App Launch</string>
-    <string name="settings_auto_mount_desc">Automatically remount when previous LIVE state is detected</string>
+    <string name="settings_auto_mount_desc">Remount last mounted partitions on launch</string>
     <string name="settings_noatime_title">noatime</string>
-    <string name="settings_noatime_desc">Disables access time logging to reduce UFS wear and boost IO performance</string>
+    <string name="settings_noatime_desc">Do not update atime on access; fewer flash writes</string>
     <string name="settings_autofsck_title">Pre-mount fsck</string>
-    <string name="settings_autofsck_desc">Runs e2fsck -p before mounting to ensure filesystem integrity</string>
+    <string name="settings_autofsck_desc">Run e2fsck -p before mounting</string>
 
     <string name="settings_group_storage">Storage &amp; Files</string>
     <string name="settings_warn_title">Low Space Threshold (%)</string>
-    <string name="settings_warn_desc">Triggers an alert when upper image free space drops below threshold (5-90)</string>
+    <string name="settings_warn_desc">Alert when image free space drops below this (5-90)</string>
     <string name="settings_show_hidden_title">Show Hidden Files by Default</string>
-    <string name="settings_show_hidden_desc">Displays dot-prefixed Linux hidden files in Partition Explorer</string>
+    <string name="settings_show_hidden_desc">Show dot-prefixed hidden files in explorer</string>
 
     <string name="settings_group_appearance">Appearance</string>
     <string name="settings_ui_theme_title">UI Theme Palette</string>
@@ -99,10 +99,10 @@
     <string name="dialog_custom_term_title">Custom Colors</string>
     <string name="dialog_custom_term_bg">Background (Hex)</string>
     <string name="dialog_custom_term_fg">Terminal Text (Hex)</string>
-    <string name="dialog_custom_term_preset">Recommended Presets</string>
+    <string name="dialog_custom_term_preset">Presets</string>
     <string name="btn_apply_term_theme">Apply &amp; Save</string>
 
-    <string name="settings_haptic_title">Haptic Vibration Feedback</string>
+    <string name="settings_haptic_title">Haptics</string>
     <string name="haptic_off">Off</string>
     <string name="haptic_weak">Light</string>
     <string name="haptic_std">Medium</string>
@@ -115,40 +115,40 @@
     <string name="settings_backup_desc">Generates SHA-256 checksums and packs upper directories into /sdcard/Gh0stra1n_Backup/</string>
     <string name="btn_backup_now">Backup Now</string>
     <string name="settings_restore_title">Restore Upper Layers</string>
-    <string name="settings_restore_desc">Verifies SHA-256 anti-tamper hashes and restores safely to respective partitions</string>
+    <string name="settings_restore_desc">Verifies SHA-256 checksums and restores to respective partitions</string>
     <string name="btn_restore_now">Restore Backup</string>
     <string name="restore_dialog_title">Select Backup Archive to Restore</string>
     <string name="restore_no_backups">No backup archive found in /sdcard/Gh0stra1n_Backup/</string>
     <string name="restore_confirm_title">Confirm Restore?</string>
-    <string name="restore_confirm_msg">Hardware-accelerated SHA-256 anti-tamper integrity check will run first. Upon passing, upper files will be restored.\n\nArchive: %1$s\nSize: %2$s\n\nProceed with restore?</string>
+    <string name="restore_confirm_msg">SHA-256 checksums are verified first; on pass, files are restored to the partition upper layer.\n\nArchive: %1$s\nSize: %2$s\n\nProceed?</string>
     <string name="restore_btn_confirm">Verify &amp; Restore</string>
-    <string name="restore_in_progress">Verifying integrity and restoring upper files...</string>
-    <string name="restore_success">Restore succeeded! Upper layers restored.</string>
+    <string name="restore_in_progress">Verifying and restoring...</string>
+    <string name="restore_success">Restore complete.</string>
     <string name="restore_failed_fmt">Restore failed: %s</string>
     <string name="restore_tamper_title">Integrity Check Failed</string>
-    <string name="restore_tamper_msg">Files in the backup archive did not match SHA-256 checksums! Tampering or corruption detected.\n\nRestoration has been blocked to protect system stability.\n\nDetails:\n%s</string>
+    <string name="restore_tamper_msg">Some files did not match SHA-256 checksums (modified or corrupted). Restore was not run.\n\nDetails:\n%s</string>
     <string name="btn_save_settings">Save Settings</string>
 
     <!-- Partition Menu -->
     <string name="menu_format">Format Image</string>
-    <string name="menu_format_desc">Auto unmounts and re-initializes the ext4 image file</string>
+    <string name="menu_format_desc">Unmounts, then re-creates the ext4 image</string>
     <string name="menu_mount">Mount Image</string>
     <string name="menu_unmount">Unmount Image</string>
-    <string name="menu_mount_desc">Mounts OverlayFS and intercepts this partition</string>
-    <string name="menu_unmount_desc">Safely unmounts partition from runtime and syncs data</string>
+    <string name="menu_mount_desc">Mounts OverlayFS on this partition</string>
+    <string name="menu_unmount_desc">Unmounts the partition and syncs data</string>
     <string name="menu_resize">Expand Capacity</string>
-    <string name="menu_resize_desc">Hot/offline capacity resize via ext4 resize2fs</string>
+    <string name="menu_resize_desc">Expand capacity online or offline</string>
     <string name="menu_compact">Compact &amp; Shrink</string>
     <string name="menu_compact_desc">Tune reserved blocks (tune2fs) or shrink volume</string>
     <string name="menu_fsck">Filesystem Check (e2fsck)</string>
-    <string name="menu_fsck_desc">Run e2fsck to verify block integrity and metadata consistency</string>
+    <string name="menu_fsck_desc">Run e2fsck to check and fix the image</string>
     <string name="tag_fsck">fsck</string>
     <string name="menu_analysis">Storage Analysis</string>
-    <string name="menu_analysis_desc">Analyzes ext4 blocks and modification footprint</string>
+    <string name="menu_analysis_desc">Auto unmounts first, then analyzes ext4 block usage</string>
     <string name="menu_delete">Delete Image</string>
-    <string name="menu_delete_desc">Unmounts and permanently removes image files</string>
+    <string name="menu_delete_desc">Unmounts, then removes image files and work dir</string>
     <string name="menu_create">Create Image</string>
-    <string name="menu_create_desc">Configure capacity quota and upper layer stack</string>
+    <string name="menu_create_desc">Set capacity and filesystem parameters</string>
     <string name="tag_confirm">Confirm</string>
     <string name="tag_resize">Resize</string>
     <string name="tag_compact">Shrink</string>
@@ -160,50 +160,50 @@
     <string name="dialog_resize_cur_cap">Current / Used</string>
     <string name="dialog_resize_cur_cap_fmt">%1$d MiB (Used %2$d MiB)</string>
     <string name="dialog_resize_target">Target Capacity (MiB)</string>
-    <string name="dialog_resize_hint_mounted">Status: Mounted. Online hot resize will be performed.</string>
-    <string name="dialog_resize_hint_offline">Status: Offline. Fast safe resize will be performed.</string>
-    <string name="btn_resize_confirm">Expand Now</string>
+    <string name="dialog_resize_hint_mounted">Mounted: online resize (losetup -c + resize2fs)</string>
+    <string name="dialog_resize_hint_offline">Offline: resize (truncate + e2fsck + resize2fs)</string>
+    <string name="btn_resize_confirm">Expand</string>
     <string name="toast_resize_err_smaller">Target size must be greater than current size (%d MiB)</string>
     <string name="toast_resize_in_progress">Expanding [%1$s] capacity to %2$d MiB...</string>
-    <string name="toast_resize_success">[%1$s] Capacity expanded to %2$d MiB!</string>
+    <string name="toast_resize_success">[%1$s] expanded to %2$d MiB.</string>
     <string name="toast_resize_failed">Expansion failed: %s</string>
     <string name="toast_unmount_failed_fmt">Unmount failed: %s</string>
 
     <!-- Compact Dialog -->
-    <string name="dialog_compact_title">Compact &amp; Shrink Image</string>
+    <string name="dialog_compact_title">Compact and Shrink Image</string>
     <string name="dialog_compact_cap_status">Capacity Status</string>
     <string name="dialog_compact_cap_fmt">%1$d MiB (Logical) - %2$d MiB (Disk)</string>
     <string name="dialog_compact_tune_title">1. Release Reserved Blocks (tune2fs -m)</string>
-    <string name="dialog_compact_tune_desc" formatted="false">ext4 reserves 5% for root by default. Adjust to 0% or 1% to instantly reclaim space.</string>
-    <string name="dialog_compact_tune_0">Set 0% (Max)</string>
+    <string name="dialog_compact_tune_desc" formatted="false">ext4 reserves 5% for root by default. 0% or 1% frees that space.</string>
+    <string name="dialog_compact_tune_0">Set 0%</string>
     <string name="dialog_compact_tune_1">Set 1% (Rec)</string>
     <string name="dialog_compact_tune_5">Set 5% (Def)</string>
     <string name="dialog_compact_shrink_title">2. Shrink Logical Size (resize2fs)</string>
-    <string name="dialog_compact_shrink_limit_calc">Calculating safe shrink limit...</string>
-    <string name="dialog_compact_shrink_limit_fmt">Safe shrink limit: ≈ %d MiB</string>
+    <string name="dialog_compact_shrink_limit_calc">Calculating minimum shrink size...</string>
+    <string name="dialog_compact_shrink_limit_fmt">Minimum shrink size: ≈ %d MiB</string>
     <string name="dialog_compact_shrink_hint">Target Size (MiB)</string>
     <string name="dialog_compact_btn_shrink">Shrink</string>
 
     <!-- Dialog Confirmations -->
-    <string name="dialog_reboot_title">Safe Reboot Confirmation</string>
-    <string name="dialog_reboot_msg">All mounted OverlayFS partitions will be safely unmounted and synced before rebooting the device.\n\nReboot now?</string>
-    <string name="dialog_reboot_btn">Reboot Now</string>
+    <string name="dialog_reboot_title">Reboot Confirmation</string>
+    <string name="dialog_reboot_msg">All mounted partitions will be unmounted and synced, then the device reboots.\n\nReboot now?</string>
+    <string name="dialog_reboot_btn">Reboot</string>
     <string name="dialog_format_title">Format Image Confirmation</string>
-    <string name="dialog_format_msg_fmt">Are you sure you want to format OverlayFS image for [%1$s] (%2$s)?\n\nIf mounted, partition will be safely unmounted first\nmkfs.ext4 will reinitialize filesystem and clear workdir\nAll partition modifications will be erased\n\nProceed?</string>
+    <string name="dialog_format_msg_fmt">Are you sure you want to format the OverlayFS image for [%1$s] (%2$s)?\n\nIf mounted, the partition will be unmounted first\nmkfs.ext4 re-creates the filesystem and clears the work dir\nAll partition modifications will be erased\n\nProceed?</string>
     <string name="dialog_format_btn">Format</string>
     <string name="dialog_delete_part_title">Delete Image Confirmation</string>
-    <string name="dialog_delete_part_msg_fmt">Are you sure you want to delete OverlayFS image for [%1$s] (%2$s)?\n\nIf mounted, partition will be safely unmounted first\n%3$s-*.img files will be permanently deleted\nAll modifications will be lost\n\nProceed?</string>
+    <string name="dialog_delete_part_msg_fmt">Are you sure you want to delete the OverlayFS image for [%1$s] (%2$s)?\n\nIf mounted, the partition will be unmounted first\n%3$s-*.img files will be permanently deleted\nAll modifications will be lost\n\nProceed?</string>
     <string name="dialog_delete_part_btn">Delete</string>
-    <string name="dialog_delete_all_title">Delete All Partition Data Confirmation</string>
-    <string name="dialog_delete_all_msg">Are you sure you want to delete all OverlayFS images?\n\nAll mounted partitions will be safely unmounted\nAll .img files will be permanently deleted\nAll system layer modifications will be lost\n\nThis cannot be undone. Proceed?</string>
+    <string name="dialog_delete_all_title">Delete All Images Confirmation</string>
+    <string name="dialog_delete_all_msg">Are you sure you want to delete all OverlayFS images?\n\nAll mounted partitions will be unmounted\nAll .img files will be permanently deleted\nAll modifications will be lost\n\nThis cannot be undone. Proceed?</string>
     <string name="dialog_delete_all_btn">Delete All</string>
     <string name="dialog_shrink_title">Confirm Size Shrink</string>
-    <string name="dialog_shrink_msg_fmt">Are you sure you want to shrink [%1$s] image to %2$d MiB?\n\nIf mounted, it will safely unmount, shrink, and remount\nresize2fs will truncate the filesystem\n\nProceed?</string>
-    <string name="dialog_shrink_btn">Shrink Now</string>
+    <string name="dialog_shrink_msg_fmt">Are you sure you want to shrink the [%1$s] image to %2$d MiB?\n\nIf mounted, it will be unmounted, shrunk, and remounted\nresize2fs shrinks the filesystem\n\nProceed?</string>
+    <string name="dialog_shrink_btn">Shrink</string>
     <string name="dialog_no_image_title">No Partition Images Found</string>
-    <string name="dialog_no_image_msg">No partition images have been initialized yet.\n\nOverlayFS requires ext4 image files to construct writable layers. Please create at least one partition image before mounting.</string>
+    <string name="dialog_no_image_msg">No partition images exist yet.\n\nOverlayFS needs an ext4 image for the writable layer. Create at least one image first.</string>
     <string name="dialog_no_image_btn_create">Create Image</string>
-    <string name="toast_select_partition_to_create">Please tap a partition to create its image</string>
+    <string name="toast_select_partition_to_create">Tap a partition to create its image</string>
 
     <string name="toast_no_image">Partition has no image. Create or mount first.</string>
     <string name="toast_theme_changing">Changing theme...</string>
@@ -211,23 +211,23 @@
     <string name="toast_custom_term_invalid">Invalid color code. Use hex format like #1E1E2E.</string>
     <string name="toast_lang_changed">Language changed</string>
     <string name="toast_backup_in_progress">Backing up upper layers to /sdcard/Gh0stra1n_Backup/...</string>
-    <string name="toast_backup_success_fmt">Backup successful! File saved at:\n%s</string>
+    <string name="toast_backup_success_fmt">Backup saved to:\n%s</string>
     <string name="toast_backup_failed_fmt">Backup failed: %s</string>
     <string name="toast_status_refreshed">Refreshed system &amp; partition status</string>
-    <string name="toast_device_info_copied">Device environment info copied to clipboard</string>
+    <string name="toast_device_info_copied">Device info copied</string>
     <string name="toast_settings_saved">Settings saved</string>
-    <string name="toast_tune_success_fmt">Reserved ratio set to %d%%!</string>
+    <string name="toast_tune_success_fmt">Reserved ratio set to %d%%</string>
     <string name="toast_tune_failed_fmt">Tuning failed: %s</string>
     <string name="toast_shrink_err_larger">Target size must be smaller than current size (%d MiB)</string>
-    <string name="toast_shrink_in_progress">Safely shrinking [%s] image...</string>
-    <string name="toast_shrink_success_fmt">[%1$s] Successfully shrunk to %2$d MiB!</string>
+    <string name="toast_shrink_in_progress">Shrinking [%s] image...</string>
+    <string name="toast_shrink_success_fmt">[%1$s] shrunk to %2$d MiB</string>
     <string name="toast_shrink_failed_fmt">Shrink failed: %s</string>
 
     <!-- Partition Explorer -->
     <string name="explorer_search_hint">Search files (including hidden)...</string>
-    <string name="explorer_root_tab">📁 Root (/)</string>
-    <string name="explorer_upper_tab">⚡ Upper (u/)</string>
-    <string name="explorer_work_tab">🛠️ Work (w/)</string>
+    <string name="explorer_root_tab">Root (/)</string>
+    <string name="explorer_upper_tab">Upper (u/)</string>
+    <string name="explorer_work_tab">Work (w/)</string>
     <string name="explorer_empty">Directory is empty</string>
     <string name="explorer_loading">Reading partition directory tree...</string>
 
@@ -244,33 +244,33 @@
     <string name="create_image_title">Create Disk Image</string>
     <string name="create_image_subtitle">Image Parameters</string>
     <string name="create_image_target_part">Target Partition</string>
-    <string name="create_image_target_part_desc">The system read-only partition this image binds to. When mounted, it acts as an upper writable overlay layer.</string>
+    <string name="create_image_target_part_desc">The read-only partition this image covers. When mounted, writes go to the upper layer.</string>
     <string name="create_image_quota">Quota (MiB)</string>
-    <string name="create_image_quota_desc">Virtual allocation cap of the image. Uses Sparse File technology, taking almost 0 flash space until written.</string>
+    <string name="create_image_quota_desc">Capacity cap. Created as a sparse file; actual usage grows with writes.</string>
     <string name="create_image_block_size">Block Size</string>
     <string name="create_image_bs_4096">4096 (4KB Rec)</string>
-    <string name="create_image_block_size_desc">Minimum filesystem allocation unit. 4096-byte matches the Android CPU page cache and flash blocks.</string>
+    <string name="create_image_block_size_desc">Allocation unit. 4096 matches the Android page size.</string>
     <string name="create_image_inode_density">Inode Density</string>
     <string name="create_image_inode_4096">4096 (Dense)</string>
     <string name="create_image_inode_8192">8192 (Standard)</string>
     <string name="create_image_inode_16384">16384 (Large Files)</string>
-    <string name="create_image_inode_density_desc">Bytes per inode. Lower values create more inodes for small files/patches to prevent inode exhaustion.</string>
+    <string name="create_image_inode_density_desc">Bytes per inode. Lower it if you need many small files.</string>
     <string name="create_image_res_ratio">Reserved Ratio</string>
     <string name="create_image_res_0">0% (Max)</string>
     <string name="create_image_res_1">1% (Recommended)</string>
     <string name="create_image_res_5">5% (Default)</string>
-    <string name="create_image_res_ratio_desc" formatted="false">Traditional Linux reserved blocks for root. Setting to 1% or 0% frees more usable space.</string>
+    <string name="create_image_res_ratio_desc" formatted="false">Blocks reserved for root. 1% or 0% frees more usable space.</string>
     <string name="create_image_features">Filesystem Features</string>
     <string name="create_image_feat_dir_index">dir_index (Directory Hash Index)</string>
     <string name="create_image_feat_filetype">filetype (Dir File Type Cache)</string>
     <string name="create_image_feat_sparse_super">sparse_super (Sparse Superblock)</string>
-    <string name="create_image_features_desc">Modern EXT4 features improve directory traversal/stat lookups and save metadata space.</string>
+    <string name="create_image_features_desc">Affect directory traversal speed and metadata usage.</string>
     <string name="create_image_save_template">Save as Default Template</string>
-    <string name="create_image_save_template_desc">Automatically apply these settings when creating images for other partitions.</string>
+    <string name="create_image_save_template_desc">Apply these settings when creating images for other partitions.</string>
     <string name="create_image_btn_submit">Create Image</string>
     <string name="create_image_confirm_title">Create Image</string>
-    <string name="create_image_confirm_msg_fmt">About to initialize new image container for [%1$s]:\n\nQuota Size: %2$d MiB (%3$s)\nFormat: EXT4 (Block: %4$dB)\nInode Density: %5$d bytes/inode\nReserved: %6$d%%\n\nFormat and register into image stack?</string>
-    <string name="create_image_btn_confirm">Create Now</string>
+    <string name="create_image_confirm_msg_fmt">Creating a new image for [%1$s]:\n\nQuota: %2$d MiB (%3$s)\nFormat: EXT4 (block %4$dB)\nInode density: %5$d bytes/inode\nReserved: %6$d%%\n\nProceed?</string>
+    <string name="create_image_btn_confirm">Create</string>
     <string name="create_image_in_progress">Initializing ext4 image...</string>
     <string name="toast_create_err_min">Image capacity cannot be less than 16 MiB</string>
     <string name="toast_create_err_max">Image capacity cannot exceed 16384 MiB (16 GiB)</string>
@@ -281,8 +281,8 @@
     <string name="analysis_title">Image Space Analysis</string>
     <string name="analysis_subtitle_fmt">%1$s %2$s</string>
     <string name="analysis_reanalyze">Re-analyze</string>
-    <string name="analysis_dir_prefix">📁 Dir: </string>
-    <string name="analysis_file_prefix">📄 File: </string>
+    <string name="analysis_dir_prefix">Dir:</string>
+    <string name="analysis_file_prefix">File:</string>
     <string name="legend_apk">■ APK/Packages</string>
     <string name="legend_so">■ SO/Native</string>
     <string name="legend_dex">■ DEX/Runtime</string>
@@ -291,14 +291,14 @@
     <string name="legend_db">■ Database</string>
     <string name="legend_dir">■ Directory</string>
     <string name="legend_other">■ Other Files</string>
-    <string name="analysis_loading_fmt">Fast parsing [%s] EXT4 metadata &amp; directory tree...</string>
-    <string name="analysis_loading">Fast parsing EXT4 metadata &amp; directory tree...</string>
+    <string name="analysis_loading_fmt">Parsing [%s] EXT4 metadata and directory tree...</string>
+    <string name="analysis_loading">Parsing EXT4 metadata and directory tree...</string>
     <string name="analysis_failed_title">Analysis Failed</string>
     <string name="analysis_current_level_fmt">Current Level: %1$s (%2$d items)</string>
     <string name="analysis_ext4_fmt">EXT4 - %1$dB Block - Used %2$s / %3$s (%4$s)</string>
     <string name="analysis_inode_fmt">Inode Usage: %1$d / %2$d (%3$.2f%%)</string>
     <string name="analysis_features_fmt">Filesystem Features: %s</string>
-    <string name="analysis_speed_fmt">⚡ %1$dms (%2$d items)</string>
+    <string name="analysis_speed_fmt">%1$dms (%2$d items)</string>
 
     <!-- Partition Explorer -->
     <string name="desc_search">Search files</string>
@@ -309,11 +309,11 @@
     <string name="explorer_sub_fmt">%s</string>
     <string name="explorer_stats_fmt">%1$d items (%2$d hidden)</string>
     <string name="explorer_parent_dir">.. (Parent Directory)</string>
-    <string name="explorer_parent_dir_hint">Click to navigate to parent</string>
+    <string name="explorer_parent_dir_hint">Tap to go to parent</string>
     <string name="explorer_items_count_fmt">%d items</string>
     <string name="explorer_root_breadcrumb">Root /</string>
-    <string name="toast_hidden_shown">Showing all hidden and system files</string>
-    <string name="toast_hidden_hidden">Hidden files hidden</string>
+    <string name="toast_hidden_shown">Showing hidden files</string>
+    <string name="toast_hidden_hidden">Hiding hidden files</string>
     <string name="toast_layer_not_found">Layer %s/ not found in image</string>
     <string name="sort_title">Choose Sort Order</string>
     <string name="sort_by_type">By Type &amp; Extension</string>
@@ -328,8 +328,8 @@
     <string name="toast_file_content_copied">File content copied to clipboard</string>
     <string name="toast_file_path_copied">File path copied to clipboard</string>
     <string name="preview_reading">Reading file content (read-only)...</string>
-    <string name="preview_text_header">📄 Text Content Preview (Max 32KB)</string>
-    <string name="preview_hex_header">⚡ Binary Hex Header Preview</string>
+    <string name="preview_text_header">Text Preview (max 32KB)</string>
+    <string name="preview_hex_header">Hex Header Preview</string>
 
     <!-- Partition Detail Dialog -->
     <string name="detail_title_fmt">[%1$s] %2$s Details</string>
@@ -339,9 +339,9 @@
     <string name="detail_img_file">Image File:</string>
     <string name="detail_no_img">No image created</string>
     <string name="detail_fs">Filesystem:</string>
-    <string name="detail_fs_desc">EXT4 - 4096B Block - Inode Dynamic Mapping</string>
+    <string name="detail_fs_desc">EXT4 - 4096B Block</string>
     <string name="detail_overlay_paths">Layer Paths:</string>
-    <string name="detail_lower_desc_fmt">Lower: %s (Base ROM, read-only)</string>
+    <string name="detail_lower_desc_fmt">Lower: %s (read-only)</string>
     <string name="detail_btn_browse">File Explorer</string>
     <string name="detail_btn_analysis">Space Analysis</string>
     <string name="state_live_active">Mounted</string>
@@ -350,12 +350,12 @@
     <!-- File Preview Dialog -->
     <string name="preview_type_text">Text / Config</string>
     <string name="preview_type_hidden">Hidden File</string>
-    <string name="preview_content_title">📄 Content Preview</string>
+    <string name="preview_content_title">Content Preview</string>
     <string name="preview_loading">Loading preview...</string>
     <string name="preview_copy_path">Copy Path</string>
     <string name="preview_copy_content">Copy Content</string>
     <string name="ncdu_dir_meta_fmt">%1$.1f%% - %2$d items</string>
-    <string name="toast_params_reset">Reset to default recommended parameters</string>
+    <string name="toast_params_reset">Reset to defaults</string>
     <string name="explorer_load_failed_title">Failed to read directory</string>
     <string name="preview_rel_path_fmt">Relative Path: %s</string>
     <string name="preview_file_size_fmt">File Size: %1$s (%2$d bytes)</string>
@@ -374,40 +374,91 @@
     <string name="about_app_subtitle">Rootless OverlayFS Partition Manager</string>
     <string name="about_version_label">Version Info</string>
     <string name="about_antifraud_title">Permanently Open Source &amp; Free</string>
-    <string name="about_antifraud_content">This software is 100% open source and completely free of charge!\nIf you purchased this software from any third-party store, reseller, or individual, you have been scammed! Please request a refund immediately and report it to our GitHub repository!</string>
+    <string name="about_antifraud_content">This software is open source and completely free.\nIf you paid for it on any third-party platform, store, or from an individual, you have been scammed. Request a refund immediately and report it on the GitHub repository.</string>
     <string name="about_antifraud_tag">Anti-Fraud - Resale Prohibited</string>
     <string name="about_developer_title">Core Developer</string>
     <string name="about_developer_name">OrionisLi (LemonFan-maker)</string>
     <string name="about_repo_title">Open Source Repository</string>
     <string name="about_repo_url">https://github.com/LemonFan-maker/gh0stra1n</string>
-    <string name="about_repo_desc">Visit GitHub to view source code, report issues, or star the project</string>
+    <string name="about_repo_desc">Source code and issues on GitHub</string>
     <string name="about_license_title">Open Source License</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">Changelog</string>
+    <string name="about_changelog_v116_title">v1.1.6 - De-flavored UI Copy and Resource Convergence</string>
+    <string name="about_changelog_v116_desc">Removed marketing tone from status and console log strings
+Design-time preview text moved to the tools namespace
+52 hardcoded captions and 9 content descriptions now use string resources
+Partition ids and size presets marked non-translatable; locale keys aligned</string>
     <string name="about_changelog_v115_title">v1.1.5 - Structure Dedup &amp; Language-Neutral Failure Details</string>
     <string name="about_changelog_v115_desc">Merged duplicated theme bootstrap, dp conversion, breadcrumb bar and failure dialog code into shared implementations\nAll settings reads and writes now go through SettingsStore instead of raw SharedPreferences\nRemoved 13 unreferenced drawables and eliminated every remaining cross-file duplicate block\n19 low-level failure details now carry only the failing command and raw output, keeping them neutral across all three locales\nCI now fails fast on blank signing secrets, restored the keystore decode step and refreshed deprecated actions</string>
     <string name="about_changelog_v114_title">v1.1.4 - Pipe Deadlock Fixes &amp; UI Copy Cleanup</string>
     <string name="about_changelog_v114_desc">Fixed pipe deadlock that silently dropped su output beyond 64KiB\nUnmount residue now matches exactly and verifies truthfully instead of reporting false success\nAdded 24 lifecycle guards across the main and explorer screens to stop crashes on back or theme switch\nCached settings and device info reads, cutting root forks on startup and save from 8 down to 1\nLog panel now appends incrementally past 500 entries instead of rebuilding the entire list each time\nTrimmed 42 UI strings, removing redundant modifiers from titles</string>
-    <string name="about_changelog_v113_title">v1.1.3 - Background Daemon &amp; Signature IPC Security</string>
-    <string name="about_changelog_v113_desc">Upgraded Gh0stOverlayService to independent daemon process (:daemon) surviving task swipe\nAdapted Android 14+ Foreground Service with low-priority silent notification and START_STICKY self-healing\nEnforced signature-level permissions and runtime UID verification against unauthorized callers\nSeamlessly integrated companion app IPC with unified Release signing and CI/CD pipeline</string>
-    <string name="about_changelog_v112_title">v1.1.2 - Dynamic Host Device &amp; System Probing</string>
-    <string name="about_changelog_v112_desc">Eliminated hardcoded host device strings; introduced dynamic DeviceInfoHelper\nAuto-detects OEM marketing model names (vivo/iQOO, Xiaomi/Redmi, OPPO/OnePlus, Honor, etc.)\nDynamically probes Linux kernel device codenames and Android OS version at runtime\nInteractive device info chip with click-to-copy full hardware specs &amp; CPU ABI to clipboard\nDecoupled header subtitles and synchronized runtime host initialization logs</string>
+    <string name="about_changelog_v113_title">v1.1.3 - Daemon Process and Caller Authentication</string>
+    <string name="about_changelog_v113_desc">Gh0stOverlayService moved to its own daemon process (:daemon); survives task swipe\nAndroid 14+ foreground service with low-priority silent notification and START_STICKY restart\nSignature-level permission plus runtime UID check against unauthorized callers\nCompanion-app IPC; rebuilt release signing and CI/CD</string>
+    <string name="about_changelog_v112_title">v1.1.2 - Dynamic Device Info</string>
+    <string name="about_changelog_v112_desc">Removed hardcoded device strings; DeviceInfoHelper probes at runtime\nDetects OEM marketing names (vivo/iQOO, Xiaomi/Redmi, OPPO/OnePlus, Honor)\nReads Linux device codename and Android version\nDevice chip is tap-to-copy for hardware and ABI info\nUnified header subtitle and init logs</string>
     <string name="about_changelog_v111_title">v1.1.1 - AIDL IPC Service Integration</string>
     <string name="about_changelog_v111_desc">Added IGh0stOverlayService AIDL inter-process communication interface\nExposed public Service (OVERLAY_SERVICE) for external modules/apps to interface with manager\nSupports remote Root probing, partition status query, upperdir retrieval, mount &amp; unmount\nSupports remote storage sync (syncStorage) and soft reboot (restartZygote)</string>
-    <string name="about_changelog_v110_title">v1.1.0 - Brand-New About Page &amp; Navigation Redesign</string>
-    <string name="about_changelog_v110_desc">Replaced test payloads tab with a plain About page\nReordered bottom navigation: Control, Partitions, Logs, Settings, About\nProminently display vector app logo with build-time Git commit hash pill\nAdded anti-fraud / permanently free notice and one-click GitHub repo link\nAdded complete version changelog timeline with full localization</string>
-    <string name="about_changelog_v103_title">v1.0.3 - Multi-SU Support &amp; Legacy Kernel Adaptation</string>
-    <string name="about_changelog_v103_desc">Added auto-detection for KernelSU, Magisk, APatch, and absolute su paths\nAdapted step-based loop allocation for legacy kernels (Linux 4.14+), fixing loop attach conflicts\nAuto-sync SELinux contexts on OverlayFS mount, resolving permission denied (error=13)\nGuided image creation prompts before mounting, preventing implicit disk formatting</string>
-    <string name="about_changelog_v102_title">v1.0.2 - Loop Teardown &amp; Idempotent Recovery</string>
-    <string name="about_changelog_v102_desc">Explicitly release associated loop devices upon unmount\nCollision-free loop device scanning (30..99) preventing EBUSY\nRemoved aggressive auto-resize; lowered minimum image size to 16 MiB</string>
-    <string name="about_changelog_v101_title">v1.0.1 - Pipelined Execution &amp; Debounce Protection</string>
-    <string name="about_changelog_v101_desc">Concurrent multi-partition pipelined mounting for faster startup\nAdded UI debounce and thread-level state refresh guard\nIntegrated GitHub Actions CI/CD automated build pipelines</string>
+    <string name="about_changelog_v110_title">v1.1.0 - About Page and Navigation Reorder</string>
+    <string name="about_changelog_v110_desc">Replaced payloads tab with an About page\nReordered bottom nav: Control, Partitions, Logs, Settings, About\nHeader shows logo and build-time git hash\nAdded open-source &amp; free notice and GitHub link\nAdded changelog timeline, localized</string>
+    <string name="about_changelog_v103_title">v1.0.3 - Multi-Root and Legacy Kernel Support</string>
+    <string name="about_changelog_v103_desc">Added KernelSU, Magisk, APatch, and absolute su path auto-detection\nStep-based loop allocation for legacy kernels (Linux 4.14), fixing attach conflicts\nSELinux contexts synced on mount, fixing permission denied (error=13)\nMount without image now prompts for creation instead of building one implicitly</string>
+    <string name="about_changelog_v102_title">v1.0.2 - Loop Release and Idempotent Mount</string>
+    <string name="about_changelog_v102_desc">Release loop devices on unmount\nScan free loop slots (30..99) to avoid EBUSY\nRemoved auto-resize; minimum image size lowered to 16 MiB</string>
+    <string name="about_changelog_v101_title">v1.0.1 - Concurrent Mount and Debounce</string>
+    <string name="about_changelog_v101_desc">Concurrent multi-partition mounting\nUI debounce and refresh guards\nGitHub Actions CI/CD</string>
     <string name="about_changelog_v100_title">v1.0.0 - Initial Open Source Release</string>
-    <string name="about_changelog_v100_desc">First official open-source release\nFlash-free system partition takeover via OverlayFS\nSkeuomorphic liquid glass navigation bar &amp; Material You theming</string>
+    <string name="about_changelog_v100_desc">First official open-source release\nModify system partitions without reflashing via OverlayFS\nLiquid glass bottom bar and Material You theming</string>
+
+    <!-- Accessibility & UI labels -->
+    <string name="cd_status_dot">Status indicator</string>
+    <string name="cd_shield_alert">Security notice</string>
+    <string name="cd_github">GitHub</string>
+    <string name="cd_open_in_browser">Open in browser</string>
+    <string name="cd_history">Version history</string>
+    <string name="cd_partition_status">Partition status</string>
+    <string name="cd_more_actions">More actions</string>
+    <string name="about_changelog_latest">LATEST</string>
+    <string name="about_footer">Gh0stra1n - Designed for Android System Enthusiasts\nCopyright © 2026 OrionisLi. All Rights Reserved.</string>
+
+    <!-- Partition identifiers -->
+    <string name="part_id_system" translatable="false">system</string>
+    <string name="part_id_vendor" translatable="false">vendor</string>
+    <string name="part_id_product" translatable="false">product</string>
+    <string name="part_id_system_ext" translatable="false">system_ext</string>
+    <string name="part_id_odm" translatable="false">odm</string>
+
+    <!-- Create image: size and block size -->
+    <string name="create_image_preset_256">256M</string>
+    <string name="create_image_preset_512">512M</string>
+    <string name="create_image_preset_1024">1024M</string>
+    <string name="create_image_preset_2048">2048M</string>
+    <string name="create_image_bs_1024">1024 (1KB)</string>
+    <string name="create_image_bs_2048">2048 (2KB)</string>
+
+    <!-- Resize dialog -->
+    <string name="dialog_resize_target_hint">768</string>
+    <string name="resize_add_256">+256M</string>
+    <string name="resize_add_512">+512M</string>
+    <string name="resize_add_1024">+1GB</string>
+    <string name="resize_add_2048">+2GB</string>
+
+    <!-- Terminal themes -->
+    <string name="dialog_custom_term_pill">RGB / HEX</string>
+    <string name="term_preset_catppuccin">Catppuccin</string>
+    <string name="term_preset_tokyo_night">Tokyo Night</string>
+    <string name="term_preset_dracula">Dracula</string>
+    <string name="term_preset_nord">Nord</string>
+    <string name="term_preset_gruvbox">Gruvbox</string>
+    <string name="term_preset_cyberpunk">Cyberpunk</string>
 
     <!-- Daemon & Notification -->
     <string name="overlay_daemon_channel_name">Gh0stra1n</string>
-    <string name="overlay_daemon_channel_desc">Keeps the OverlayFS IPC daemon running stably in the background</string>
-    <string name="overlay_daemon_notif_title">Gh0stra1n Daemon Active</string>
+    <string name="overlay_daemon_channel_desc">Keeps the OverlayFS IPC service running in the background</string>
+    <string name="overlay_daemon_notif_title">Gh0stra1n service running</string>
     <string name="overlay_daemon_notif_text">Service ready</string>
+    <string name="lang_zh_cn">简体中文</string>
+    <string name="lang_en">English</string>
+    <string name="lang_zh_tw">繁體中文</string>
+    <string name="val_dash">-</string>
 </resources>

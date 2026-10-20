@@ -12,48 +12,48 @@
     <!-- 顶部状态栏 -->
     <string name="header_desc">Rootless OverlayFS管理器</string>
     <string name="btn_refresh">刷新状态</string>
-    <string name="btn_safe_reboot">安全重启</string>
+    <string name="btn_safe_reboot">卸载后重启</string>
 
     <!-- 控制状态描述 -->
-    <string name="status_ready_text">就绪待命</string>
-    <string name="status_ready_desc">系统环境就绪，点击下方按钮挂载系统分区。</string>
-    <string name="status_live_desc">OverlayFS挂载生效中，系统分区已成功接管。</string>
-    <string name="status_mounting_desc">正在装载OverlayFS分区栈...</string>
-    <string name="status_teardown_desc">正在安全卸载各分区并落盘...</string>
-    <string name="status_unmounted_desc">已全部安全卸载，系统恢复原始状态。</string>
-    <string name="status_noroot_desc">未检测到Root权限，特权挂载不可用。</string>
+    <string name="status_ready_text">就绪</string>
+    <string name="status_ready_desc">环境就绪，可挂载系统分区。</string>
+    <string name="status_live_desc">OverlayFS挂载生效，分区已可写。</string>
+    <string name="status_mounting_desc">正在挂载分区...</string>
+    <string name="status_teardown_desc">正在卸载分区并同步磁盘...</string>
+    <string name="status_unmounted_desc">已全部卸载。</string>
+    <string name="status_noroot_desc">未检测到Root权限，无法挂载。</string>
     <string name="status_failed_desc">操作失败，请在控制台查看详细日志。</string>
     <string name="status_failed_fmt">操作失败：%s</string>
-    <string name="status_init_desc">正在初始化系统与特权环境...</string>
-    <string name="state_live_title">活跃挂载</string>
+    <string name="status_init_desc">正在初始化...</string>
+    <string name="state_live_title">已挂载</string>
     <string name="state_mounting_title">正在挂载</string>
     <string name="state_teardown_title">正在卸载</string>
     <string name="state_noroot_title">无ROOT</string>
-    <string name="state_failed_title">异常失败</string>
+    <string name="state_failed_title">失败</string>
     <string name="state_ready_title">就绪</string>
-    <string name="state_unmounted_title">已安全卸载</string>
+    <string name="state_unmounted_title">已卸载</string>
 
     <!-- 控制面板按钮与概览 -->
     <string name="btn_mount_overlayfs">挂载OverlayFS</string>
     <string name="btn_unmount_overlayfs">卸载OverlayFS</string>
     <string name="overview_title">分区概览</string>
-    <string name="overview_sub">5个系统核心分区</string>
+    <string name="overview_sub">5个系统分区</string>
     <string name="overview_mount_count_default">0/5已挂载</string>
     <string name="overview_mount_count_fmt">%d/5已挂载</string>
     <string name="overview_mount_count_none">0/5未挂载</string>
-    <string name="overview_total_label">全部总计</string>
+    <string name="overview_total_label">总计</string>
 
     <!-- 分区 Tab -->
     <string name="part_tab_title">系统分区</string>
     <string name="btn_unmount_all_part">卸载全部分区</string>
     <string name="btn_delete_all_part">删除全部镜像</string>
     <string name="btn_refresh_part">刷新</string>
-    <string name="part_quota_fmt">容量配额%d MiB</string>
+    <string name="part_quota_fmt">配额%d MiB</string>
     <string name="part_no_image">无镜像</string>
     <string name="menu_pill_exists">已存在</string>
     <string name="menu_disabled_no_image_hint">未检测到镜像文件，请先「创建新镜像」</string>
-    <string name="menu_disabled_has_image_hint">该分区已有镜像，每个分区限单一镜像</string>
-    <string name="create_image_already_exists">分区%1$s已存在镜像文件，每个分区限单一镜像！请先删除现有镜像再创建。</string>
+    <string name="menu_disabled_has_image_hint">该分区已有镜像，每个分区只能有一个镜像</string>
+    <string name="create_image_already_exists">分区%1$s已有镜像，每个分区只能有一个镜像。请先删除现有镜像。</string>
 
     <!-- 载荷测试 Tab -->
 
@@ -61,24 +61,24 @@
     <string name="log_tab_title">控制台</string>
     <string name="log_btn_copy">复制</string>
     <string name="log_btn_clear">清空</string>
-    <string name="log_init_text">Gh0stra1n 控制台就绪\n</string>
+    <string name="log_init_text">Gh0stra1n控制台\n</string>
     <string name="toast_log_copied">日志已复制到剪贴板</string>
     <string name="toast_log_cleared">日志已清空</string>
 
     <!-- 设置界面 -->
     <string name="settings_group_mount">挂载策略</string>
     <string name="settings_auto_mount_title">应用启动恢复挂载</string>
-    <string name="settings_auto_mount_desc">检测到上次LIVE状态时，应用启动后自动装载</string>
+    <string name="settings_auto_mount_desc">启动时恢复上次挂载的分区</string>
     <string name="settings_noatime_title">noatime</string>
-    <string name="settings_noatime_desc">禁用访问时间记录，大幅减少UFS闪存磨损并提升IO效率</string>
+    <string name="settings_noatime_desc">挂载时不更新atime，减少闪存写入</string>
     <string name="settings_autofsck_title">挂载前自检</string>
-    <string name="settings_autofsck_desc">装载镜像前调用e2fsck -p自动自愈，杜绝坏块死锁</string>
+    <string name="settings_autofsck_desc">挂载前先运行e2fsck -p修复镜像</string>
 
     <string name="settings_group_storage">存储与文件</string>
     <string name="settings_warn_title">空间预警阈值（%）</string>
-    <string name="settings_warn_desc">upper镜像剩余空间低于此百分比时提示扩容告警（5-90）</string>
+    <string name="settings_warn_desc">镜像剩余空间低于此百分比时告警（5-90）</string>
     <string name="settings_show_hidden_title">默认显示隐藏文件</string>
-    <string name="settings_show_hidden_desc">在分区文件管理器中默认展示点开头的Linux隐藏文件</string>
+    <string name="settings_show_hidden_desc">文件管理器默认显示点开头的隐藏文件</string>
 
     <string name="settings_group_appearance">外观</string>
     <string name="settings_ui_theme_title">应用主题配色</string>
@@ -99,10 +99,10 @@
     <string name="dialog_custom_term_title">自定义配色</string>
     <string name="dialog_custom_term_bg">背景色（Hex）</string>
     <string name="dialog_custom_term_fg">文本前景色（Hex）</string>
-    <string name="dialog_custom_term_preset">推荐极客配色预设</string>
+    <string name="dialog_custom_term_preset">预设配色</string>
     <string name="btn_apply_term_theme">应用并保存</string>
 
-    <string name="settings_haptic_title">触觉震动反馈</string>
+    <string name="settings_haptic_title">震动反馈</string>
     <string name="haptic_off">关闭</string>
     <string name="haptic_weak">微弱</string>
     <string name="haptic_std">标准</string>
@@ -112,44 +112,44 @@
 
     <string name="settings_group_maintenance">备份与恢复</string>
     <string name="settings_backup_title">备份修改层</string>
-    <string name="settings_backup_desc">为所有分区的upper文件生成SHA-256清单并打包至 /sdcard/Gh0stra1n_Backup/</string>
+    <string name="settings_backup_desc">打包所有分区upper文件到/sdcard/Gh0stra1n_Backup/并生成SHA-256清单</string>
     <string name="btn_backup_now">立即备份</string>
     <string name="settings_restore_title">恢复修改层</string>
-    <string name="settings_restore_desc">校验SHA-256防篡改哈希后安全还原到对应分区</string>
+    <string name="settings_restore_desc">校验SHA-256清单后还原到对应分区</string>
     <string name="btn_restore_now">恢复备份</string>
     <string name="restore_dialog_title">选择要恢复的备份归档</string>
-    <string name="restore_no_backups">未在 /sdcard/Gh0stra1n_Backup/ 找到任何备份归档文件</string>
+    <string name="restore_no_backups">/sdcard/Gh0stra1n_Backup/下没有找到备份归档</string>
     <string name="restore_confirm_title">确认恢复备份？</string>
-    <string name="restore_confirm_msg">将先执行硬件加速SHA-256完整性防篡改自检，校验通过后还原至对应分区的修改层。\n\n归档包：%1$s\n大小：%2$s\n\n是否继续执行？</string>
+    <string name="restore_confirm_msg">先校验SHA-256清单，通过后还原到对应分区的修改层。\n\n归档：%1$s\n大小：%2$s\n\n是否继续？</string>
     <string name="restore_btn_confirm">校验并恢复</string>
-    <string name="restore_in_progress">正在校验完整性并执行还原...</string>
-    <string name="restore_success">恢复成功！已还原各分区修改层数据。</string>
+    <string name="restore_in_progress">正在校验并还原...</string>
+    <string name="restore_success">还原完成</string>
     <string name="restore_failed_fmt">恢复失败：%s</string>
     <string name="restore_tamper_title">校验失败</string>
-    <string name="restore_tamper_msg">检测到备份包中的文件被篡改或损坏，SHA-256校验未通过！\n\n系统已主动阻断本次恢复操作以防系统崩溃或恶意注入。\n\n详情：\n%s</string>
+    <string name="restore_tamper_msg">备份中的部分文件与SHA-256清单不符（被改动或损坏），本次恢复未执行。\n\n详情：\n%s</string>
     <string name="btn_save_settings">保存配置</string>
 
     <!-- 分区操作菜单 -->
     <string name="menu_format">格式化此镜像</string>
-    <string name="menu_format_desc">先自动安全卸载，重新初始化ext4镜像文件</string>
+    <string name="menu_format_desc">先卸载，再用mkfs.ext4重建镜像</string>
     <string name="menu_mount">挂载此镜像</string>
     <string name="menu_unmount">卸载此镜像</string>
-    <string name="menu_mount_desc">装载OverlayFS并接管该系统分区</string>
-    <string name="menu_unmount_desc">从系统运行时中安全卸载该分区并同步数据</string>
+    <string name="menu_mount_desc">挂载该分区的OverlayFS</string>
+    <string name="menu_unmount_desc">卸载该分区并同步数据</string>
     <string name="menu_resize">扩展镜像容量</string>
-    <string name="menu_resize_desc">在线/离线调整容量，无缝支持ext4 resize2fs</string>
+    <string name="menu_resize_desc">挂载中在线扩容，离线走resize2fs</string>
     <string name="menu_compact">镜像瘦身</string>
     <string name="menu_compact_desc">释放保留空间（tune2fs），或压缩逻辑体积</string>
     <string name="menu_fsck">文件系统自检（e2fsck）</string>
-    <string name="menu_fsck_desc">调用e2fsck检查并修复镜像坏块与元数据一致性</string>
+    <string name="menu_fsck_desc">运行e2fsck检查并修复镜像</string>
     <string name="tag_fsck">自检</string>
     <string name="menu_analysis">镜像占用分析</string>
-    <string name="menu_analysis_desc">需先自动卸载后分析ext4块与修改体积</string>
-    <string name="menu_delete">彻底删除此镜像</string>
-    <string name="menu_delete_desc">先安全卸载，彻底删除 .img文件并清空工作目录</string>
+    <string name="menu_analysis_desc">先自动卸载，再分析ext4块占用</string>
+    <string name="menu_delete">删除此镜像</string>
+    <string name="menu_delete_desc">先卸载，删除.img文件并清空工作目录</string>
     <string name="menu_create">创建新镜像</string>
-    <string name="menu_create_desc">自定义配额容量与上层工作栈结构</string>
-    <string name="tag_confirm">二次确认</string>
+    <string name="menu_create_desc">设置容量与文件系统参数</string>
+    <string name="tag_confirm">需确认</string>
     <string name="tag_resize">扩容</string>
     <string name="tag_compact">瘦身</string>
     <string name="tag_analysis">树图</string>
@@ -160,74 +160,74 @@
     <string name="dialog_resize_cur_cap">当前容量 / 已用</string>
     <string name="dialog_resize_cur_cap_fmt">%1$d MiB（已用%2$d MiB）</string>
     <string name="dialog_resize_target">目标容量（MiB）</string>
-    <string name="dialog_resize_hint_mounted">状态：处于挂载状态，将执行在线热扩容（losetup -c + resize2fs）</string>
-    <string name="dialog_resize_hint_offline">状态：处于离线状态，将执行快速安全扩容（truncate + e2fsck + resize2fs）</string>
-    <string name="btn_resize_confirm">立即扩容</string>
+    <string name="dialog_resize_hint_mounted">已挂载：将在线扩容（losetup -c + resize2fs）</string>
+    <string name="dialog_resize_hint_offline">未挂载：将离线扩容（truncate + e2fsck + resize2fs）</string>
+    <string name="btn_resize_confirm">扩容</string>
     <string name="toast_resize_err_smaller">目标容量必须大于当前容量（%d MiB）</string>
     <string name="toast_resize_in_progress">正在扩展%1$s镜像容量至%2$d MiB...</string>
-    <string name="toast_resize_success">%1$s扩容成功！当前容量：%2$d MiB</string>
+    <string name="toast_resize_success">%1$s扩容完成，当前容量%2$d MiB</string>
     <string name="toast_resize_failed">扩容失败：%s</string>
     <string name="toast_unmount_failed_fmt">卸载失败：%s</string>
 
     <!-- 压缩弹窗 -->
-    <string name="dialog_compact_title">镜像压缩与空间整理</string>
+    <string name="dialog_compact_title">压缩与收缩镜像</string>
     <string name="dialog_compact_cap_status">容量状态</string>
     <string name="dialog_compact_cap_fmt">%1$d MiB（逻辑） - %2$d MiB（占用）</string>
     <string name="dialog_compact_tune_title">1. 保留块空间释放（tune2fs -m）</string>
-    <string name="dialog_compact_tune_desc" formatted="false">ext4默认预留5%空间给超级用户，调至0%或1%可瞬间释放大量空间</string>
-    <string name="dialog_compact_tune_0">设为0%（极限）</string>
+    <string name="dialog_compact_tune_desc" formatted="false">ext4默认为root预留5%空间，改为0%或1%可释放这部分容量</string>
+    <string name="dialog_compact_tune_0">设为0%</string>
     <string name="dialog_compact_tune_1">设为1%（推荐）</string>
     <string name="dialog_compact_tune_5">设为5%（默认）</string>
     <string name="dialog_compact_shrink_title">2. 镜像逻辑体积收缩（resize2fs）</string>
-    <string name="dialog_compact_shrink_limit_calc">检测到最小安全收缩极限：计算中...</string>
-    <string name="dialog_compact_shrink_limit_fmt">检测到最小安全收缩极限：≈ %d MiB</string>
+    <string name="dialog_compact_shrink_limit_calc">正在计算最小可收缩大小...</string>
+    <string name="dialog_compact_shrink_limit_fmt">最小可收缩至≈ %d MiB</string>
     <string name="dialog_compact_shrink_hint">目标收缩大小（MiB）</string>
-    <string name="dialog_compact_btn_shrink">执行收缩</string>
+    <string name="dialog_compact_btn_shrink">收缩</string>
 
     <!-- 对话框确认与通用按钮 -->
-    <string name="dialog_reboot_title">安全重启确认</string>
-    <string name="dialog_reboot_msg">设备将按规范安全卸载所有已挂载的OverlayFS分区并落盘数据，随后执行系统重启。\n\n确定要现在重启手机吗？</string>
-    <string name="dialog_reboot_btn">立即重启</string>
+    <string name="dialog_reboot_title">重启确认</string>
+    <string name="dialog_reboot_msg">将先卸载所有已挂载分区并同步数据，然后重启设备。\n\n现在重启？</string>
+    <string name="dialog_reboot_btn">重启</string>
     <string name="dialog_format_title">格式化镜像确认</string>
-    <string name="dialog_format_msg_fmt">确定要格式化分区%1$s（%2$s）的OverlayFS镜像吗？\n\n若当前处于挂载状态，将先自动安全卸载该分区\n将使用mkfs.ext4重新初始化镜像文件系统并清空工作目录\n该分区的全部修改将被清空恢复初始状态\n\n确定格式化吗？</string>
+    <string name="dialog_format_msg_fmt">确定要格式化分区%1$s（%2$s）的OverlayFS镜像吗？\n\n若处于挂载状态将先自动卸载\n用mkfs.ext4重新初始化镜像并清空工作目录\n该分区的全部修改将被清除\n\n确定格式化吗？</string>
     <string name="dialog_format_btn">确认格式化</string>
-    <string name="dialog_delete_part_title">彻底删除镜像确认</string>
-    <string name="dialog_delete_part_msg_fmt">确定要彻底删除分区%1$s（%2$s）的OverlayFS镜像数据吗？\n\n若当前处于挂载状态，将先自动安全卸载该分区\n将彻底删除%3$s-*.img镜像文件并清空工作目录\n该分区的全部修改将被丢弃且无法恢复\n\n确定彻底删除吗？</string>
-    <string name="dialog_delete_part_btn">彻底删除</string>
-    <string name="dialog_delete_all_title">清空所有分区数据确认</string>
-    <string name="dialog_delete_all_msg">确定要彻底删除所有受管分区的OverlayFS镜像数据吗？\n\n将安全卸载所有已挂载分区\n永久删除所有 .img镜像文件并清空工作目录\n跨重启的所有系统层修改将被彻底丢弃\n\n此操作不可撤销，确定执行吗？</string>
+    <string name="dialog_delete_part_title">删除镜像确认</string>
+    <string name="dialog_delete_part_msg_fmt">确定要删除分区%1$s（%2$s）的OverlayFS镜像吗？\n\n若处于挂载状态将先自动卸载\n删除%3$s-*.img镜像并清空工作目录\n该分区的全部修改将无法恢复\n\n确定删除吗？</string>
+    <string name="dialog_delete_part_btn">删除</string>
+    <string name="dialog_delete_all_title">删除全部镜像确认</string>
+    <string name="dialog_delete_all_msg">确定要删除所有受管分区的OverlayFS镜像吗？\n\n将先卸载所有已挂载分区\n删除全部.img镜像并清空工作目录\n所有分区修改将无法恢复\n\n此操作不可撤销，确定执行？</string>
     <string name="dialog_delete_all_btn">全部删除</string>
     <string name="dialog_shrink_title">确认收缩镜像体积</string>
-    <string name="dialog_shrink_msg_fmt">确定要将分区%1$s镜像收缩至%2$d MiB吗？\n\n若处于挂载中，将自动先安全卸载后收缩并重新装载\n将使用resize2fs对ext4文件系统与镜像执行截断收缩\n\n确定执行吗？</string>
-    <string name="dialog_shrink_btn">立即收缩</string>
+    <string name="dialog_shrink_msg_fmt">确定要将分区%1$s镜像收缩至%2$d MiB吗？\n\n若处于挂载状态将先卸载、收缩后重新挂载\n用resize2fs收缩文件系统\n\n确定执行吗？</string>
+    <string name="dialog_shrink_btn">收缩</string>
     <string name="dialog_no_image_title">未检测到分区镜像</string>
-    <string name="dialog_no_image_msg">当前系统尚未初始化任何分区镜像。\n\nOverlayFS需要基于ext4镜像构建可写层。请先创建至少一个分区镜像后再执行挂载。</string>
+    <string name="dialog_no_image_msg">当前尚未创建任何分区镜像。\n\nOverlayFS的可写层需要ext4镜像，请先创建至少一个分区镜像。</string>
     <string name="dialog_no_image_btn_create">去创建镜像</string>
-    <string name="toast_select_partition_to_create">请点击需要配置的分区以创建镜像</string>
+    <string name="toast_select_partition_to_create">点击要配置的分区以创建镜像</string>
 
     <string name="toast_no_image">该分区暂无镜像，请先创建或挂载</string>
     <string name="toast_theme_changing">主题切换中...</string>
     <string name="toast_custom_term_applied">自定义配色已生效</string>
     <string name="toast_custom_term_invalid">颜色代码格式无效，请输入如 #1E1E2E的十六进制代码</string>
     <string name="toast_lang_changed">语言已切换 / Language changed</string>
-    <string name="toast_backup_in_progress">正在备份全部修改层至 /sdcard/Gh0stra1n_Backup/...</string>
-    <string name="toast_backup_success_fmt">备份成功！文件存放在：\n%s</string>
+    <string name="toast_backup_in_progress">正在备份修改层到/sdcard/Gh0stra1n_Backup/...</string>
+    <string name="toast_backup_success_fmt">备份完成，文件在：\n%s</string>
     <string name="toast_backup_failed_fmt">备份失败：%s</string>
     <string name="toast_status_refreshed">已刷新系统与分区状态</string>
-    <string name="toast_device_info_copied">已复制设备环境信息至剪贴板</string>
+    <string name="toast_device_info_copied">设备信息已复制</string>
     <string name="toast_settings_saved">设置已保存</string>
-    <string name="toast_tune_success_fmt">保留块比例已设为%d%%！</string>
+    <string name="toast_tune_success_fmt">保留块比例已设为%d%%</string>
     <string name="toast_tune_failed_fmt">设置失败：%s</string>
     <string name="toast_shrink_err_larger">目标大小必须小于当前大小（%d MiB）</string>
-    <string name="toast_shrink_in_progress">正在安全收缩%s镜像...</string>
-    <string name="toast_shrink_success_fmt">%1$s成功收缩至%2$d MiB！</string>
+    <string name="toast_shrink_in_progress">正在收缩%s镜像...</string>
+    <string name="toast_shrink_success_fmt">%1$s已收缩至%2$d MiB</string>
     <string name="toast_shrink_failed_fmt">收缩失败：%s</string>
 
     <!-- 分区文件管理 -->
     <string name="explorer_search_hint">搜索分区文件（支持隐藏项）...</string>
-    <string name="explorer_root_tab">📁 根目录（/）</string>
-    <string name="explorer_upper_tab">⚡ 修改层（u/）</string>
-    <string name="explorer_work_tab">🛠️ 工作层（w/）</string>
+    <string name="explorer_root_tab">根目录（/）</string>
+    <string name="explorer_upper_tab">修改层（u/）</string>
+    <string name="explorer_work_tab">工作层（w/）</string>
     <string name="explorer_empty">当前目录为空</string>
     <string name="explorer_loading">正在读取分区文件目录树...</string>
 
@@ -244,33 +244,33 @@
     <string name="create_image_title">创建磁盘镜像</string>
     <string name="create_image_subtitle">镜像参数</string>
     <string name="create_image_target_part">目标分区</string>
-    <string name="create_image_target_part_desc">该镜像所绑定的系统只读分区。挂载后将作为上层可写容器覆盖在此分区上，实现免解包注入。</string>
+    <string name="create_image_target_part_desc">镜像对应的系统只读分区。挂载后在其上叠加可写层。</string>
     <string name="create_image_quota">配额容量（MiB）</string>
-    <string name="create_image_quota_desc">镜像的虚拟分配上限。系统采用稀疏文件（Sparse File）技术，创建时几乎不占用闪存，写入时按需动态分配。</string>
+    <string name="create_image_quota_desc">分配上限。稀疏文件创建，实际占用随写入增长。</string>
     <string name="create_image_block_size">块大小</string>
     <string name="create_image_bs_4096">4096（4KB推荐）</string>
-    <string name="create_image_block_size_desc">文件系统分配的最小数据块单位。4096字节与Android CPU页缓存和闪存擦写块对齐，读写吞吐最佳。</string>
-    <string name="create_image_inode_density">Inode 密度</string>
+    <string name="create_image_block_size_desc">最小分配单位。4096与Android页大小对齐，一般保持默认。</string>
+    <string name="create_image_inode_density">Inode密度</string>
     <string name="create_image_inode_4096">4096（密集）</string>
     <string name="create_image_inode_8192">8192（标准推荐）</string>
     <string name="create_image_inode_16384">16384（大文件）</string>
-    <string name="create_image_inode_density_desc">每多少字节预留一个Inode索引节点。若需注入大量小文件或补丁，建议调小数值以防止Inode提前耗尽。</string>
+    <string name="create_image_inode_density_desc">每个Inode占用的字节数。小文件多时调小，避免Inode耗尽。</string>
     <string name="create_image_res_ratio">保留空间</string>
     <string name="create_image_res_0">0%（全开）</string>
     <string name="create_image_res_1">1%（推荐）</string>
     <string name="create_image_res_5">5%（传统）</string>
-    <string name="create_image_res_ratio_desc" formatted="false">传统Linux为root特权预留的保留空间。OverlayFS镜像中设为1%或0%可释放更多可用容量。</string>
+    <string name="create_image_res_ratio_desc" formatted="false">Linux为root预留的保留空间。设为1%或0%可增加可用容量。</string>
     <string name="create_image_features">文件系统特性</string>
     <string name="create_image_feat_dir_index">dir_index（目录哈希索引）</string>
     <string name="create_image_feat_filetype">filetype（目录文件类型缓存）</string>
     <string name="create_image_feat_sparse_super">sparse_super（分散超级块备份）</string>
-    <string name="create_image_features_desc">启用现代EXT4文件系统扩展特性，能显著提高大型目录的遍历与stat查找效率并节约磁盘元数据头空间。</string>
+    <string name="create_image_features_desc">影响目录遍历速度与元数据占用。</string>
     <string name="create_image_save_template">保存为默认创建模板</string>
-    <string name="create_image_save_template_desc">后续为其他分区创建新镜像时自动加载此参数配置</string>
+    <string name="create_image_save_template_desc">创建其他分区镜像时默认使用这组参数</string>
     <string name="create_image_btn_submit">创建镜像</string>
     <string name="create_image_confirm_title">创建镜像</string>
-    <string name="create_image_confirm_msg_fmt">即将为%1$s分区初始化新镜像容器：\n\n配额大小：%2$d MiB（%3$s）\n存储格式：EXT4（块大小：%4$dB）\nInode密度：%5$d bytes/inode\n保留块：%6$d%%\n\n确认开始格式化并注册到镜像栈吗？</string>
-    <string name="create_image_btn_confirm">立即创建</string>
+    <string name="create_image_confirm_msg_fmt">即将为%1$s分区创建新镜像：\n\n配额：%2$d MiB（%3$s）\n格式：EXT4（块大小%4$dB）\nInode密度：%5$d bytes/inode\n保留块：%6$d%%\n\n确认创建？</string>
+    <string name="create_image_btn_confirm">创建</string>
     <string name="create_image_in_progress">正在初始化ext4镜像...</string>
     <string name="toast_create_err_min">镜像容量最小不能低于16 MiB</string>
     <string name="toast_create_err_max">镜像容量不能超过16384 MiB（16 GiB）</string>
@@ -281,8 +281,8 @@
     <string name="analysis_title">镜像占用分析</string>
     <string name="analysis_subtitle_fmt">%1$s %2$s</string>
     <string name="analysis_reanalyze">重新分析</string>
-    <string name="analysis_dir_prefix">📁 目录：</string>
-    <string name="analysis_file_prefix">📄 文件：</string>
+    <string name="analysis_dir_prefix">目录：</string>
+    <string name="analysis_file_prefix">文件：</string>
     <string name="legend_apk">■ APK/包</string>
     <string name="legend_so">■ SO/原生</string>
     <string name="legend_dex">■ DEX/运行</string>
@@ -291,14 +291,14 @@
     <string name="legend_db">■ 数据库</string>
     <string name="legend_dir">■ 目录</string>
     <string name="legend_other">■ 其他文件</string>
-    <string name="analysis_loading_fmt">正在高速解析%s EXT4元数据与目录树...</string>
-    <string name="analysis_loading">正在高速解析EXT4元数据与目录树...</string>
+    <string name="analysis_loading_fmt">正在解析%s的EXT4元数据与目录树...</string>
+    <string name="analysis_loading">正在解析EXT4元数据与目录树...</string>
     <string name="analysis_failed_title">镜像分析失败</string>
     <string name="analysis_current_level_fmt">当前层级：%1$s（%2$d项）</string>
     <string name="analysis_ext4_fmt">EXT4 - %1$dB块 - 已用%2$s / %3$s（%4$s）</string>
     <string name="analysis_inode_fmt">Inode占用：%1$d / %2$d（%3$.2f%%）</string>
     <string name="analysis_features_fmt">文件系统特性：%s</string>
-    <string name="analysis_speed_fmt">⚡ %1$dms（%2$d项）</string>
+    <string name="analysis_speed_fmt">用时%1$dms（%2$d项）</string>
 
     <!-- 分区文件浏览 -->
     <string name="desc_search">搜索文件</string>
@@ -308,12 +308,12 @@
     <string name="explorer_title_fmt">%s文件管理</string>
     <string name="explorer_sub_fmt">%s</string>
     <string name="explorer_stats_fmt">%1$d项（含%2$d个隐藏）</string>
-    <string name="explorer_parent_dir">..（返回上一级目录）</string>
-    <string name="explorer_parent_dir_hint">点击导航至父级目录</string>
+    <string name="explorer_parent_dir">..（上级目录）</string>
+    <string name="explorer_parent_dir_hint">点击进入上级目录</string>
     <string name="explorer_items_count_fmt">%d项</string>
     <string name="explorer_root_breadcrumb">根目录 /</string>
-    <string name="toast_hidden_shown">已开启：显示所有隐藏文件与系统项</string>
-    <string name="toast_hidden_hidden">已隐藏系统隐藏文件</string>
+    <string name="toast_hidden_shown">已显示隐藏文件</string>
+    <string name="toast_hidden_hidden">不再显示隐藏文件</string>
     <string name="toast_layer_not_found">该镜像未发现%s/ 层级</string>
     <string name="sort_title">选择文件排序方式</string>
     <string name="sort_by_type">按类型与扩展名</string>
@@ -328,8 +328,8 @@
     <string name="toast_file_content_copied">文件内容已复制到剪贴板</string>
     <string name="toast_file_path_copied">文件路径已复制到剪贴板</string>
     <string name="preview_reading">正在读取文件内容（只读）...</string>
-    <string name="preview_text_header">📄 文本内容预览（最大32KB）</string>
-    <string name="preview_hex_header">⚡ 二进制Hex头部预览</string>
+    <string name="preview_text_header">文本预览（最大32KB）</string>
+    <string name="preview_hex_header">二进制头部Hex预览</string>
 
     <!-- 分区详情弹窗 -->
     <string name="detail_title_fmt">%1$s %2$s详细信息</string>
@@ -339,9 +339,9 @@
     <string name="detail_img_file">镜像文件：</string>
     <string name="detail_no_img">暂未创建镜像</string>
     <string name="detail_fs">文件系统：</string>
-    <string name="detail_fs_desc">EXT4 - 4096B块 - Inode动态映射</string>
+    <string name="detail_fs_desc">EXT4 - 4096B块</string>
     <string name="detail_overlay_paths">目录结构：</string>
-    <string name="detail_lower_desc_fmt">Lower: %s（底包只读）</string>
+    <string name="detail_lower_desc_fmt">Lower: %s（只读）</string>
     <string name="detail_btn_browse">文件浏览</string>
     <string name="detail_btn_analysis">占用分析</string>
     <string name="state_live_active">已挂载</string>
@@ -350,12 +350,12 @@
     <!-- 文件预览弹窗 -->
     <string name="preview_type_text">文本/配置</string>
     <string name="preview_type_hidden">隐藏文件</string>
-    <string name="preview_content_title">📄 内容预览</string>
+    <string name="preview_content_title">内容预览</string>
     <string name="preview_loading">正在加载预览...</string>
     <string name="preview_copy_path">复制路径</string>
     <string name="preview_copy_content">复制内容</string>
     <string name="ncdu_dir_meta_fmt">%1$.1f%% - %2$d项</string>
-    <string name="toast_params_reset">已重置为标准推荐参数</string>
+    <string name="toast_params_reset">已重置为默认参数</string>
     <string name="explorer_load_failed_title">读取文件目录失败</string>
     <string name="preview_rel_path_fmt">相对路径：%s</string>
     <string name="preview_file_size_fmt">文件大小：%1$s（%2$d字节）</string>
@@ -371,43 +371,94 @@
     <string name="file_type_other">其他文件</string>
 
     <!-- 关于页面 -->
-    <string name="about_app_subtitle">Rootless OverlayFS 分区管理器</string>
+    <string name="about_app_subtitle">Rootless OverlayFS分区管理器</string>
     <string name="about_version_label">版本信息</string>
     <string name="about_antifraud_title">永久开源与免费声明</string>
-    <string name="about_antifraud_content">本程序永久开源且完全免费！\n如果您是在任何第三方平台、网店或个人处付费购买的，说明您已被骗！请立即向平台申请退款，并欢迎前往GitHub开源仓库进行反馈和举报！</string>
+    <string name="about_antifraud_content">本程序永久开源且完全免费。\n若您在任何第三方平台、网店或个人处付费购买，说明您已被骗。请立即向平台申请退款，并欢迎到GitHub开源仓库反馈举报。</string>
     <string name="about_antifraud_tag">谨防诈骗 - 拒绝倒卖</string>
     <string name="about_developer_title">核心开发者</string>
     <string name="about_developer_name">OrionisLi (LemonFan-maker)</string>
     <string name="about_repo_title">开源仓库</string>
     <string name="about_repo_url">https://github.com/LemonFan-maker/gh0stra1n</string>
-    <string name="about_repo_desc">前往GitHub查看源码、提交Issue或Star支持</string>
+    <string name="about_repo_desc">源码与Issue都在GitHub仓库</string>
     <string name="about_license_title">开源协议</string>
     <string name="about_license_name">Apache License 2.0</string>
     <string name="about_changelog_title">版本更新日志</string>
+    <string name="about_changelog_v116_title">v1.1.6 - 界面文案去营销化与硬编码收敛</string>
+    <string name="about_changelog_v116_desc">清理状态与控制台日志中的营销化措辞，改为中性操作描述
+界面占位与预览文本移入tools命名空间，不再参与运行时
+52处硬编码文案与9处无障碍描述改由字符串资源提供
+分区标识与容量预设等固定值标记为不翻译，三语键位保持一致</string>
     <string name="about_changelog_v115_title">v1.1.5 - 界面结构去重与失败详情中立化</string>
     <string name="about_changelog_v115_desc">主题引导、dp换算、面包屑栏与失败弹窗等跨页面复制代码收敛为共享实现\n设置读写全部改走SettingsStore，界面代码不再直连原始SharedPreferences\n移除13个未引用图标资源，全仓5行以上跨文件重复块清零\n19条底层失败详情改为仅含命令与原始输出，三语界面错误展示不再混入翻译\nCI签名密钥缺失时快速失败，恢复keystore解码步骤并刷新弃用的Actions</string>
     <string name="about_changelog_v114_title">v1.1.4 - 管道阻塞修复与界面文案精简</string>
-    <string name="about_changelog_v114_desc">修复su命令输出超64KiB时管道写满导致的阻塞与静默失败\n卸载残留改为精确匹配并真实校验，残留未清空时不再谎报成功\n主界面与分区浏览补齐24处生命周期守卫，杜绝返回与切主题时的崩溃\n设置与设备信息读取引入缓存，启动与保存的root fork由8次降至1次\n日志面板超过500条后改为增量追加，修复每次输出全量重建导致的卡顿\n精简42条界面文案，去除标题中的冗余修饰</string>
-    <string name="about_changelog_v113_title">v1.1.3 - 守护进程常驻与跨进程签名安全隔离</string>
-    <string name="about_changelog_v113_desc">全新升级Gh0stOverlayService为独立守护进程（:daemon），退出不中断\n适配Android 14+ 前台服务与低优先级静默常驻通知，支持START_STICKY故障自愈\n引入Signature签名级权限与运行时UID鉴权双重隔离，严防未授权恶意调用\n适配同系列工具跨进程无缝通信，重构Release签名与CI/CD流水线</string>
-    <string name="about_changelog_v112_title">v1.1.2 - 动态识别宿主机型与系统环境</string>
-    <string name="about_changelog_v112_desc">移除所有写死的宿主设备信息，全新引入DeviceInfoHelper动态解析器\n自动匹配各大主流厂商商业市场机型名称（vivo/iQOO、小米/Redmi、OPPO/一加、荣耀等）\n自动获取底层Linux官方硬件代号（Codename）与系统Android主版本\n顶部机型卡片增加点击反馈，支持一键将详细硬件与架构信息复制到剪贴板\n统一主界面顶栏副标题与底层初始化日志输出，彻底完成设备解耦</string>
+    <string name="about_changelog_v114_desc">修复su命令输出超64KiB时管道写满导致的阻塞与静默失败\n卸载残留改为精确匹配并真实校验，残留未清空时不再谎报成功\n主界面与分区浏览补齐24处生命周期守卫，修复返回与切主题时的崩溃\n设置与设备信息读取引入缓存，启动与保存的root fork由8次降至1次\n日志面板超过500条后改为增量追加，修复每次输出全量重建导致的卡顿\n精简42条界面文案，去除标题中的冗余修饰</string>
+    <string name="about_changelog_v113_title">v1.1.3 - 守护进程与调用方鉴权</string>
+    <string name="about_changelog_v113_desc">Gh0stOverlayService改为独立守护进程（:daemon），退出不中断\n适配Android 14+前台服务与低优先级常驻通知，支持START_STICKY自动重启\n签名级权限与运行时UID校验，拒绝未授权调用\n适配同系列工具跨进程调用，重构Release签名与CI/CD流水线</string>
+    <string name="about_changelog_v112_title">v1.1.2 - 动态获取设备信息</string>
+    <string name="about_changelog_v112_desc">移除写死的宿主设备信息，改为DeviceInfoHelper动态获取\n识别厂商市场机型名称（vivo/iQOO、小米/Redmi、OPPO/一加、荣耀等）\n获取Linux硬件代号（Codename）与Android主版本\n顶部机型卡片支持点击复制硬件与架构信息\n统一顶栏副标题与初始化日志</string>
     <string name="about_changelog_v111_title">v1.1.1 - 引入AIDL跨进程通信服务</string>
     <string name="about_changelog_v111_desc">新增IGh0stOverlayService AIDL跨进程通信接口\n提供公开Service（OVERLAY_SERVICE）供外部模块/应用与管理器交互\n支持远程探测Root、查询分区状态、获取upperdir、挂载与卸载分区\n支持远程调用存储落盘（syncStorage）与软重启（restartZygote）</string>
-    <string name="about_changelog_v110_title">v1.1.0 - 全新「关于」页面与导航架构重组</string>
-    <string name="about_changelog_v110_desc">移除测试载荷页面，全新引入规范化「关于」页面与开源信息\n调整底栏导航架构：控制、分区、日志、设置、关于\n页面顶部展示矢量Logo与编译期Git短提交哈希胶囊\n增加永久开源与免费防倒卖声明，支持一键直达GitHub开源仓库\n增加版本更新历史日志时间线与多语言同步</string>
-    <string name="about_changelog_v103_title">v1.0.3 - 全面适配多方案与旧内核</string>
-    <string name="about_changelog_v103_desc">新增KernelSU、Magisk、APatch及绝对路径su自动探测支持\n适配旧内核（Linux 4.14等） loop步长算法，解决loop attach设备冲突\n挂载OverlayFS时自动同步分区SELinux上下文，根除权限被拒（error=13）\n挂载无镜像拦截与引导创建，移除隐式自动建图</string>
-    <string name="about_changelog_v102_title">v1.0.2 - 回环释放与挂载幂等自愈</string>
-    <string name="about_changelog_v102_desc">卸载时主动回收关联的loop回环设备节点\n顺延无冲突扫描（30..99）避免EBUSY\n移除自动扩容逻辑，最低镜像门槛降至16 MiB</string>
-    <string name="about_changelog_v101_title">v1.0.1 - 管道化加速与防抖保护</string>
-    <string name="about_changelog_v101_desc">多分区并发多线程管道化装载，速度显著提升\n界面增加防抖与线程级刷新保护机制\n接入GitHub Actions自动化CI/CD流水线</string>
+    <string name="about_changelog_v110_title">v1.1.0 - 「关于」页面与导航调整</string>
+    <string name="about_changelog_v110_desc">移除测试载荷页面，改为「关于」页与开源信息\n调整底栏导航：控制、分区、日志、设置、关于\n页面顶部展示矢量Logo与编译期Git短哈希\n增加开源与免费声明，附GitHub仓库链接\n增加版本更新日志时间线与三语同步</string>
+    <string name="about_changelog_v103_title">v1.0.3 - 多Root方案与旧内核适配</string>
+    <string name="about_changelog_v103_desc">新增KernelSU、Magisk、APatch及绝对路径su自动探测\n适配旧内核（Linux 4.14等）loop步长算法，修复loop attach设备冲突\n挂载OverlayFS时同步分区SELinux上下文，修复权限被拒（error=13）\n挂载无镜像时拦截并提示创建，不再隐式建镜像</string>
+    <string name="about_changelog_v102_title">v1.0.2 - loop设备释放与幂等挂载</string>
+    <string name="about_changelog_v102_desc">卸载时释放关联的loop设备节点\n扫描空闲loop（30..99）避免EBUSY\n移除自动扩容逻辑，最低镜像门槛降至16 MiB</string>
+    <string name="about_changelog_v101_title">v1.0.1 - 并发挂载与防抖</string>
+    <string name="about_changelog_v101_desc">多分区并发挂载\n界面增加防抖与刷新保护机制\n接入GitHub Actions CI/CD流水线</string>
     <string name="about_changelog_v100_title">v1.0.0 - 首发开源版本</string>
-    <string name="about_changelog_v100_desc">首个正式开源版本发布\n实现基于OverlayFS的免重刷系统分区接管\n拟物液态玻璃底部导航与Material You主题系统</string>
+    <string name="about_changelog_v100_desc">首个正式开源版本发布\n基于OverlayFS免重刷修改系统分区\n液态玻璃底部导航与Material You主题</string>
+
+    <!-- 无障碍与界面标签 -->
+    <string name="cd_status_dot">状态指示灯</string>
+    <string name="cd_shield_alert">安全提示</string>
+    <string name="cd_github">GitHub</string>
+    <string name="cd_open_in_browser">在浏览器中打开</string>
+    <string name="cd_history">更新历史</string>
+    <string name="cd_partition_status">分区状态</string>
+    <string name="cd_more_actions">更多操作</string>
+    <string name="about_changelog_latest">最新</string>
+    <string name="about_footer">Gh0stra1n - Designed for Android System Enthusiasts\nCopyright © 2026 OrionisLi. All Rights Reserved.</string>
+
+    <!-- 分区标识 -->
+    <string name="part_id_system" translatable="false">system</string>
+    <string name="part_id_vendor" translatable="false">vendor</string>
+    <string name="part_id_product" translatable="false">product</string>
+    <string name="part_id_system_ext" translatable="false">system_ext</string>
+    <string name="part_id_odm" translatable="false">odm</string>
+
+    <!-- 镜像创建：容量与块大小 -->
+    <string name="create_image_preset_256">256M</string>
+    <string name="create_image_preset_512">512M</string>
+    <string name="create_image_preset_1024">1024M</string>
+    <string name="create_image_preset_2048">2048M</string>
+    <string name="create_image_bs_1024">1024（1KB）</string>
+    <string name="create_image_bs_2048">2048（2KB）</string>
+
+    <!-- 扩容弹窗 -->
+    <string name="dialog_resize_target_hint">768</string>
+    <string name="resize_add_256">+256M</string>
+    <string name="resize_add_512">+512M</string>
+    <string name="resize_add_1024">+1GB</string>
+    <string name="resize_add_2048">+2GB</string>
+
+    <!-- 终端配色 -->
+    <string name="dialog_custom_term_pill">RGB / HEX</string>
+    <string name="term_preset_catppuccin">Catppuccin</string>
+    <string name="term_preset_tokyo_night">Tokyo Night</string>
+    <string name="term_preset_dracula">Dracula</string>
+    <string name="term_preset_nord">Nord</string>
+    <string name="term_preset_gruvbox">Gruvbox</string>
+    <string name="term_preset_cyberpunk">Cyberpunk</string>
 
     <!-- 守护进程与服务通知 -->
     <string name="overlay_daemon_channel_name">Gh0stra1n</string>
-    <string name="overlay_daemon_channel_desc">保持OverlayFS跨进程通信服务在后台稳定运行</string>
-    <string name="overlay_daemon_notif_title">Gh0stra1n守护中</string>
+    <string name="overlay_daemon_channel_desc">让OverlayFS IPC服务在后台保持运行</string>
+    <string name="overlay_daemon_notif_title">Gh0stra1n服务运行中</string>
     <string name="overlay_daemon_notif_text">服务已就绪</string>
+    <string name="lang_zh_cn">简体中文</string>
+    <string name="lang_en">English</string>
+    <string name="lang_zh_tw">繁體中文</string>
+    <string name="val_dash">-</string>
 </resources>

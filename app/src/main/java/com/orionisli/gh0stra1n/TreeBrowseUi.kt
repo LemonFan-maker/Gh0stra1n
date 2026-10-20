@@ -69,6 +69,15 @@ fun rebuildBreadcrumbBar(
     }
 }
 
+fun bindHiddenBadge(badge: TextView, isHidden: Boolean, palette: ThemePalette) {
+    if (isHidden) {
+        badge.visibility = View.VISIBLE
+        ThemeManager.stylePill(badge, PillType.GRAY, palette)
+    } else {
+        badge.visibility = View.GONE
+    }
+}
+
 fun attachHeaderListInsets(root: View, header: View, list: View) {
     ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
         val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())

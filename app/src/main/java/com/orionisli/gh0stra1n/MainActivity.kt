@@ -1302,7 +1302,7 @@ class MainActivity : AppCompatActivity() {
         if (isLive) {
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.menu_fsck)
-                .setMessage("当前分区${item.def.id}处于活跃挂载状态。\n\nLinux要求在离线未挂载状态下执行e2fsck检查以避免破坏元数据。\n是否立即安全卸载该分区并执行自检？")
+                .setMessage("当前分区${item.def.id}处于挂载状态。\n\ne2fsck需要先卸载镜像，避免文件系统损坏。\n是否卸载并执行自检？")
                 .setPositiveButton("卸载并自检") { _, _ ->
                     HapticUtil.confirm()
                     Thread {
@@ -2152,12 +2152,12 @@ class MainActivity : AppCompatActivity() {
             .setMessage(R.string.dialog_reboot_msg)
             .setPositiveButton(R.string.dialog_reboot_btn) { _, _ ->
                 HapticUtil.confirm()
-                AppLogger.i("UI", "安全重启")
+                AppLogger.i("UI", "重启")
                 controller.rebootWithTeardown()
             }
             .setNegativeButton(R.string.btn_cancel) { _, _ ->
                 HapticUtil.click()
-                AppLogger.i("UI", "取消安全重启")
+                AppLogger.i("UI", "取消重启")
             }
             .show()
     }

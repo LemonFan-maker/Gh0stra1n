@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_ncdu_item"
     android:layout_width="match_parent"
@@ -42,7 +43,7 @@
                 android:ellipsize="middle"
                 android:fontFamily="@font/maple_mono_regular"
                 android:singleLine="true"
-                android:text="app/"
+                tools:text="app/"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -68,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/maple_mono_regular"
-                android:text="28.0 MiB"
+                tools:text="28.0 MiB"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -81,7 +82,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="2dp"
             android:fontFamily="@font/maple_mono_regular"
-            android:text="-rw-rw-rw- - root:root"
+            tools:text="-rw-rw-rw- - root:root"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="10sp" />
 
@@ -110,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/maple_mono_regular"
-                android:text="0.0%"
+                tools:text="0.0%"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="10sp" />
         </LinearLayout>

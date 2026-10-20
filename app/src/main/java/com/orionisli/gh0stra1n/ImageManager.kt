@@ -190,7 +190,6 @@ object ImageManager {
 
     fun shrinkImage(part: PartitionDef, image: String, targetBytes: Long): Result<Unit> {
         AppLogger.i("SHRINK", "开始收缩镜像${part.id}：目标大小=${targetBytes / (1024 * 1024)}MiB")
-        AppLogger.i("SHRINK", "准备安全收缩${part.id}...")
 
         val live = livePartitions()
         val wasLive = part.id in live
@@ -700,7 +699,6 @@ object ImageManager {
 
     fun deletePartitionData(part: PartitionDef): Result<Unit> {
         AppLogger.i("DELETE", "开始删除分区${part.id}(${part.mountPoint})数据")
-        AppLogger.i("DELETE", "开始安全清理${part.id}...")
 
         val live = livePartitions()
         if (part.id in live) {
@@ -754,14 +752,12 @@ object ImageManager {
         }
 
         ManifestStore.clearAllPartImages()
-        AppLogger.i("DELETE", "全部分区镜像与缓存目录已完全清除")
         AppLogger.i("DELETE", "全部镜像与工作目录已删除")
         return Result.success(Unit)
     }
 
     fun formatPartitionData(part: PartitionDef): Result<Unit> {
         AppLogger.i("FORMAT", "开始格式化分区${part.id}(${part.mountPoint})镜像")
-        AppLogger.i("FORMAT", "开始安全卸载${part.id}...")
 
         val live = livePartitions()
         if (part.id in live) {
@@ -794,7 +790,6 @@ object ImageManager {
         }
 
         AppLogger.i("FORMAT", "分区${part.id}格式化完成")
-        AppLogger.i("FORMAT", "${part.id}格式化完成，已恢复为干净ext4卷")
         return Result.success(Unit)
     }
 }

@@ -185,12 +185,7 @@ class PartitionExplorerAdapter(
             holder.details.setTextColor(p.textSecondary)
         }
 
-        if (item.isHidden) {
-            holder.badgeHidden.visibility = View.VISIBLE
-            ThemeManager.stylePill(holder.badgeHidden, PillType.GRAY, p)
-        } else {
-            holder.badgeHidden.visibility = View.GONE
-        }
+        bindHiddenBadge(holder.badgeHidden, item.isHidden, p)
 
         holder.card.setOnClickListener {
             HapticUtil.click(it)

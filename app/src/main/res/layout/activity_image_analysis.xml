@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_image_analysis"
     android:layout_width="match_parent"
@@ -52,7 +53,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/maple_mono_regular"
                 android:singleLine="true"
-                android:text="WizTree"
+                tools:text="WizTree"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="11sp" />
         </LinearLayout>
@@ -118,7 +119,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/maple_mono_regular"
-                            android:text="EXT4"
+                            tools:text="EXT4"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -131,7 +132,7 @@
                             android:fontFamily="@font/maple_mono_regular"
                             android:paddingHorizontal="6dp"
                             android:paddingVertical="2dp"
-                            android:text="⚡ 0ms"
+                            tools:text="⚡ 0ms"
                             android:textColor="?attr/colorPrimary"
                             android:textSize="10sp"
                             android:textStyle="bold" />
@@ -143,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/maple_mono_regular"
-                        android:text="Inode: -"
+                        tools:text="Inode: -"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="10sp" />
 
@@ -153,7 +154,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:fontFamily="@font/maple_mono_regular"
-                        android:text="Features: -"
+                        tools:text="Features: -"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="10sp" />
                 </LinearLayout>
@@ -209,7 +210,7 @@
                             android:ellipsize="middle"
                             android:fontFamily="@font/maple_mono_regular"
                             android:singleLine="true"
-                            android:text="📁 /"
+                            tools:text="📁 /"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -366,7 +367,7 @@
                         android:ellipsize="middle"
                         android:fontFamily="@font/maple_mono_regular"
                         android:singleLine="true"
-                        android:text="/"
+                        tools:text="/"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="11sp" />
 
@@ -375,7 +376,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/maple_mono_regular"
-                        android:text="0 B"
+                        tools:text="0 B"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="12sp"
                         android:textStyle="bold" />

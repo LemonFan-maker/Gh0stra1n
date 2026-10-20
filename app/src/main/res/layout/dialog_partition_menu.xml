@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialog_scroll_container"
     android:layout_width="match_parent"
@@ -40,13 +41,13 @@
                 android:layout_height="9dp"
                 android:src="@drawable/bg_status_dot"
                 android:visibility="gone"
-                android:contentDescription="Status" />
+                android:contentDescription="@string/cd_partition_status" />
 
             <TextView
                 android:id="@+id/menu_part_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="system"
+                tools:text="system"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="17sp"
                 android:textStyle="bold"
@@ -59,7 +60,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="/system"
+                tools:text="/system"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12.5sp"
                 android:fontFamily="@font/maple_mono"
@@ -73,7 +74,7 @@
                 android:background="@drawable/bg_pill_green"
                 android:paddingHorizontal="7dp"
                 android:paddingVertical="2dp"
-                android:text="LIVE"
+                tools:text="LIVE"
                 android:textColor="@color/status_green"
                 android:textSize="10.5sp"
                 android:textStyle="bold"
@@ -85,7 +86,7 @@
             android:id="@+id/menu_part_stats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1.2 GiB"
+            tools:text="1.2 GiB"
             android:textColor="?attr/colorPrimary"
             android:textSize="11.5sp"
             android:fontFamily="@font/maple_mono"

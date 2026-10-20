@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/maple_mono_regular"
-                android:text="Details"
+                tools:text="Details"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -42,7 +43,7 @@
                 android:fontFamily="@font/maple_mono_regular"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="3dp"
-                android:text="LIVE"
+                tools:text="LIVE"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="11sp"
                 android:textStyle="bold" />
@@ -92,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/maple_mono_regular"
-                        android:text="/system"
+                        tools:text="/system"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="11sp"
                         android:textStyle="bold" />
@@ -119,7 +120,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/maple_mono_regular"
-                        android:text="512 MiB"
+                        tools:text="512 MiB"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -145,7 +146,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/maple_mono_regular"
-                        android:text="64.1 MiB / 512 MiB (12.5%)"
+                        tools:text="64.1 MiB / 512 MiB (12.5%)"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="11sp"
                         android:textStyle="bold" />
@@ -174,7 +175,7 @@
                         android:ellipsize="middle"
                         android:fontFamily="@font/maple_mono_regular"
                         android:singleLine="true"
-                        android:text="system.img"
+                        tools:text="system.img"
                         android:textColor="?attr/colorPrimary"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -200,7 +201,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/maple_mono_regular"
-                        android:text="EXT4"
+                        tools:text="EXT4"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -228,7 +229,7 @@
                         android:ellipsize="middle"
                         android:fontFamily="@font/maple_mono_regular"
                         android:singleLine="true"
-                        android:text="• Upper: -"
+                        tools:text="• Upper: -"
                         android:textColor="?attr/colorPrimary"
                         android:textSize="10sp" />
 
@@ -240,7 +241,7 @@
                         android:ellipsize="middle"
                         android:fontFamily="@font/maple_mono_regular"
                         android:singleLine="true"
-                        android:text="• Work: -"
+                        tools:text="• Work: -"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="10sp" />
 
@@ -252,7 +253,7 @@
                         android:ellipsize="middle"
                         android:fontFamily="@font/maple_mono_regular"
                         android:singleLine="true"
-                        android:text="• Lower: -"
+                        tools:text="• Lower: -"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="10sp" />
                 </LinearLayout>

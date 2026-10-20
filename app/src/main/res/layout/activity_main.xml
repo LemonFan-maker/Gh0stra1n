@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
@@ -29,7 +30,7 @@
                 android:id="@+id/icon_badge"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:contentDescription="Gh0stra1n"
+                android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_launcher" />
 
             <LinearLayout
@@ -42,7 +43,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gh0stra1n"
+                    android:text="@string/app_name"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="26sp"
                     android:textStyle="bold"
@@ -65,7 +66,7 @@
                 android:background="@drawable/bg_pill_gray"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
-                android:text="BOOT"
+                tools:text="BOOT"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="11sp"
                 android:textStyle="bold"
@@ -148,14 +149,14 @@
                                 android:layout_width="12dp"
                                 android:layout_height="12dp"
                                 android:src="@drawable/bg_status_dot"
-                                android:contentDescription="Status Dot" />
+                                android:contentDescription="@string/cd_status_dot" />
 
                             <TextView
                                 android:id="@+id/status_state"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="BOOT"
+                                tools:text="BOOT"
                                 android:textColor="?attr/colorOnSurface"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
@@ -376,7 +377,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="system"
+                                        android:text="@string/part_id_system"
                                         android:textColor="?attr/colorOnSurface"
                                         android:textSize="10.5sp"
                                         android:textStyle="bold"
@@ -418,7 +419,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="5dp"
-                                        android:text="--"
+                                        android:text="@string/val_dash"
                                         android:textColor="?attr/colorOnSurfaceVariant"
                                         android:textSize="9sp"
                                         android:fontFamily="@font/maple_mono"
@@ -461,7 +462,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="vendor"
+                                        android:text="@string/part_id_vendor"
                                         android:textColor="?attr/colorOnSurface"
                                         android:textSize="10.5sp"
                                         android:textStyle="bold"
@@ -503,7 +504,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="5dp"
-                                        android:text="--"
+                                        android:text="@string/val_dash"
                                         android:textColor="?attr/colorOnSurfaceVariant"
                                         android:textSize="9sp"
                                         android:fontFamily="@font/maple_mono"
@@ -550,7 +551,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="product"
+                                        android:text="@string/part_id_product"
                                         android:textColor="?attr/colorOnSurface"
                                         android:textSize="10.5sp"
                                         android:textStyle="bold"
@@ -592,7 +593,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="5dp"
-                                        android:text="--"
+                                        android:text="@string/val_dash"
                                         android:textColor="?attr/colorOnSurfaceVariant"
                                         android:textSize="9sp"
                                         android:fontFamily="@font/maple_mono"
@@ -635,7 +636,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="system_ext"
+                                        android:text="@string/part_id_system_ext"
                                         android:textColor="?attr/colorOnSurface"
                                         android:textSize="10.5sp"
                                         android:textStyle="bold"
@@ -677,7 +678,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="5dp"
-                                        android:text="--"
+                                        android:text="@string/val_dash"
                                         android:textColor="?attr/colorOnSurfaceVariant"
                                         android:textSize="9sp"
                                         android:fontFamily="@font/maple_mono"
@@ -724,7 +725,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="odm"
+                                        android:text="@string/part_id_odm"
                                         android:textColor="?attr/colorOnSurface"
                                         android:textSize="10.5sp"
                                         android:textStyle="bold"
@@ -766,7 +767,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="5dp"
-                                        android:text="--"
+                                        android:text="@string/val_dash"
                                         android:textColor="?attr/colorOnSurfaceVariant"
                                         android:textSize="9sp"
                                         android:fontFamily="@font/maple_mono"
@@ -851,7 +852,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="5dp"
-                                        android:text="--"
+                                        android:text="@string/val_dash"
                                         android:textColor="?attr/colorOnSurfaceVariant"
                                         android:textSize="9sp"
                                         android:fontFamily="@font/maple_mono"
@@ -1721,7 +1722,7 @@
                             android:layout_height="38dp"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
-                            android:text="简体中文"
+                            android:text="@string/lang_zh_cn"
                             android:textSize="11sp"
                             android:textColor="?attr/colorOnSurface"
                             app:strokeColor="?attr/colorPrimary"
@@ -1738,7 +1739,7 @@
                             android:layout_height="38dp"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
-                            android:text="English"
+                            android:text="@string/lang_en"
                             android:textSize="11sp"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             app:strokeColor="?attr/colorOutline"
@@ -1753,7 +1754,7 @@
                             android:layout_width="0dp"
                             android:layout_height="38dp"
                             android:layout_weight="1"
-                            android:text="繁體中文"
+                            android:text="@string/lang_zh_tw"
                             android:textSize="11sp"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             app:strokeColor="?attr/colorOutline"
@@ -1978,7 +1979,7 @@
                                 android:id="@+id/txt_about_version"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="v1.1.3"
+                                tools:text="v1.1.3"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="12sp"
                                 android:fontFamily="@font/maple_mono"
@@ -2026,7 +2027,7 @@
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_shield_alert"
                                 app:tint="#FFEF4444"
-                                android:contentDescription="Shield Alert" />
+                                android:contentDescription="@string/cd_shield_alert" />
 
                             <TextView
                                 android:layout_width="0dp"
@@ -2138,7 +2139,7 @@
                                 android:layout_height="22dp"
                                 android:src="@drawable/ic_github"
                                 app:tint="?attr/colorOnSurface"
-                                android:contentDescription="GitHub" />
+                                android:contentDescription="@string/cd_github" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -2169,7 +2170,7 @@
                                 android:layout_height="16dp"
                                 android:src="@drawable/ic_open_in_new"
                                 app:tint="?attr/colorOnSurfaceVariant"
-                                android:contentDescription="Open in browser" />
+                                android:contentDescription="@string/cd_open_in_browser" />
                         </LinearLayout>
 
                         <View
@@ -2220,7 +2221,7 @@
                         android:layout_height="16dp"
                         android:src="@drawable/ic_history"
                         app:tint="?attr/colorOnSurfaceVariant"
-                        android:contentDescription="History" />
+                        android:contentDescription="@string/cd_history" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -2231,6 +2232,65 @@
                         android:textStyle="bold"
                         android:layout_marginStart="6dp" />
                 </LinearLayout>
+
+                <!-- v1.1.6 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_changelog_v116"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/about_changelog_v116_title"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/badge_changelog_latest"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_pill_green"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="3dp"
+                                android:text="@string/about_changelog_latest"
+                                android:textColor="#FFFFFFFF"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/maple_mono" />
+
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/about_changelog_v116_desc"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="12sp"
+                            android:layout_marginTop="8dp"
+                            android:lineSpacingExtra="3dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- v1.1.5 -->
                 <com.google.android.material.card.MaterialCardView
@@ -2265,18 +2325,6 @@
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:id="@+id/badge_changelog_latest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_pill_green"
-                                android:paddingHorizontal="8dp"
-                                android:paddingVertical="3dp"
-                                android:text="LATEST"
-                                android:textColor="#FFFFFFFF"
-                                android:textSize="10sp"
-                                android:textStyle="bold"
-                                android:fontFamily="@font/maple_mono" />
 
                         </LinearLayout>
 
@@ -2650,7 +2698,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Gh0stra1n - Designed for Android System Enthusiasts\nCopyright © 2026 OrionisLi. All Rights Reserved."
+                    android:text="@string/about_footer"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="11sp"
                     android:gravity="center"

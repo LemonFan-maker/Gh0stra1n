@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_explorer_item"
     android:layout_width="match_parent"
@@ -55,7 +56,7 @@
                     android:ellipsize="middle"
                     android:fontFamily="@font/maple_mono_regular"
                     android:singleLine="true"
-                    android:text="beef.txt"
+                    tools:text="beef.txt"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -83,7 +84,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/maple_mono_regular"
                 android:singleLine="true"
-                android:text="10 B - -rw-rw-rw- - root:root"
+                tools:text="10 B - -rw-rw-rw- - root:root"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="10sp" />
         </LinearLayout>

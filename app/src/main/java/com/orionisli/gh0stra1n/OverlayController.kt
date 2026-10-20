@@ -43,10 +43,10 @@ class OverlayController(
         if (running) return
         running = true
         Thread {
-            AppLogger.i("INIT", "Gh0stra1n系统初始化启动")
+            AppLogger.i("INIT", "初始化开始")
             AppLogger.i("SYS", "宿主：${DeviceInfoHelper.getDeviceSummary()}")
             if (!SuChannel.probeRoot()) {
-                AppLogger.e("INIT", "Root特权通道不可用，请确认su授权")
+                AppLogger.e("INIT", "su授权不可用，初始化中止")
                 setState(State.NO_ROOT, "")
                 running = false
                 return@Thread
@@ -54,25 +54,25 @@ class OverlayController(
             AppLogger.i("SYS", "Root授权方案：${SuChannel.rootProvider}")
             val live = ImageManager.livePartitions()
             if (live.isNotEmpty()) {
-                AppLogger.i("INIT", "检测到已有活跃OverlayFS挂载：${live.joinToString()}")
+                AppLogger.i("INIT", "已挂载：${live.joinToString()}")
                 setState(State.LIVE, "")
             } else {
                 val auto = settings?.bootAutoMount ?: false
                 val (lastIds, lastState) = ManifestStore.lastMountState()
                 AppLogger.i("INIT", "当前分区未挂载(开机自动挂载=$auto，上次记录=$lastState)")
                 if (!auto) {
-                    AppLogger.w("CONFIG", "开机自动恢复挂载未启用，系统当前处于冷备离线状态")
+                    AppLogger.w("CONFIG", "开机自动挂载未启用")
                 }
                 if (auto && lastState == "LIVE" && lastIds.isNotEmpty()) {
                     val validLastIds = lastIds.filter { id ->
                         PartitionTable.byId[id]?.takeIf { ImageManager.hasImage(it) } != null
                     }
                     if (validLastIds.isNotEmpty()) {
-                        AppLogger.i("INIT", "根据策略恢复上次挂载：${validLastIds.joinToString()}")
+                        AppLogger.i("INIT", "恢复上次挂载记录：${validLastIds.joinToString()}")
                         setState(State.MOUNTING, "")
                         doMount(validLastIds)
                     } else {
-                        AppLogger.w("INIT", "上次挂载记录中的分区镜像已不存在，跳过自动恢复挂载")
+                        AppLogger.w("INIT", "上次记录的镜像已不存在，跳过自动恢复")
                         setState(State.READY, "")
                     }
                 } else {
@@ -87,11 +87,11 @@ class OverlayController(
         if (running) return
         running = true
         Thread {
-            AppLogger.i("ACTION", "挂载分区OverlayFS")
+            AppLogger.i("ACTION", "挂载全部分区")
             if (state == State.NO_ROOT) {
-                AppLogger.i("MOUNT", "重新检测Root通道...")
+                AppLogger.i("MOUNT", "重试su检测...")
                 if (!SuChannel.probeRoot()) {
-                    AppLogger.e("MOUNT", "Root通道不可用，请在授权管理器中授权")
+                    AppLogger.e("MOUNT", "su不可用，请在Root管理器中授权")
                     setState(State.NO_ROOT, "")
                     running = false
                     return@Thread
@@ -99,12 +99,12 @@ class OverlayController(
             }
             val targetParts = PartitionTable.ALL.filter { ImageManager.hasImage(it) }
             if (targetParts.isEmpty()) {
-                AppLogger.w("MOUNT", "未检测到任何已创建的分区镜像，终止挂载，请先创建镜像")
+                AppLogger.w("MOUNT", "未找到任何镜像，终止挂载")
                 setState(State.READY, "未检测到镜像")
                 running = false
                 return@Thread
             }
-            AppLogger.i("MOUNT", "准备挂载已创建镜像的分区${targetParts.size}个：${targetParts.map { it.id }.joinToString()}")
+            AppLogger.i("MOUNT", "挂载${targetParts.size}个已有镜像的分区：${targetParts.map { it.id }.joinToString()}")
             setState(State.MOUNTING, "")
             doMount(targetParts.map { it.id })
             running = false
@@ -272,9 +272,9 @@ class OverlayController(
         Thread {
             AppLogger.i("ACTION", "挂载单个分区${part.id}")
             if (state == State.NO_ROOT) {
-                AppLogger.i("MOUNT", "重新检测Root通道...")
+                AppLogger.i("MOUNT", "重试su检测...")
                 if (!SuChannel.probeRoot()) {
-                    AppLogger.e("MOUNT", "Root通道仍不可用，请在授权管理器中授权")
+                    AppLogger.e("MOUNT", "su仍不可用，请在Root管理器中授权")
                     setState(State.NO_ROOT, "")
                     running = false
                     return@Thread
@@ -357,7 +357,7 @@ class OverlayController(
                 AppLogger.e("DELETE", "全部分区删除失败：$errMsg")
                 setState(State.FAILED, "error: $errMsg")
             } else {
-                AppLogger.i("DELETE", "全部分区镜像与数据已彻底删除")
+                AppLogger.i("DELETE", "全部分区镜像已删除")
                 settle()
             }
             running = false

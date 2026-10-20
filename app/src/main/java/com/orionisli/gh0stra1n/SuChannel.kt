@@ -85,20 +85,20 @@ object SuChannel {
     }
 
     fun probeRoot(): Boolean {
-        AppLogger.i("SU", "正在探测Root通道...")
+        AppLogger.i("SU", "正在探测su...")
         for (candidate in CANDIDATES) {
             try {
                 val r = runWithBinary(candidate, "id", timeoutSec = 8, logCmd = false)
                 if (r.ok && r.out.contains("uid=0")) {
                     activeSu = candidate
                     rootProvider = identifyRootProvider(candidate)
-                    AppLogger.i("SU", "Root通道就绪：$rootProvider(命令：$activeSu，输出：${r.out.trim()})")
+                    AppLogger.i("SU", "su可用：$rootProvider(命令：$activeSu，输出：${r.out.trim()})")
                     return true
                 }
             } catch (_: Exception) {
             }
         }
-        AppLogger.w("SU", "Root探测失败或未授权，请在Magisk / KernelSU / APatch中授权")
+        AppLogger.w("SU", "su探测失败或未授权，请在Magisk/KernelSU/APatch中授权")
         return false
     }
 

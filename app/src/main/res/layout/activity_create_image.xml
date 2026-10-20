@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_create_image"
     android:layout_width="match_parent"
@@ -131,7 +132,7 @@
                                 style="@style/Gh0stra1n.Chip.Filter"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="system"
+                                android:text="@string/part_id_system"
                                 android:checked="true"
                                 android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
                                 android:fontFamily="@font/maple_mono_regular" />
@@ -141,7 +142,7 @@
                                 style="@style/Gh0stra1n.Chip.Filter"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="vendor"
+                                android:text="@string/part_id_vendor"
                                 android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
                                 android:fontFamily="@font/maple_mono_regular" />
 
@@ -150,7 +151,7 @@
                                 style="@style/Gh0stra1n.Chip.Filter"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="product"
+                                android:text="@string/part_id_product"
                                 android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
                                 android:fontFamily="@font/maple_mono_regular" />
 
@@ -159,7 +160,7 @@
                                 style="@style/Gh0stra1n.Chip.Filter"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="system_ext"
+                                android:text="@string/part_id_system_ext"
                                 android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
                                 android:fontFamily="@font/maple_mono_regular" />
 
@@ -168,7 +169,7 @@
                                 style="@style/Gh0stra1n.Chip.Filter"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="odm"
+                                android:text="@string/part_id_odm"
                                 android:textAppearance="@style/Gh0stra1n.TextAppearance.Chip"
                                 android:fontFamily="@font/maple_mono_regular" />
                         </com.google.android.material.chip.ChipGroup>
@@ -226,7 +227,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/bg_input"
                             android:inputType="number"
-                            android:text="1024"
+                            tools:text="1024"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -237,7 +238,7 @@
                             android:id="@+id/txt_size_readable"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="≈ 1.0 GiB"
+                            tools:text="≈ 1.0 GiB"
                             android:textColor="?attr/colorPrimary"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -258,7 +259,7 @@
                             android:layout_width="0dp"
                             android:layout_height="38dp"
                             android:layout_weight="1"
-                            android:text="256M"
+                            android:text="@string/create_image_preset_256"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="11sp"
                             android:fontFamily="@font/maple_mono"
@@ -275,7 +276,7 @@
                             android:layout_width="0dp"
                             android:layout_height="38dp"
                             android:layout_weight="1"
-                            android:text="512M"
+                            android:text="@string/create_image_preset_512"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="11sp"
                             android:fontFamily="@font/maple_mono"
@@ -292,7 +293,7 @@
                             android:layout_width="0dp"
                             android:layout_height="38dp"
                             android:layout_weight="1"
-                            android:text="1024M"
+                            android:text="@string/create_image_preset_1024"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="11sp"
                             android:fontFamily="@font/maple_mono"
@@ -309,7 +310,7 @@
                             android:layout_width="0dp"
                             android:layout_height="38dp"
                             android:layout_weight="1"
-                            android:text="2048M"
+                            android:text="@string/create_image_preset_2048"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="11sp"
                             android:fontFamily="@font/maple_mono"
@@ -370,7 +371,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="1024 (1KB)"
+                            android:text="@string/create_image_bs_1024"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="12sp"
                             android:fontFamily="@font/maple_mono" />
@@ -380,7 +381,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="2048 (2KB)"
+                            android:text="@string/create_image_bs_2048"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="12sp"
                             android:fontFamily="@font/maple_mono" />
