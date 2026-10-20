@@ -119,6 +119,7 @@ class MainActivity : AppCompatActivity() {
 
     private enum class Tab { CONTROL, PARTITIONS, LOGS, SETTINGS, ABOUT }
     private var currentTab = Tab.CONTROL
+    private var notificationPermissionRequested = false
 
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
@@ -176,7 +177,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun startOverlayDaemon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED &&
+                !notificationPermissionRequested
+            ) {
+                notificationPermissionRequested = true
                 requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
             }
         }
@@ -194,6 +198,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        startOverlayDaemon()
         refreshRows()
     }
 
